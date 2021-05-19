@@ -1,0 +1,70 @@
+{
+  "name": "tiny-injector",
+  "version": "0.0.1",
+  "description": "Lightweight dependency injection library for TypeScript applications",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest",
+    "watch": "tsc --watch",
+    "release": "dotenv release-it",
+    "build": "tsc",
+    "start": "ts-node src/index.ts",
+    "prebuild": "del ./dist/",
+    "postbuild": "cpy 'README.md' 'package*.json' ./dist/ --no-overwrite --parents"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ezzabuzaid/dependency-injection.git"
+  },
+  "author": "ezzabuzaid",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/ezzabuzaid/dependency-injection/issues"
+  },
+  "homepage": "https://github.com/ezzabuzaid/dependency-injection#readme",
+  "keywords": [
+    "dependency injection",
+    "inversion of control",
+    "containers",
+    "ioc",
+    "di",
+    "decorator",
+    "ezzabuzaid"
+  ],
+  "private": false,
+  "release-it": {
+    "git": {
+      "requireBranch": "main",
+      "requireCleanWorkingDir": true,
+      "requireCommits": true,
+      "changelog": "npx auto-changelog --stdout --commit-limit false -u --template https://raw.githubusercontent.com/release-it/release-it/master/templates/changelog-compact.hbs"
+    },
+    "github": {
+      "release": true
+    },
+    "npm": {
+      "publish": false,
+      "publishPath": "./dist"
+    },
+    "hooks": {
+      "after:bump": "npx auto-changelog -p",
+      "before:npm:publish": "npm run build"
+    }
+  },
+  "dependencies": {
+    "cpy-cli": "^3.1.1",
+    "del-cli": "^3.0.1",
+    "reflect-metadata": "^0.1.13",
+    "typescript": "^4.2.2"
+  },
+  "devDependencies": {
+    "@release-it/conventional-changelog": "^2.0.1",
+    "@release-it/keep-a-changelog": "^2.2.2",
+    "@types/jest": "^26.0.21",
+    "dotenv-cli": "^4.0.0",
+    "jest": "^26.6.3",
+    "release-it": "^14.4.1",
+    "ts-jest": "^26.5.4",
+    "ts-node": "^9.1.1"
+  }
+}
