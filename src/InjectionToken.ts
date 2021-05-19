@@ -32,12 +32,12 @@ interface Options<T> {
  * @link https://github.com/angular/angular/blob/master/packages/core/src/di/injection_token.ts
  */
 export class InjectionToken<T> {
-    constructor(name: string, options?: Options<T>) {
+    constructor(public _name: string, options?: Options<T>) {
         class serviceType extends InjectionToken<T> { };
-        Object.defineProperty(serviceType, 'name', { value: name });
+        Object.defineProperty(serviceType, 'name', { value: _name });
         if (options && ServiceLifetime[options.lifetime]) {
             Injector.instance.AddService(serviceType, options.implementationFactory, options.lifetime)
         }
-        return serviceType;
+        return serviceType as any;
     }
 }

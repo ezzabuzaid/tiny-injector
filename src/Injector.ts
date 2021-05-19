@@ -28,18 +28,6 @@ export class Injector {
     }
 
     /**
-     * Adds a singleton service of the injection token with a factory specified in implementationFactory.
-     *
-     * @description
-     * Singleton services are created The first time they're requested.
-     * the same result will be returned for each subsequent request.
-     *
-     * @param injectionToken The token to add.
-     * @param implementationFactory the factory that creates the service.
-     *
-     */
-    static AddSingleton<T extends InjectionToken<any>>(injectionToken: T, implementationFactory: (context: Context) => InjectionTokenGenericParam<T>): void;
-    /**
      * Adds a singleton service of the type specified in serviceType with a factory specified in implementationFactory.
      * 
      * @description
@@ -51,6 +39,18 @@ export class Injector {
      * 
      */
     static AddSingleton<T extends Type<any>>(serviceType: T, implementationFactory: (context: Context) => InstanceType<T>): void;
+    /**
+     * Adds a singleton service of the injection token with a factory specified in implementationFactory.
+     *
+     * @description
+     * Singleton services are created The first time they're requested.
+     * the same result will be returned for each subsequent request.
+     *
+     * @param injectionToken The token to add.
+     * @param implementationFactory the factory that creates the service.
+     *
+     */
+    static AddSingleton<T extends InjectionToken<any>>(injectionToken: T, implementationFactory: (context: Context) => InjectionTokenGenericParam<T>): void;
     /**
      * Adds a singleton service of the type specified in serviceType with an implementation of the type specified in implementationType.
      * 
@@ -77,6 +77,16 @@ export class Injector {
         Injector.instance.AddService(serviceType, a, ServiceLifetime.Singleton);
     }
     /**
+     * Adds a transient service of the type specified in serviceType with a factory specified in implementationFactory.
+     *
+     * @description
+     * Transient services are created each time they're requested, Unlike Singleton and Scoped, the reference for the implementation won't be stored.
+     *
+     * @param serviceType - The type of the service to add.
+     * @param implementationFactory - the factory that creates the service.
+     */
+    static AddTransient<T extends Type<any>>(serviceType: T, implementationFactory: (context: Context) => InstanceType<T>): void;
+    /**
      * Adds a transient service of the injection token with a factory specified in implementationFactory.
      *
      * @description
@@ -87,16 +97,6 @@ export class Injector {
      *
      */
     static AddTransient<T extends InjectionToken<any>>(injectionToken: T, implementationFactory: (context: Context) => InjectionTokenGenericParam<T>): void;
-    /**
-     * Adds a transient service of the type specified in serviceType with a factory specified in implementationFactory.
-     *
-     * @description
-     * Transient services are created each time they're requested, Unlike Singleton and Scoped, the reference for the implementation won't be stored.
-     *
-     * @param serviceType - The type of the service to add.
-     * @param implementationFactory - the factory that creates the service.
-     */
-    static AddTransient<T extends Type<any>>(serviceType: T, implementationFactory: (context: Context) => InstanceType<T>): void;
     /**
      * Adds a transient service of the type specified in serviceType with an implementation of the type specified in implementationType.
      *
@@ -120,6 +120,19 @@ export class Injector {
         Injector.instance.AddService(serviceType, implementation, ServiceLifetime.Transient);
     }
     /**
+     * Adds a scoped service of the type specified in serviceType with a factory specified in implementationFactory.
+     * 
+     * @description
+     * Scoped services are created once per context.
+     *
+     * @see {Injector.CreateScope}
+     * @see {Injector.Create}
+     *
+     * @param serviceType The type of the service to add.
+     * @param implementationFactory the factory that creates the service.
+     */
+    static AddScoped<T extends Type<any>>(serviceType: T, implementationFactory: (context: Context) => InstanceType<T>): void;
+    /**
      * Adds a scoped service of the injection token with a factory specified in implementationFactory.
      *
      * @description
@@ -133,19 +146,6 @@ export class Injector {
      *
      */
     static AddScoped<T extends InjectionToken<any>>(injectionToken: T, implementationFactory: (context: Context) => InjectionTokenGenericParam<T>): void;
-    /**
-     * Adds a scoped service of the type specified in serviceType with a factory specified in implementationFactory.
-     * 
-     * @description
-     * Scoped services are created once per context.
-     *
-     * @see {Injector.CreateScope}
-     * @see {Injector.Create}
-     *
-     * @param serviceType The type of the service to add.
-     * @param implementationFactory the factory that creates the service.
-     */
-    static AddScoped<T extends Type<any>>(serviceType: T, implementationFactory: (context: Context) => InstanceType<T>): void;
     /**
      * Adds a scoped service of the type specified in serviceType with an implementation of the type specified in implementationType.
      *
