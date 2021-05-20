@@ -1,4 +1,4 @@
-import { Type } from "../Utils";
+import { Type } from "../Types";
 import { InvalidOperationException } from "./InvalidOperationException";
 
 export class ActivationFailedException extends InvalidOperationException {

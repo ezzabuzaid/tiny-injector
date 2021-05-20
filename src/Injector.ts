@@ -1,4 +1,5 @@
 import "reflect-metadata";
+import { ClassType, Type, TypeOf } from "./Types";
 import { Context } from "./Context";
 import {
     ActivationFailedException,
@@ -9,7 +10,7 @@ import {
 import { InjectionToken } from "./InjectionToken";
 import { ServiceDescriptor } from "./ServiceDescriptor";
 import { ServiceLifetime } from "./ServiceLifetime";
-import { isArrowFn, isConstructor, lastElement, notNullOrUndefined, Type } from './Utils';
+import { isArrowFn, isConstructor, lastElement, notNullOrUndefined } from './Utils';
 
 type InjectionTokenGenericParam<C extends InjectionToken<any>> = C extends InjectionToken<infer T> ? T : unknown;
 
@@ -20,7 +21,7 @@ export class Injector {
 
     #SingletonContext = new Context();
     #serviceCollection = new Map<Type<any>, ServiceDescriptor[]>();
-    #contextsContainer = new Map<Context, WeakMap<ServiceDescriptor, InstanceType<any>>>();
+    #contextsContainer = new Map<Context, WeakMap<ServiceDescriptor, TypeOf<any>>>();
     #toBeCreatedServices = new Map<Type<any>, Type<any>>();
 
     private constructor() {
@@ -38,7 +39,7 @@ export class Injector {
      * @param implementationFactory the factory that creates the service.
      * 
      */
-    static AddSingleton<T extends Type<any>>(serviceType: T, implementationFactory: (context: Context) => InstanceType<T>): void;
+    static AddSingleton<T extends Type<any>>(serviceType: T, implementationFactory: (context: Context) => TypeOf<T>): void;
     /**
      * Adds a singleton service of the injection token with a factory specified in implementationFactory.
      *
@@ -61,7 +62,7 @@ export class Injector {
      * @param serviceType The type of the service to add.
      * @param implementationType The type of the implementation to use.
      */
-    static AddSingleton<T extends Type<any>, I extends T>(serviceType: T, implementationType: I): void;
+    static AddSingleton<T extends Type<any>, I extends (T & ClassType<any>)>(serviceType: T, implementationType: I): void;
     /**
      * Adds a singleton service of the type specified in serviceType.
      *
@@ -72,7 +73,7 @@ export class Injector {
      * @param serviceType The type of the service to add.
      *
      */
-    static AddSingleton<T extends Type<any>>(serviceType: T): void;
+    static AddSingleton<T extends ClassType<any>>(serviceType: T): void;
     static AddSingleton(serviceType: any, a?: any) {
         Injector.instance.AddService(serviceType, a, ServiceLifetime.Singleton);
     }
@@ -85,7 +86,7 @@ export class Injector {
      * @param serviceType - The type of the service to add.
      * @param implementationFactory - the factory that creates the service.
      */
-    static AddTransient<T extends Type<any>>(serviceType: T, implementationFactory: (context: Context) => InstanceType<T>): void;
+    static AddTransient<T extends Type<any>>(serviceType: T, implementationFactory: (context: Context) => TypeOf<T>): void;
     /**
      * Adds a transient service of the injection token with a factory specified in implementationFactory.
      *
@@ -115,7 +116,7 @@ export class Injector {
      *
      * @param serviceType - The type of the service to add.
      */
-    static AddTransient<T extends Type<I>, I>(serviceType: T): void;
+    static AddTransient<T extends ClassType<I>, I>(serviceType: T): void;
     static AddTransient(serviceType: any, implementation?: any) {
         Injector.instance.AddService(serviceType, implementation, ServiceLifetime.Transient);
     }
@@ -131,7 +132,7 @@ export class Injector {
      * @param serviceType The type of the service to add.
      * @param implementationFactory the factory that creates the service.
      */
-    static AddScoped<T extends Type<any>>(serviceType: T, implementationFactory: (context: Context) => InstanceType<T>): void;
+    static AddScoped<T extends Type<any>>(serviceType: T, implementationFactory: (context: Context) => TypeOf<T>): void;
     /**
      * Adds a scoped service of the injection token with a factory specified in implementationFactory.
      *
@@ -170,7 +171,7 @@ export class Injector {
      *
      * @param serviceType The type of the service to add.
      */
-    static AddScoped<T extends Type<I>, I>(serviceType: T): void;
+    static AddScoped<T extends ClassType<I>, I>(serviceType: T): void;
     static AddScoped(serviceType: any, implementation?: any) {
         Injector.instance.AddService(serviceType, implementation, ServiceLifetime.Scoped);
     }
@@ -192,7 +193,7 @@ export class Injector {
      * @param implementationFactory the factory that creates the service.
      * 
      */
-    static AppendSingleton<T extends Type<any>>(serviceType: T, implementationFactory: (context: Context) => InstanceType<T>): void;
+    static AppendSingleton<T extends Type<any>>(serviceType: T, implementationFactory: (context: Context) => TypeOf<T>): void;
     /**
      * Appends a singleton service of the type specified in serviceType with an implementation of the type specified in implementationType.
      * 
@@ -226,7 +227,7 @@ export class Injector {
      * @param serviceType The type of the service to add.
      *
      */
-    static AppendSingleton<T extends Type<any>>(serviceType: T): void;
+    static AppendSingleton<T extends ClassType<any>>(serviceType: T): void;
     static AppendSingleton(serviceType: any, implementation?: any) {
         Injector.instance.AppendService(serviceType, implementation, ServiceLifetime.Singleton);
     }
@@ -248,7 +249,7 @@ export class Injector {
      * @param implementationFactory the factory that creates the service.
      * 
      */
-    static AppendTransient<T extends Type<any>>(serviceType: T, implementationFactory: (context: Context) => InstanceType<T>): void;
+    static AppendTransient<T extends Type<any>>(serviceType: T, implementationFactory: (context: Context) => TypeOf<T>): void;
     /**
      * Appends a Transient service of the type specified in serviceType with an implementation of the type specified in implementationType.
      * 
@@ -282,7 +283,7 @@ export class Injector {
      * @param serviceType The type of the service to add.
      *
      */
-    static AppendTransient<T extends Type<any>>(serviceType: T): void;
+    static AppendTransient<T extends ClassType<any>>(serviceType: T): void;
     static AppendTransient(serviceType: any, implementation?: any) {
         Injector.instance.AppendService(serviceType, implementation, ServiceLifetime.Transient);
     }
@@ -304,7 +305,7 @@ export class Injector {
      * @param implementationFactory the factory that creates the service.
      * 
      */
-    static AppendScoped<T extends Type<any>>(serviceType: T, implementationFactory: (context: Context) => InstanceType<T>): void;
+    static AppendScoped<T extends Type<any>>(serviceType: T, implementationFactory: (context: Context) => TypeOf<T>): void;
     /**
      * Appends a Scoped service of the type specified in serviceType with an implementation of the type specified in implementationType.
      * 
@@ -338,7 +339,7 @@ export class Injector {
      * @param serviceType The type of the service to add.
      *
      */
-    static AppendScoped<T extends Type<any>>(serviceType: T): void;
+    static AppendScoped<T extends ClassType<any>>(serviceType: T): void;
     static AppendScoped(serviceType: any, implementation?: any) {
         Injector.instance.AppendService(serviceType, implementation, ServiceLifetime.Scoped);
     }
@@ -381,7 +382,7 @@ export class Injector {
             };
         }
 
-        const resolver = (serviceType: Type<any>) => {
+        const resolver = (serviceType: ClassType<any>) => {
             switch (lifetime) {
                 case ServiceLifetime.Scoped:
                     return cache(this.Resolve(serviceType, lifetime));
@@ -527,7 +528,7 @@ export class Injector {
         return Reflect.getMetadata('design:paramtypes', serviceType) ?? [];
     }
 
-    private Resolve(serviceType: Type<any>, lifetime: ServiceLifetime) {
+    private Resolve(serviceType: ClassType<any>, lifetime: ServiceLifetime) {
         // TODO: add option to disable SingletonLifetime validation
         const tokens = this.getServiceTypeDependencies(serviceType);
 

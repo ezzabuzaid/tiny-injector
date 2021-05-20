@@ -1,4 +1,4 @@
-import { Type } from "./Utils";
+import { Type } from "./Types";
 import { Injectable } from "./Injectable";
 import { ServiceLifetime } from "./ServiceLifetime";
 

@@ -1,6 +1,6 @@
 import { InjectionToken } from "./InjectionToken";
 import { Injector } from ".";
-import { Type } from "./Utils";
+import { Type } from "./Types";
 
 export class Context {
     #extras = new Map<string, any>();

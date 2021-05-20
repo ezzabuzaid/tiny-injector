@@ -1,6 +1,6 @@
 import { Injector } from "./Injector";
 import { ServiceLifetime } from "./ServiceLifetime";
-import { Type } from "./Utils";
+import { Type } from "./Types";
 
 interface Options {
     /**

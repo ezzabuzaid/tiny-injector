@@ -1,5 +1,4 @@
 import { Context, Injector, ServiceLifetime } from ".";
-import { Type } from "./Utils";
 
 type FactoryType<T extends
     (new (...args: any) => any)
