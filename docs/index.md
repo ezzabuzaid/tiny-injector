@@ -1,0 +1,137 @@
+# Tiny Injector
+
+Tiny Injector is tiny yet powerful and flexible Dependency Injection library for web projects that uses TypeScript.
+
+Tiny Injector could be used on top of existing projects.
+
+The work heavily inspired by . NET Dependency Injection, Angular +2 and [This Answer](https://stackoverflow.com/a/48187842/10415423).
+
+Parts of documentation are taken from Microsoft DI website
+
+## What Is Dependency Injection
+
+In software engineering, dependency injection is a technique in which an object receives other objects that it depends on. These other objects are called dependencies.
+
+In the typical "using" relationship the receiving object is called a client and the passed (that is, "injected") object is called a service.
+
+[Reference](https://en.wikipedia.org/wiki/Dependency_injection)
+
+*in which an object receives other objects that it depends on.*
+Let's say you have two classes `ObjectA` and `ObjectB` , and `ObjectB` depends on `ObjectA` , in this case we call `ObjectA` dependency on `ObjectB` .
+
+*In the typical "using" relationship the receiving object is called a client and the passed (that is, "injected") object is called a service.*
+hence, `ObjectB` is client and `ObjectA` is "injected" service.
+
+```typescript
+class ObjectA { }
+
+class ObjectB {
+    constructor (objectA: ObjectA)
+}
+```
+
+which leads us to second defention
+
+*Dependency Injection is a software design concept that allows a service to be used/injected in a way that is completely independent of any client consumption.*
+
+so `ObjectB` will receive the service `ObjectA` without any knowledge of how the service constructed.
+
+*Dependency injection separates the creation of a client's dependencies from the client's behavior, which allows program designs to be loosely coupled.*
+
+[Reference](https://www.codementor.io/@olotintemitope/dependency-injection-explained-in-plain-english-b24hippx7)
+
+The goal of the dependency injection technique is to remove this dependency by separating the usage from the creation of the object. This reduces the amount of required boilerplate code and improves flexibility.
+
+With dependency injection you won't care how the service "injected object" is created or what dependencies it needs, you care only about specifing either the concrete implementation or the abstractions.
+
+* Dependency Inversion Principle
+
+*Entities must depend on abstractions, not on concretions. It states that the high-level module must not depend on the low-level module, but they should depend on abstractions.*
+
+so to truly have loosely coupled application you should start thinking abstractions instead of using concretions direclty.
+
+```typescript
+class SqlConnection {
+    connect() { }
+}
+
+class DataRepository {
+    constructor(sqlConnection: SqlConnection) { }
+
+    async fetch() {
+       const connection = await this.sqlConnection.connect();
+       return connection.find();
+    }
+}
+```
+
+this sample violates the Dependency Inversion Principle because if you thought about changing the `SqlConnection` to `MySqlConnection` you would have to change `DataRepository` as well since it depends on `SqlConnection` .
+
+to overcome this issue you need to create abstract class for database connection
+
+```typescript
+abstract class DatabaseConnection {
+    abstract connect(): Promise
+}
+
+class SqlConnection extends DatabaseConnection {
+    connect() { }
+}
+
+class MySqlConnection extends DatabaseConnection {
+    connect() { }
+}
+
+class DataRepository {
+    constructor(databaseConnection: DatabaseConnection) { }
+
+    async fetch() {
+       const connection = await this.databaseConnection.connect();
+       return connection.find();
+    }
+}
+```
+
+no wether you chosed `SqlConnection` or `MySqlConnection` you won't change the `DataRepository` since it depends on the abstraction and not on any of concretions.
+
+## Features
+
+Included
+
+* Supports Node.js and anything uses TypeScript.
+* Singleton, Scoped and Transient service lifetime.
+* Auto scope validation.
+* Uses class constructor to identify and inject its dependencies
+
+Not Included
+
+* Property injection
+* Injection based on name
+* Custom lifetime management
+
+TODO:
+
+1. Service disposal.
+2. Asynchronous registration.
+3. Provide user-defined options.
+4. Replace service functionality
+5. Error less service registration via Try{ServiceLifetime} methods
+
+## Other third-party libraries
+
+Worth to mention other great libraries.
+
+1. [InversifyJS](https://www.npmjs.com/package/inversify)
+2. [Awilix](https://www.npmjs.com/package/awilix)
+3. [BottleJS](https://www.npmjs.com/package/bottlejs)
+4. [injection-js](https://www.npmjs.com/package/injection-js)
+
+## License
+
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
+
+* See [LICENSE](/LICENSE)
+
+---
+
+Built and maintained with 💛 by [ezzabuzaid](https://github.com/ezzabuzaid)

@@ -46,6 +46,14 @@ interface Options {
  */
 export function Injectable(options?: Options): ClassDecorator {
     return function (target: Function) {
+        // TODO: add option to specify if the service should be replaced if exist
+        // the option should be function callback style that returns boolean
+        // if false is returned an error should be thrown in case of existance
+        // if true is returned the service should be replaced
+        // replaceOnExist: () => boolean
+
+        // TODO: add option to skip adding the service if exist
+        // tryAddService: boolean;
         if (options && ServiceLifetime[options.lifetime]) {
             Injector.instance.AddService(options.serviceType ?? target, target, options.lifetime)
         }

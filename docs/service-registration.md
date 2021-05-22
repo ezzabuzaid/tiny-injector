@@ -1,0 +1,188 @@
+# Service registration
+
+There's several service registration methods that are useful in different scenarios.
+
+1. Using `Injector.Add{Lifetime}`
+2. Using `@Injectable` decorator.
+
+---
+
+## Using Lifetime methods
+
+---
+| Syntax      | Example |
+| ----------- | ----------- |
+| Injector. Add{LIFETIME}({SERVICE}, {IMPLEMENTATION})      | Injector. AddSingleton(AbstractDep, ConcreteDep)       |
+| Injector. Add{LIFETIME}({SERVICE}, context => new {IMPLEMENTATION})   | Injector. AddSingleton(AbstractDep, context => new ConcreteDep())        |
+| Injector. Add{LIFETIME}<{IMPLEMENTATION}>()   | Injector. AddSingleton(ConcreteDep)        |
+
+Registering a service with only an implementation type is equivalent to registering that service with the same implementation and service type.
+
+```typescript
+Injector.AddSingleton(serviceType): void;
+Injector.AddSingleton(serviceType, serviceType): void;
+Injector.AddSingleton(serviceType, implementationType): void;
+Injector.AddSingleton(serviceType, implementationFactory): void;
+```
+
+Angular way would be
+
+```typescript
+providers: [
+    serviceType,
+    {
+        provide: serviceType,
+        useClass: serviceType
+    },
+    {
+        provide: serviceType,
+        useClass: implementationType
+    },
+    {
+        provide: serviceType,
+        useFactory: factoryFn
+    }
+]
+```
+
+Example
+
+```typescript
+abstract class Logger {}
+
+@Injectable()
+class InformativeLogger extends Logger {}
+
+Injector.AddSingleton(Logger, InformativeLogger);
+```
+
+using factory as implementation
+
+```typescript
+Injector.AddSingleton(Logger, (context) => {
+    // Some interesting logic
+   return new InformativeLogger();
+});
+```
+
+Note: Make sure that serviceType is always class syntax otherwise an error will be thrown.
+
+## Using @Injectable
+
+The other approche is to use `@Injectable` decorator as it is the best choice for tree shaking purposes.
+with `@Injectable` you don't need to explict service registration using Add{Lifetime} methods.
+
+Although in somecase you might need to use Add{Lifetime} methods such as, deffered registration or if you want to provide factoryFn as implementation
+
+```typescript
+@Injectable({
+    lifetime: ServiceLifetime.Singleton
+})
+class ServiceType {}
+```
+
+Example
+
+```typescript
+abstract class Logger {}
+
+@Injectable({
+    lifetime: ServiceLifetime.Singleton,
+    serviceType: Logger
+})
+class InformativeLogger extends Logger {}
+
+```
+
+keep in mind that `@Injectable` is always needed in order to resolve the class constructor parameters type.
+
+## Multiple registration for the same service type
+
+By default adding more than one serviceType will throw `InvalidOperationException` .
+so in case where you want to add multiple implemention for the same serviceType you would use the
+`Append{Lifetime}` methods.
+
+```typescript
+Injector.AppendSingleton(serviceType): void;
+Injector.AppendSingleton(serviceType, serviceType): void;
+Injector.AppendSingleton(serviceType, implementationType): void;
+Injector.AppendSingleton(serviceType, implementationFactory): void;
+```
+
+Example
+
+```typescript
+abstract class Logger {}
+
+@Injectable()
+class InformativeLogger extends Logger {}
+
+@Injectable()
+class WarningLogger extends Logger {}
+
+Injector.AppendSingleton(Logger, InformativeLogger);
+Injector.AppendSingleton(Logger, WarningLogger);
+```
+
+You can use `AddSingleton` for the first add, but to be in safe side use `AppendSingleton` if you want to have array of implementations.
+
+## Strict Type
+
+Thanks to TypeScript, the implementation will be constrained to the serviceType.
+
+e.g
+
+```typescript
+@Injectable()
+class Vehicle {
+    start() {}
+}
+
+@Injectable()
+class Weapon {
+    shoot() {}
+}
+
+Injector.AddSingleton(Vehicle, Weapon);
+
+Injector.AddSingleton(Vehicle, context => new Weapon());
+```
+
+the above sample won't work since `Weapon` is not subtype of `Vehicle`
+
+```typescript
+@Injectable()
+class Vehicle {
+    start() {}
+}
+
+@Injectable()
+class Truck extends Vehicle {
+    warmUp() {}
+}
+
+Injector.AddSingleton(Vehicle, Truck);
+
+Injector.AddSingleton(Vehicle, context => new Truck());
+```
+
+now the implementation either factory or type will work just find since the Truck is subtype of Vehicle.
+
+### Type Equivalence
+
+Because of JavaScript nature, having different classes with the same properties and methods make them equivalent in regards to type, 
+so the below code will work with no errors, although, this code can be handled at runtime using `instanceof` keyword
+
+```typescript
+class Test {
+    variable = 10;
+}
+
+class Service {
+    variable = 10;
+}
+
+class Implementation extends Test { }
+
+Injector.AddSingleton(Service, Implementation);
+```

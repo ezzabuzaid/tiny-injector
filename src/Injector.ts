@@ -19,13 +19,13 @@ export class Injector {
     private static _instance: Injector;
     public static instance = Injector._instance ?? (Injector._instance = new Injector());
 
-    #SingletonContext = new Context();
+    #singletonContext = new Context();
     #serviceCollection = new Map<Type<any>, ServiceDescriptor[]>();
     #contextsContainer = new Map<Context, WeakMap<ServiceDescriptor, TypeOf<any>>>();
     #toBeCreatedServices = new Map<Type<any>, Type<any>>();
 
     private constructor() {
-        this.#contextsContainer.set(this.#SingletonContext, new WeakMap());
+        this.#contextsContainer.set(this.#singletonContext, new WeakMap());
     }
 
     /**
@@ -530,9 +530,9 @@ export class Injector {
 
     private Resolve(serviceType: ClassType<any>, lifetime: ServiceLifetime) {
         // TODO: add option to disable SingletonLifetime validation
-        const tokens = this.getServiceTypeDependencies(serviceType);
 
         return (context?: Context) => {
+            const tokens = this.getServiceTypeDependencies(serviceType);
             return new serviceType(...tokens.map((token, index) => {
                 const injectMetadata = Reflect.getMetadata(`DI:Inject:${ index }`, serviceType);
                 const argumentType = injectMetadata?.serviceType ?? token
@@ -632,7 +632,7 @@ export class Injector {
     }
 
     private LocateSingleton(descriptor: ServiceDescriptor) {
-        return descriptor.implementation(descriptor, this.#SingletonContext);
+        return descriptor.implementation(descriptor, this.#singletonContext);
     }
 
     private LocateScoped(descriptor: ServiceDescriptor, context: Context | undefined) {

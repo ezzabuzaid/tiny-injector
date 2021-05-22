@@ -1,0 +1,46 @@
+{
+    "name": "Tiny Injector",
+    "noindex": false,
+    "sidebar": [
+        [
+            "Overview",
+            "/"
+        ],
+        [
+            "Getting Started",
+            "/getting-started"
+        ],
+        [
+            "Service Lifetime",
+            "/service-lifetime"
+        ],
+        [
+            "Service Registration",
+            "/service-registration"
+        ],
+        [
+            "Context",
+            "/context"
+        ],
+        [
+            "Use Dependency Injection",
+            "/use-dependency-injection"
+        ],
+        [
+            "Injection Token",
+            "/injection-token"
+        ],
+        [
+            "Configuration",
+            "/configuration"
+        ],
+        [
+            "Contributing",
+            "/contributing"
+        ],
+        [
+            "Examples",
+            "/examples"
+        ]
+    ]
+}
