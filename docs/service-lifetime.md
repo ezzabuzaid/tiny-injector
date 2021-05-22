@@ -10,8 +10,6 @@ The lifetime of a service can be either
 
 * Singleton
 
----
-
 ## Singleton
 
 Singleton lifetime services are created The first time they're requested which means the same instance will be returned for each subsequent request.

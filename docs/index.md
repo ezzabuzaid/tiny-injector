@@ -132,6 +132,4 @@ Worth to mention other great libraries.
 
 * See [LICENSE](/LICENSE)
 
----
-
 Built and maintained with 💛 by [ezzabuzaid](https://github.com/ezzabuzaid)

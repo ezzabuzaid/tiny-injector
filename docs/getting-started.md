@@ -1,10 +1,6 @@
 # Getting Started
 
----
-
-## Setup
-
-### Installation
+## Installation
 
 Installation can be only done using a package manager and it can only be used in typescript codebase.
 
@@ -16,13 +12,13 @@ Installation can be only done using a package manager and it can only be used in
 
  `yarn add tiny-injector`
 
-### Configuration
+## Configuration
 
 include these two options in tsconfig.json
 
 ```json
-    "experimentalDecorators": true,
-    "emitDecoratorMetadata": true
+"experimentalDecorators": true,
+"emitDecoratorMetadata": true
 ```
 
 ## Example
@@ -30,12 +26,9 @@ include these two options in tsconfig.json
 Abstract class that defines simple method to log information and errors.
 
 ```typescript
-
 abstract class Logger {
-
     abstract debug(...objects: any[]): void;
     abstract error(error: Error): void;
-
 }
 
 ```

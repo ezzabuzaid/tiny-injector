@@ -16,7 +16,4 @@ you can find them [here](https://docs.page/ezzabuzaid/tiny-injector).
 
 * See [LICENSE](/LICENSE)
 
----
-
 Built and maintained with 💛 by [ezzabuzaid](https://github.com/ezzabuzaid)
- 

@@ -5,11 +5,8 @@ There's several service registration methods that are useful in different scenar
 1. Using `Injector.Add{Lifetime}`
 2. Using `@Injectable` decorator.
 
----
-
 ## Using Lifetime methods
 
----
 | Syntax      | Example |
 | ----------- | ----------- |
 | Injector. Add{LIFETIME}({SERVICE}, {IMPLEMENTATION})      | Injector. AddSingleton(AbstractDep, ConcreteDep)       |

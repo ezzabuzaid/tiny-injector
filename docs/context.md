@@ -4,8 +4,6 @@ The context is a special object that binds a set of services, it is purpose is t
 
 It exist to provide the same instance of a *Scoped* service during the request lifetime.
 
----
-
 ## Create Context
 
 * A Context can be created using `Create()` method.
