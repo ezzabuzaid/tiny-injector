@@ -1,8 +1,4 @@
-# Examples
-
-## Express JS
-
-I'll assume that you're using Node.js with express.
+# Express
 
 * Setup HTTP server
 
@@ -17,7 +13,7 @@ application.listen('8080', () => {
 });
 ```
 
-* Create top level express middleware that will make Scoped service possiple for each request
+* Create top level express middleware that will create new context for each request.
 
 ```typescript
 application.use((req, res, next) => {
@@ -117,16 +113,13 @@ application.use((req, res, next) => {
 
 ```typescript
 import { Request } from "express";
-export const REQUEST_TOKEN = new InjectionToken<Request>('TOKEN_REQUEST');
+export const REQUEST_TOKEN = new InjectionToken<Request>('TOKEN_REQUEST', {
+    lifetime: ServiceLifetime.Scoped,
+    implementationFactory:  (context) => context.getExtra('request'),
+});
 ```
 
-3. Add it as *Scoped* service
-
-```typescript
-Injector.AddScoped(REQUEST_TOKEN, (context) => context.getExtra('request'));
-```
-
-4. Use it ^^
+4. Use `@Inject` to reference `REQUEST_TOKEN`
 
 ```typescript
 @Injectable({

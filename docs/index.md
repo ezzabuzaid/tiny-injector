@@ -1,12 +1,11 @@
 # Tiny Injector
 
-Tiny Injector is tiny yet powerful and flexible Dependency Injection library for web projects that uses TypeScript.
-
-Tiny Injector could be used on top of existing projects.
+Tiny Injector is a tiny yet powerful and flexible Dependency Injection library for web projects that uses TypeScript.
+It could be used on top of existing projects.
 
 The work heavily inspired by . NET Dependency Injection, Angular +2 and [This Answer](https://stackoverflow.com/a/48187842/10415423).
 
-Parts of documentation are taken from Microsoft DI website
+Parts of documentation are taken from the Microsoft DI website
 
 ## What Is Dependency Injection
 

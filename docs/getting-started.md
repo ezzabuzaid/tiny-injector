@@ -100,4 +100,4 @@ const dataProvider = Injector.Locate(DataProvider);
 dataProvider.fetchData();
 ```
 
-as you can see we provided two arguments when adding the `abstract Logger` service and only one argument when adding the `DataProvider` service.
+as you can see we provided two arguments when adding the `abstract Logger` service and only one argument when adding the `DataProvider` service, because `DataProvider` doesn't have `abstraction` .
