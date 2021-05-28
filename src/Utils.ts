@@ -12,13 +12,15 @@ export function isConstructor(value: any) {
     return !!value.prototype && !!value.prototype.constructor.name;
 }
 
-export const isArrowFn = (fn: any) => (typeof fn === 'function') && /^[^{]+?=>/.test(fn.toString());
+export function isArrowFn(fn: any): fn is (...args: any[]) => any {
+    return (typeof fn === 'function') && /^[^{]+?=>/.test(fn.toString());
+};
 
 export function isNullOrUndefined<T>(value: T): boolean {
     return value === undefined || value === null;
 }
 
-export function notNullOrUndefined(value: any) {
+export function notNullOrUndefined<T>(value: T): value is T {
     return !isNullOrUndefined(value);
 }
 

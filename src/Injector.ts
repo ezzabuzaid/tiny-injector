@@ -365,48 +365,40 @@ export class Injector {
         }
     }
 
-    private makeServiceDescriptor(serviceType: any, implementation: any, lifetime: ServiceLifetime) {
-        const cache = (fn: Function) => {
-            return (descriptor: ServiceDescriptor, context?: Context) => {
-                if (!(context instanceof Context)) {
-                    throw new InvalidOperationException(`Wrong context used to retrieve the dependency ${ serviceType.name }, make sure to use the same context that was used before with {Injector.Create}`);
-                }
-                const container = this.#contextsContainer.get(context)!;
-                if (!(container instanceof WeakMap)) {
-                    throw new InvalidOperationException(`context are not registered, use {Injector.Create} to register the context.`);
-                }
-                if (!container.has(descriptor)) {
-                    container.set(descriptor, fn(context))
-                }
-                return container.get(descriptor);
-            };
-        }
-
-        const resolver = (serviceType: ClassType<any>) => {
-            switch (lifetime) {
-                case ServiceLifetime.Scoped:
-                    return cache(this.Resolve(serviceType, lifetime));
-                case ServiceLifetime.Transient:
-                    return (descriptor: ServiceDescriptor, context?: Context) => {
-                        return this.Resolve(serviceType, lifetime)(context);
-                    };
-                case ServiceLifetime.Singleton:
-                    return cache(this.Resolve(serviceType, lifetime));
+    private cache(serviceType: ClassType<any>, fn: Function) {
+        return (descriptor: ServiceDescriptor, context?: Context) => {
+            if (!(context instanceof Context)) {
+                throw new InvalidOperationException(`Wrong context used to retrieve the dependency ${ serviceType.name }, make sure to use the same context that was used before with {Injector.Create}`);
             }
+            const container = this.#contextsContainer.get(context)!;
+            if (!(container instanceof WeakMap)) {
+                throw new InvalidOperationException(`context are not registered, use {Injector.Create} to register the context.`);
+            }
+            if (!container.has(descriptor)) {
+                container.set(descriptor, fn(context))
+            }
+            return container.get(descriptor);
+        };
+    }
+
+
+    private makeServiceDescriptor(serviceType: any, implementation: any, lifetime: ServiceLifetime) {
+        const resolver = (serviceTypeOrFactory: ClassType<any> | ((context?: Context) => any)) => {
+            if (lifetime === ServiceLifetime.Transient) {
+                return (descriptor: ServiceDescriptor, context?: Context) => {
+                    if (isArrowFn(serviceTypeOrFactory)) {
+                        return serviceTypeOrFactory(context);
+                    }
+                    return this.Resolve(serviceTypeOrFactory, lifetime)(context);
+                };
+            }
+            if (isArrowFn(serviceTypeOrFactory)) {
+                return this.cache(serviceType, serviceTypeOrFactory);
+            }
+            return this.cache(serviceType, this.Resolve(serviceTypeOrFactory, lifetime));
         }
 
-        if (notNullOrUndefined(implementation)) {
-            return new ServiceDescriptor(
-                lifetime,
-                isArrowFn(implementation)
-                    ? (_, context) => {
-                        return implementation(context);
-                    }
-                    : resolver(implementation)
-            );
-        } else {
-            return new ServiceDescriptor(lifetime, resolver(serviceType));
-        }
+        return new ServiceDescriptor(lifetime, resolver(implementation ?? serviceType));
     }
 
     /**
