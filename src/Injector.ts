@@ -74,8 +74,8 @@ export class Injector {
      *
      */
     static AddSingleton<T extends ClassType<any>>(serviceType: T): void;
-    static AddSingleton(serviceType: any, a?: any) {
-        Injector.instance.AddService(serviceType, a, ServiceLifetime.Singleton);
+    static AddSingleton(serviceType: any, implementation?: any) {
+        Injector.instance.AddService(serviceType, implementation, ServiceLifetime.Singleton);
     }
     /**
      * Adds a transient service of the type specified in serviceType with a factory specified in implementationFactory.
@@ -524,7 +524,7 @@ export class Injector {
 
     }
 
-    getServiceTypeDependencies(serviceType: Type<any>): Type<any>[] {
+    private getServiceTypeDependencies(serviceType: Type<any>): Type<any>[] {
         return Reflect.getMetadata('design:paramtypes', serviceType) ?? [];
     }
 

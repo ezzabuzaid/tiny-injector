@@ -1,5 +1,5 @@
-import { Context, Injector, ServiceLifetime, Injectable } from "../";
-import { InvalidOperationException, ArgumentException } from "../Exceptions";
+import { Context, Injector, ServiceLifetime, Injectable } from "../src";
+import { InvalidOperationException, ArgumentException } from "../src/Exceptions";
 @Injectable()
 class Service {
     id = Math.random() * Math.random();
