@@ -98,9 +98,25 @@ test('Locate_LocateScoped_ReturnSameInstanceForSameContextInSubsequentCalls', ()
     expect(instance1 === instance2).toBeTruthy();
     expect(instance2 === instance1).toBeTruthy();
     expect(instance2 === instance3).toBeTruthy();
+
     expect(instance11 === instance12).toBeTruthy();
 });
 
+test('Locate_LocateScoped_ReturnDifferentInstanceForDifferentContext', () => {
+    @Injectable()
+    class ScopedService {
+        id = Math.random() * Math.random();
+    }
+
+    Injector.AddScoped(ScopedService);
+
+    const context1 = Injector.Create();
+    const context2 = Injector.Create();
+
+    const instanceContext1 = Injector.Locate(ScopedService, context1);
+    const instanceContext2 = Injector.Locate(ScopedService, context2);
+    expect(instanceContext1 !== instanceContext2).toBeTruthy();
+});
 
 test('Locate_LocateMultipleScoped_ReturnSameInstanceForSameContextOnSubsequentCallsWith', () => {
     @Injectable()
@@ -128,16 +144,6 @@ test('Locate_LocateMultipleScoped_ReturnSameInstanceForSameContextOnSubsequentCa
     expect(instances.every((instance, index) => instances1[index] === instance)).toBeTruthy();
 });
 
-test('Locate_LocateScoped_ReturnDifferentInstanceForDifferentContext', () => {
-    Injector.AddScoped(Service);
-
-    const context1 = Injector.Create();
-    const context2 = Injector.Create();
-
-    const instanceContext1 = Injector.Locate(Service, context1);
-    const instanceContext2 = Injector.Locate(Service, context2);
-    expect(instanceContext1 !== instanceContext2).toBeTruthy();
-});
 
 test('Locate_LocateScopedWithoutContext_ArgumentExceptionThrown', () => {
     Injector.AddScoped(Service);
