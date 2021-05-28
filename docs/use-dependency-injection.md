@@ -252,14 +252,33 @@ console.log(app.scopedOperation1.operationId === app.scopedOperation2.operationI
 
 * Singleton objects are the same for every context.
 
-# Worth mention
+## Summary
 
-* `@Injectable` is required on top of each service even if you don't use it to add service.
+* `@Injectable` is required on top of each service even if you don't use it to register a service.
 
-* Once you add service you cannot override it and an error will be throw if you tried to do so.
+* Once you add service you cannot override it and an error will be throw if you tried to do.
 
 * If you want to override a service you have to use `Injector.Replace{Lifetime}` instead.
 
 * A service will only be created when requested with respect to a service lifetime.
 
-* You would use `Append{Lifetime}` to have multiple implementation for the same service type 
+* You would use `Append{Lifetime}` to have multiple implementation for the same service type.
+
+* Use `@Inject` to resolve multiple implementations with array type, `@Inject(Logger) private loggers: Logger[]`.
+
+* `@Inject` is optional to resolve single implementation.
+
+```typescript
+@Injectable()
+class Application {
+    constructor(
+        private logger: Logger,
+        // Shorthand for
+        @Inject(Logger) private logger: Logger,
+    ) { }
+}
+```
+
+* Last implementation will always returned if you don't use array type.
+
+* Inject `Context` to resolve deffered dependencies.
