@@ -116,19 +116,22 @@ application.use((req, res, next) => {
 `request_token.ts` file
 
 ```typescript
+import { InjectionToken, ServiceLifetime } from "@lib/dependency-injection";
 import { Request } from "express";
-export const REQUEST_TOKEN = new InjectionToken<Request>('TOKEN_REQUEST');
+
+export const REQUEST_TOKEN = new InjectionToken<Request>('TOKEN_REQUEST', {
+    lifetime: ServiceLifetime.Scoped,
+    implementationFactory: (context) => context.get('request')
+});
+
 ```
 
-3. Add it as *Scoped* service
+3. Inject `REQUEST_TOKEN` using `@Inject` ^^
 
 ```typescript
-Injector.AddScoped(REQUEST_TOKEN, (context) => context.getExtra('request'));
-```
+import { Request } from "express";
+import { Inject, Injectable, ServiceLifetime } from "@lib/dependency-injection";
 
-4. Use it ^^
-
-```typescript
 @Injectable({
     lifetime: ServiceLifetime.Scoped
 })
