@@ -5,12 +5,13 @@ import {
     ActivationFailedException,
     ArgumentException,
     InvalidOperationException,
-    LifestyleMismatchException
+    LifestyleMismatchException,
+    ServiceExistException
 } from "./Exceptions";
 import { InjectionToken } from "./InjectionToken";
 import { ServiceDescriptor } from "./ServiceDescriptor";
 import { ServiceLifetime } from "./ServiceLifetime";
-import { isArrowFn, isConstructor, lastElement, notNullOrUndefined } from './Utils';
+import { isArrowFn, isConstructor, isTypeOf, lastElement, notNullOrUndefined } from './Utils';
 
 type InjectionTokenGenericParam<C extends InjectionToken<any>> = C extends InjectionToken<infer T> ? T : unknown;
 
@@ -410,8 +411,9 @@ export class Injector {
         const currentDescriptors = this.#serviceCollection.get(serviceType);
         if (currentDescriptors) {
             const descriptor = currentDescriptors[0] as ServiceDescriptor;
-            throw new InvalidOperationException(
-                `You cannot override registered types. ${ serviceType.name } already registered as ${ descriptor.lifetimeType }`
+            throw new ServiceExistException(
+                serviceType.name,
+                descriptor.lifetime
             );
         }
         const descriptor = this.makeServiceDescriptor(serviceType, implementation, lifetime);
@@ -439,7 +441,7 @@ export class Injector {
         try {
             Injector.instance.AddService(serviceType, implementation, lifetime);
         } catch (error) {
-            if (!(error instanceof Error)) {
+            if (!isTypeOf(error, ServiceExistException)) {
                 throw error;
             }
         }

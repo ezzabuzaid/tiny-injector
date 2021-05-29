@@ -1,3 +1,4 @@
+import { ClassType, Type } from "Types";
 
 
 export function isConstructor(value: any) {
@@ -26,4 +27,10 @@ export function notNullOrUndefined<T>(value: T): value is T {
 
 export function lastElement<T>(list: T[]): T {
     return list[list.length - 1] as T;
+}
+/**
+ * Check if error is instanceOf type but not any of it's parent
+ */
+export function isTypeOf<T extends ClassType<any>>(error: any, type: T): error is InstanceType<T> {
+    return Object.getPrototypeOf(error).constructor === type;
 }
