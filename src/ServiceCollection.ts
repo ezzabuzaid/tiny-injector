@@ -1,20 +1,19 @@
 import "reflect-metadata";
-import { ServiceProvider } from "./ServiceProvider";
+import { AbstractServiceCollection } from "./AbstractServiceCollection";
 import { Context } from "./Context";
-import { AbstractServiceCollection, LocateOptions } from "./AbstractServiceCollection";
 import {
     ActivationFailedException,
     ArgumentException,
     InvalidOperationException,
     LifestyleMismatchException,
-    ServiceExistException
+    ServiceExistException,
+    ServiceNotFoundException
 } from "./Exceptions";
-import { InjectionToken } from "./InjectionToken";
 import { ServiceDescriptor } from "./ServiceDescriptor";
 import { ServiceLifetime } from "./ServiceLifetime";
+import { ServiceProvider } from "./ServiceProvider";
 import { ClassType, ImplementationFactory, Type, TypeOf } from "./Types";
-import { isArrowFn, isConstructor, isTypeOf, lastElement, notNullOrUndefined } from './Utils';
-import { Injector } from "./Extensions";
+import { isArrowFn, isConstructor, isNullOrUndefined, isTypeOf, lastElement, notNullOrUndefined } from './Utils';
 
 export class ServiceCollection extends AbstractServiceCollection {
 
@@ -117,10 +116,8 @@ export class ServiceCollection extends AbstractServiceCollection {
 
     public getServiceDescriptors<T>(serviceType: Type<T>) {
         const descriptor = this.#serviceCollection.get(serviceType);
-        if (descriptor === null || descriptor === undefined) {
-            throw new InvalidOperationException(
-                `Unable to resolve service for type '${ serviceType.name }'.`
-            );
+        if (isNullOrUndefined(descriptor)) {
+            throw new ServiceNotFoundException(serviceType.name);
         }
         return descriptor;
     }
