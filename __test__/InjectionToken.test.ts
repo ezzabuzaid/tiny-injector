@@ -13,7 +13,7 @@ test('InjectionToken_ImplictTokenAdd_TokenAddedSuccessfully', () => {
         implementationFactory: () => tokenValue
     });
 
-    expect(Injector.Locate(TOKEN)).toEqual(tokenValue);
+    expect(Injector.GetRequiredService(TOKEN)).toEqual(tokenValue);
 });
 
 test('InjectionToken_ExplictTokenAdd_TokenAddedSuccessfully', () => {
@@ -21,7 +21,7 @@ test('InjectionToken_ExplictTokenAdd_TokenAddedSuccessfully', () => {
     const TOKEN = new InjectionToken<number>('UnderTest');
 
     Injector.AddSingleton(TOKEN, () => tokenValue);
-    expect(Injector.Locate(TOKEN)).toEqual(tokenValue);
+    expect(Injector.GetRequiredService(TOKEN)).toEqual(tokenValue);
 });
 
 test('InjectionToken_AddAsSingleton_ReturnSameResultOnSubsequentCalls', () => {
@@ -29,7 +29,7 @@ test('InjectionToken_AddAsSingleton_ReturnSameResultOnSubsequentCalls', () => {
 
     Injector.AddSingleton(TOKEN, () => Math.random());
 
-    expect(Injector.Locate(TOKEN)).toBe(Injector.Locate(TOKEN));
+    expect(Injector.GetRequiredService(TOKEN)).toBe(Injector.GetRequiredService(TOKEN));
 });
 
 test('InjectionToken_AddAsScoped_ReturnSameForTheSameContext', () => {
@@ -39,9 +39,9 @@ test('InjectionToken_AddAsScoped_ReturnSameForTheSameContext', () => {
     Injector.AddScoped(TOKEN, () => Math.random());
 
     expect(
-        Injector.Locate(TOKEN, context)
+        Injector.GetRequiredService(TOKEN, context)
         ===
-        Injector.Locate(TOKEN, context)
+        Injector.GetRequiredService(TOKEN, context)
     ).toBeTruthy();
 });
 
@@ -53,9 +53,9 @@ test('InjectionToken_AddAsScoped_ReturnDifferentResultForDifferentContexts', () 
     Injector.AddScoped(TOKEN, () => Math.random());
 
     expect(
-        Injector.Locate(TOKEN, context1)
+        Injector.GetRequiredService(TOKEN, context1)
         !==
-        Injector.Locate(TOKEN, context2)
+        Injector.GetRequiredService(TOKEN, context2)
     ).toBeTruthy();
 });
 

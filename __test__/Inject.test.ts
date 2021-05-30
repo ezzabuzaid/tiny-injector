@@ -22,7 +22,7 @@ test('Inject_MultipleServicesWithArrayType_ReturnArrayOfServices', () => {
     Injector.AppendSingleton(Service, Service2);
     Injector.AppendSingleton(Client);
 
-    const client = Injector.Locate(Client);
+    const client = Injector.GetRequiredService(Client);
 
     [Service, Service1, Service2].forEach((serviceType, index) => {
         expect(client.services[index]).toBeInstanceOf(serviceType);
@@ -53,7 +53,7 @@ test('Inject_MultipleServicesWithNonArrayType_ReturnLastAddedService', () => {
     Injector.AppendSingleton(Service, ServiceToBeAddedLast);
     Injector.AppendSingleton(Client);
 
-    const client = Injector.Locate(Client);
+    const client = Injector.GetRequiredService(Client);
 
     expect(client.services).toBeInstanceOf(ServiceToBeAddedLast);
 
@@ -75,7 +75,7 @@ test('Inject_InjectionToken_ReturnImplementationFactoryReturnedValue', () => {
 
     Injector.AppendSingleton(Client);
 
-    const client = Injector.Locate(Client);
+    const client = Injector.GetRequiredService(Client);
 
     expect(client.tokenUnderTest).toEqual(tokenValue);
 

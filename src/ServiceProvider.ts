@@ -1,13 +1,12 @@
-import { InvalidOperationException, ArgumentException, ActivationFailedException, LifestyleMismatchException } from "./Exceptions";
+import { AbstractServiceCollection, LocateOptions } from "./AbstractServiceCollection";
+import { Context } from "./Context";
+import { ArgumentException, InvalidOperationException, ServiceNotFoundException } from "./Exceptions";
 import { InjectionToken } from "./InjectionToken";
+import { ServiceCollection } from "./ServiceCollection";
 import { ServiceDescriptor } from "./ServiceDescriptor";
 import { ServiceLifetime } from "./ServiceLifetime";
-import { ClassType, Type } from "./Types";
-import { isArrowFn, isConstructor, isTypeOf, lastElement, notNullOrUndefined } from "./Utils";
-import { AbstractServiceCollection, LocateOptions } from "./AbstractServiceCollection";
-import { Injector } from "./Extensions";
-import { ServiceCollection } from "./ServiceCollection";
-import { Context } from "./Context";
+import { Type } from "./Types";
+import { isConstructor, isTypeOf, lastElement } from "./Utils";
 
 export class ServiceProvider {
     #serviceCollection: AbstractServiceCollection = new ServiceCollection();
@@ -16,38 +15,19 @@ export class ServiceProvider {
     private constructor() {
         this.#serviceCollection.AddService(AbstractServiceCollection, () => this.#serviceCollection, ServiceLifetime.Singleton);
         this.#serviceCollection.AddService(Context, (context) => context, ServiceLifetime.Scoped);
-
     }
 
-    GetService() {
-
-    }
-
-    GetRequiredService() { }
-
-    Create() {
-        const context = new Context();
-
-        if (!(context instanceof Context)) {
-            throw new ArgumentException(`${ context } should be of type Context`, 'context');
+    public GetService(serviceTypeOrOptions: Type<any> | InjectionToken<any> | LocateOptions, context?: Context): any | any[] {
+        try {
+            return this.GetRequiredService(serviceTypeOrOptions, context);
+        } catch (error) {
+            if (!isTypeOf(error, ServiceNotFoundException)) {
+                throw error;
+            }
         }
-
-        if (this.#serviceCollection.HasContext(context)) {
-            throw new InvalidOperationException("Context already in use.");
-        }
-        this.#serviceCollection.AddContext(context);
-        return context;
     }
 
-    CreateScope() {
-        throw new Error("Method is not implemented.");
-    }
-
-    Destroy() {
-        throw new Error("Method is not implemented.");
-    }
-
-    public Locate(serviceTypeOrOptions: Type<any> | InjectionToken<any> | LocateOptions, context?: Context): any | any[] {
+    public GetRequiredService(serviceTypeOrOptions: Type<any> | InjectionToken<any> | LocateOptions, context?: Context): any | any[] {
         let options: LocateOptions;
         if (isConstructor(serviceTypeOrOptions) || isTypeOf(serviceTypeOrOptions, InjectionToken)) {
             options = {
@@ -64,6 +44,29 @@ export class ServiceProvider {
             return descriptors.map(descriptor => this.LocateService(descriptor, options.context));
         }
         return this.LocateService(lastElement(descriptors), options.context);
+
+    }
+
+    public Create() {
+        const context = new Context();
+
+        if (!(context instanceof Context)) {
+            throw new ArgumentException(`${ context } should be of type Context`, 'context');
+        }
+
+        if (this.#serviceCollection.HasContext(context)) {
+            throw new InvalidOperationException("Context already in use.");
+        }
+        this.#serviceCollection.AddContext(context);
+        return context;
+    }
+
+    public CreateScope() {
+        throw new Error("Method is not implemented.");
+    }
+
+    public Destroy() {
+        throw new Error("Method is not implemented.");
     }
 
     private LocateService(descriptor: ServiceDescriptor, context: Context | undefined) {

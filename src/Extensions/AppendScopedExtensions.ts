@@ -2,7 +2,7 @@ import { AbstractServiceCollection } from "../AbstractServiceCollection";
 import { Context } from "../Context";
 import { ServiceLifetime } from "../ServiceLifetime";
 import { ClassType, Type, TypeOf } from "../Types";
-import { Locate } from "./LocateExtensions";
+import { GetRequiredService } from "./LocateExtensions";
 
 /**
  * Appends a singleton service of the type specified in serviceType with a factory specified in implementationFactory.
@@ -57,5 +57,5 @@ export function AppendScoped<T, I extends T>(serviceType: T, implementationType:
  */
 export function AppendScoped<T extends ClassType<any>>(serviceType: T): void;
 export function AppendScoped(serviceType: any, implementation?: any) {
-    Locate(AbstractServiceCollection).AppendService(serviceType, implementation, ServiceLifetime.Scoped);
+    GetRequiredService(AbstractServiceCollection).AppendService(serviceType, implementation, ServiceLifetime.Scoped);
 }

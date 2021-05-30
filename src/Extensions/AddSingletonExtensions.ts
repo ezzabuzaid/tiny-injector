@@ -3,7 +3,7 @@ import { Context } from "../Context";
 import { InjectionToken, InjectionTokenGenericParam } from "../InjectionToken";
 import { ServiceLifetime } from "../ServiceLifetime";
 import { ClassType, Type, TypeOf } from "../Types";
-import { Locate } from "./LocateExtensions";
+import { GetRequiredService } from "./LocateExtensions";
 
 /**
  * Add a singleton service of the type specified in serviceType with a factory specified in implementationFactory.
@@ -53,5 +53,5 @@ export function AddSingleton<T extends Type<any>, I extends (T & ClassType<any>)
 export function AddSingleton<T extends ClassType<any>>(serviceType: T): void;
 
 export function AddSingleton(serviceType: any, implementation?: any) {
-    Locate(AbstractServiceCollection).AddService(serviceType, implementation, ServiceLifetime.Singleton);
+    GetRequiredService(AbstractServiceCollection).AddService(serviceType, implementation, ServiceLifetime.Singleton);
 }

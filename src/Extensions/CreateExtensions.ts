@@ -1,6 +1,6 @@
 import { AbstractServiceCollection } from "../AbstractServiceCollection";
 import { ArgumentException, InvalidOperationException } from "../Exceptions";
-import { Locate } from "./LocateExtensions";
+import { GetRequiredService } from "./LocateExtensions";
 import { Context } from "../Context";
 import { ServiceProvider } from "../ServiceProvider";
 
@@ -23,7 +23,7 @@ export function Create() {
 }
 
 export function Destroy(context: Context) {
-    const serviceProvider = Locate(AbstractServiceCollection);
+    const serviceProvider = GetRequiredService(AbstractServiceCollection);
 
     if (!(context instanceof Context)) {
         throw new ArgumentException(`${ context } should be of type Context`, 'context');

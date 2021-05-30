@@ -55,7 +55,7 @@ export class InjectionToken<T> {
         Object.defineProperty(serviceType, 'name', { value: _name });
 
         if (notNullOrUndefined(options)) {
-            Injector.Locate(AbstractServiceCollection).AddService(
+            Injector.GetRequiredService(AbstractServiceCollection).AddService(
                 serviceType,
                 options.implementationFactory as any,
                 options.lifetime

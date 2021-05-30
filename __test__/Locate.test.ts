@@ -12,9 +12,9 @@ class Implementation { }
 test('Locate_LocateSingleton_ReturnSameInstanceOnSubsequentCalls', () => {
     Injector.AddSingleton(Service);
 
-    const instance1 = Injector.Locate(Service);
-    const instance2 = Injector.Locate(Service);
-    const instance3 = Injector.Locate(Service);
+    const instance1 = Injector.GetRequiredService(Service);
+    const instance2 = Injector.GetRequiredService(Service);
+    const instance3 = Injector.GetRequiredService(Service);
 
     expect(instance1).toBe(instance2);
     expect(instance2).toBe(instance3);
@@ -31,11 +31,11 @@ test('Locate_LocateMultipleSingleton_ReturnSameInstanceOnSubsequentCalls', () =>
     Injector.AppendSingleton(Service, Service1);
     Injector.AppendSingleton(Service, Service2);
 
-    const instances = Injector.Locate({
+    const instances = Injector.GetRequiredService({
         serviceType: Service,
         multiple: true
     });
-    const instances1 = Injector.Locate({
+    const instances1 = Injector.GetRequiredService({
         serviceType: Service,
         multiple: true
     });
@@ -50,8 +50,8 @@ test('Locate_LocateMultipleSingleton_ReturnSameInstanceOnSubsequentCalls', () =>
 test('Locate_LocateTransient_ReturnNewInstanceOnSubsequentCalls', () => {
     Injector.AddTransient(Service);
 
-    const instance1 = Injector.Locate(Service);
-    const instance2 = Injector.Locate(Service);
+    const instance1 = Injector.GetRequiredService(Service);
+    const instance2 = Injector.GetRequiredService(Service);
 
     expect(instance1 !== instance2);
 });
@@ -63,11 +63,11 @@ test('Locate_LocateMultipleTransient_ReturnNewInstanceOnSubsequentCalls', () => 
     Injector.AddTransient(Service);
     Injector.AppendTransient(Service, Service1);
 
-    const instances = Injector.Locate({
+    const instances = Injector.GetRequiredService({
         serviceType: Service,
         multiple: true
     });
-    const instances1 = Injector.Locate({
+    const instances1 = Injector.GetRequiredService({
         serviceType: Service,
         multiple: true
     });
@@ -89,11 +89,11 @@ test('Locate_LocateScoped_ReturnSameInstanceForSameContextInSubsequentCalls', ()
 
     const context = Injector.Create();
 
-    const instance1 = Injector.Locate(Service, context);
-    const instance2 = Injector.Locate(Service, context);
-    const instance3 = Injector.Locate(Service, context);
-    const instance11 = Injector.Locate(Service1, context);
-    const instance12 = Injector.Locate(Service1, context);
+    const instance1 = Injector.GetRequiredService(Service, context);
+    const instance2 = Injector.GetRequiredService(Service, context);
+    const instance3 = Injector.GetRequiredService(Service, context);
+    const instance11 = Injector.GetRequiredService(Service1, context);
+    const instance12 = Injector.GetRequiredService(Service1, context);
 
     expect(instance1 === instance2).toBeTruthy();
     expect(instance2 === instance1).toBeTruthy();
@@ -113,8 +113,8 @@ test('Locate_LocateScoped_ReturnDifferentInstanceForDifferentContext', () => {
     const context1 = Injector.Create();
     const context2 = Injector.Create();
 
-    const instanceContext1 = Injector.Locate(ScopedService, context1);
-    const instanceContext2 = Injector.Locate(ScopedService, context2);
+    const instanceContext1 = Injector.GetRequiredService(ScopedService, context1);
+    const instanceContext2 = Injector.GetRequiredService(ScopedService, context2);
     expect(instanceContext1 !== instanceContext2).toBeTruthy();
 });
 
@@ -127,12 +127,12 @@ test('Locate_LocateMultipleScoped_ReturnSameInstanceForSameContextOnSubsequentCa
 
     const context = Injector.Create();
 
-    const instances = Injector.Locate({
+    const instances = Injector.GetRequiredService({
         serviceType: Service,
         multiple: true,
         context: context
     });
-    const instances1 = Injector.Locate({
+    const instances1 = Injector.GetRequiredService({
         serviceType: Service,
         multiple: true,
         context: context
@@ -149,7 +149,7 @@ test('Locate_LocateScopedWithoutContext_ArgumentExceptionThrown', () => {
     Injector.AddScoped(Service);
 
     expect(() => {
-        Injector.Locate(Service);
+        Injector.GetRequiredService(Service);
     })
         .toThrowError(ArgumentException);
 });
@@ -166,12 +166,12 @@ test('Locate_LocateScopedInTransientServiceWithoutContext_LifestyleMismatchExcep
     Injector.AddTransient(InjectableService);
 
     expect(() => {
-        Injector.Locate(InjectableService);
+        Injector.GetRequiredService(InjectableService);
     })
         .toThrowError(LifestyleMismatchException);
 });
 
 afterEach(() => {
-    Injector.Locate(AbstractServiceCollection).Remove(Implementation);
-    Injector.Locate(AbstractServiceCollection).Remove(Service);
+    Injector.GetRequiredService(AbstractServiceCollection).Remove(Implementation);
+    Injector.GetRequiredService(AbstractServiceCollection).Remove(Service);
 });

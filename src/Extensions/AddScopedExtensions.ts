@@ -3,7 +3,7 @@ import { Context } from "../Context";
 import { InjectionToken, InjectionTokenGenericParam } from "../InjectionToken";
 import { ServiceLifetime } from "../ServiceLifetime";
 import { ClassType, Type, TypeOf } from "../Types";
-import { Locate } from "./LocateExtensions";
+import { GetRequiredService } from "./LocateExtensions";
 
 /**
  * Add a scoped service of the type specified in serviceType with a factory specified in implementationFactory.
@@ -58,5 +58,5 @@ export function AddScoped<T extends Type<any>, I extends T>(serviceType: T, impl
  */
 export function AddScoped<T extends ClassType<I>, I>(serviceType: T): void;
 export function AddScoped(serviceType: any, implementation?: any) {
-    Locate(AbstractServiceCollection).AddService(serviceType, implementation, ServiceLifetime.Scoped);
+    GetRequiredService(AbstractServiceCollection).AddService(serviceType, implementation, ServiceLifetime.Scoped);
 }

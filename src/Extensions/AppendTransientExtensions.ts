@@ -2,7 +2,7 @@ import { AbstractServiceCollection } from "../AbstractServiceCollection";
 import { Context } from "../Context";
 import { ServiceLifetime } from "../ServiceLifetime";
 import { ClassType, Type, TypeOf } from "../Types";
-import { Locate } from "./LocateExtensions";
+import { GetRequiredService } from "./LocateExtensions";
 
 /**
  * Appends a singleton service of the type specified in serviceType with a factory specified in implementationFactory.
@@ -57,5 +57,5 @@ export function AppendTransient<T, I extends T>(serviceType: T, implementationTy
  */
 export function AppendTransient<T extends ClassType<any>>(serviceType: T): void;
 export function AppendTransient(serviceType: any, implementation?: any) {
-    Locate(AbstractServiceCollection).AppendService(serviceType, implementation, ServiceLifetime.Transient);
+    GetRequiredService(AbstractServiceCollection).AppendService(serviceType, implementation, ServiceLifetime.Transient);
 }

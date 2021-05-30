@@ -56,7 +56,7 @@ export function Injectable(options?: Options): ClassDecorator {
         // TODO: add option to skip adding the service if exist
         // tryAddService: boolean;
         if (options && ServiceLifetime[options.lifetime]) {
-            Injector.Locate(AbstractServiceCollection).AddService(options.serviceType ?? target, target as any, options.lifetime)
+            Injector.GetRequiredService(AbstractServiceCollection).AddService(options.serviceType ?? target, target as any, options.lifetime)
         }
     };
 }

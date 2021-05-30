@@ -15,6 +15,7 @@ import { ServiceProvider } from "./ServiceProvider";
 import { ClassType, ImplementationFactory, Type, TypeOf } from "./Types";
 import { isArrowFn, isConstructor, isNullOrUndefined, isTypeOf, lastElement, notNullOrUndefined } from './Utils';
 
+
 export class ServiceCollection extends AbstractServiceCollection {
 
 
@@ -135,7 +136,7 @@ export class ServiceCollection extends AbstractServiceCollection {
                     this.ValidateTransientLifetime(serviceType, argumentType);
                 }
 
-                return ServiceProvider.GetInstance().Locate({ serviceType: argumentType, multiple: token === Array, context })
+                return ServiceProvider.GetInstance().GetRequiredService({ serviceType: argumentType, multiple: token === Array, context })
             }));
         }
     }
@@ -171,7 +172,7 @@ export class ServiceCollection extends AbstractServiceCollection {
             }
             const container = this.#contextsContainer.get(context)!;
             if (!(container instanceof WeakMap)) {
-                throw new InvalidOperationException(`context are not registered, use {Injector.Create} to register the context.`);
+                throw new InvalidOperationException(`Context are not registered, use {Injector.Create} to register the context.`);
             }
             if (!container.has(descriptor)) {
                 container.set(descriptor, fn(context))

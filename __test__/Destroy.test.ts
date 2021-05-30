@@ -30,6 +30,6 @@ test('Destroy_ContextParameterOfTypeContextAndIsFound_ContextIsRemoved', () => {
 
     Injector.Destroy(context);
     expect(() => {
-        Injector.Locate(Service, context)
+        Injector.GetRequiredService(Service, context)
     }).toThrowError(InvalidOperationException);
 });

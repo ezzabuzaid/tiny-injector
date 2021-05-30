@@ -3,7 +3,7 @@ import { Context } from "../Context";
 import { InjectionToken, InjectionTokenGenericParam } from "../InjectionToken";
 import { ServiceLifetime } from "../ServiceLifetime";
 import { ClassType, Type, TypeOf } from "../Types";
-import { Locate } from "./LocateExtensions";
+import { GetRequiredService } from "./LocateExtensions";
 
 /**
  * Add a transient service of the type specified in serviceType with a factory specified in implementationFactory.
@@ -46,5 +46,5 @@ export function AddTransient<T extends Type<any>, I extends T>(serviceType: T, i
  */
 export function AddTransient<T extends ClassType<I>, I>(serviceType: T): void;
 export function AddTransient(serviceType: any, implementation?: any) {
-    Locate(AbstractServiceCollection).AddService(serviceType, implementation, ServiceLifetime.Transient);
+    GetRequiredService(AbstractServiceCollection).AddService(serviceType, implementation, ServiceLifetime.Transient);
 }

@@ -10,7 +10,7 @@ export class Context {
     }
 
     get<T>(serviceType: Type<T> | InjectionToken<T>): T {
-        return Injector.Locate<T>(serviceType, this);
+        return Injector.GetRequiredService<T>(serviceType, this);
     }
 
     setExtra(name: string, value: any) {
