@@ -1,8 +1,10 @@
+import { AbstractServiceCollection } from "./AbstractServiceCollection";
+import { Injector } from "./Extensions";
+import { ImplementationFactory } from "./Types";
 import { ArgumentException } from "./Exceptions";
-import { isArrowFn, isNullOrUndefined } from "./Utils";
-import { Context, } from "./Context";
 import { ServiceLifetime } from "./ServiceLifetime";
-import { Injector } from "./Injector";
+import { isArrowFn, isNullOrUndefined, notNullOrUndefined } from "./Utils";
+export type InjectionTokenGenericParam<C extends InjectionToken<any>> = C extends InjectionToken<infer T> ? T : unknown;
 
 type FactoryType<T extends
     (new (...args: any) => any)
@@ -22,7 +24,7 @@ interface Options<T> {
     /**
      * The factory that creates the service.
      */
-    implementationFactory: (context: Context) => FactoryType<T>;
+    implementationFactory: ImplementationFactory<FactoryType<T>>;
 }
 
 /**
@@ -42,17 +44,22 @@ export class InjectionToken<T> {
             throw new ArgumentException('InjectionToken name must be valid non string', 'name')
         }
 
-        if (options && !isArrowFn(options.implementationFactory)) {
+        if (notNullOrUndefined(options) && !isArrowFn(options.implementationFactory)) {
             throw new ArgumentException('InjectionToken implementationFactory can only be arrow function', 'options.implementationFactory')
         }
 
-        if (options && isNullOrUndefined(ServiceLifetime[options.lifetime])) {
+        if (notNullOrUndefined(options) && isNullOrUndefined(ServiceLifetime[options.lifetime])) {
             throw new ArgumentException('InjectionToken implementationFactory can only be arrow function', 'options.implementationFactory')
         }
 
         Object.defineProperty(serviceType, 'name', { value: _name });
-        if (options && ServiceLifetime[options.lifetime]) {
-            Injector.instance.AddService(serviceType, options.implementationFactory, options.lifetime)
+
+        if (notNullOrUndefined(options)) {
+            Injector.Locate(AbstractServiceCollection).AddService(
+                serviceType,
+                options.implementationFactory as any,
+                options.lifetime
+            )
         }
         return serviceType as any;
     }

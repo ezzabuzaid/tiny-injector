@@ -1,4 +1,5 @@
-import { Injector } from "./Injector";
+import { AbstractServiceCollection } from "./AbstractServiceCollection";
+import { Injector } from "./Extensions";
 import { ServiceLifetime } from "./ServiceLifetime";
 import { Type } from "./Types";
 
@@ -55,7 +56,7 @@ export function Injectable(options?: Options): ClassDecorator {
         // TODO: add option to skip adding the service if exist
         // tryAddService: boolean;
         if (options && ServiceLifetime[options.lifetime]) {
-            Injector.instance.AddService(options.serviceType ?? target, target, options.lifetime)
+            Injector.Locate(AbstractServiceCollection).AddService(options.serviceType ?? target, target as any, options.lifetime)
         }
     };
 }

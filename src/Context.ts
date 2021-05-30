@@ -1,5 +1,5 @@
+import { Injector } from './Extensions';
 import { InjectionToken } from "./InjectionToken";
-import { Injector } from ".";
 import { Type } from "./Types";
 
 export class Context {
