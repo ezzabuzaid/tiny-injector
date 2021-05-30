@@ -1,88 +1,243 @@
-import { Context, Injector, ServiceLifetime, Injectable } from "../src";
+import { isTypeOf } from "../src/Utils";
+import { Context, Injector, ServiceLifetime, Injectable, AbstractServiceCollection } from "../src";
 
 import {
     LifestyleMismatchException,
     ActivationFailedException,
     InvalidOperationException,
-    ArgumentException
+    ArgumentException,
+    ServiceExistException
 } from "../src/Exceptions";
 
+@Injectable()
 class Service {
     id = Math.random() * Math.random();
 }
-class Implementation { }
+@Injectable()
+class Implementation implements Service {
+    id = Math.random() * Math.random();
+}
 
-describe('AddService_PrimitiveTypeAsServiceType_ArgumentExceptionThrown', () => {
+describe('AddSingleton_PrimitiveTypeAsServiceType_ArgumentExceptionThrown', () => {
     const types = [null, undefined, {}, function () { }, () => { }, [], false, true, '', ' '];
     types.forEach((type) => {
         test(`${ type }`, () => {
-            expect(() => Injector.instance.AddService(type, Implementation, ServiceLifetime.Singleton))
+            expect(() => Injector.AddSingleton(type as any, Implementation))
+                .toThrowError(ArgumentException);
+        });
+    });
+});
+describe('AddScoped_PrimitiveTypeAsServiceType_ArgumentExceptionThrown', () => {
+    const types = [null, undefined, {}, function () { }, () => { }, [], false, true, '', ' '];
+    types.forEach((type) => {
+        test(`${ type }`, () => {
+            expect(() => Injector.AddScoped(type as any, Implementation))
+                .toThrowError(ArgumentException);
+        })
+    });
+})
+describe('AddTransient_PrimitiveTypeAsServiceType_ArgumentExceptionThrown', () => {
+    const types = [null, undefined, {}, function () { }, () => { }, [], false, true, '', ' '];
+    types.forEach((type) => {
+        test(`${ type }`, () => {
+            expect(() => Injector.AddTransient(type as any, Implementation))
                 .toThrowError(ArgumentException);
         })
     });
 });
 
-
-describe('AddService_PrimitiveTypeAsImplementationType_ArgumentExceptionThrown', () => {
+describe('AddSingleton_PrimitiveTypeAsImplementationType_ArgumentExceptionThrown', () => {
     const types = [{}, function () { }, [], false, true, '', ' '];
     types.forEach((type) => {
         test(`${ type }`, () => {
-            expect(() => Injector.instance.AddService(Service, type, ServiceLifetime.Singleton))
+            expect(() => Injector.AddSingleton(type as any, Implementation))
                 .toThrowError(ArgumentException);
         })
     });
 });
 
-
-test('AddService_ServiceExist_InvalidOperationExceptionThrown', () => {
-
-    Injector.instance.AddService(Service, null, ServiceLifetime.Singleton);
-
-    expect(() => {
-        Injector.instance.AddService(Service, null, ServiceLifetime.Singleton);
-    })
-        .toThrowError(InvalidOperationException);
-
+describe('AddScoped_PrimitiveTypeAsImplementationType_ArgumentExceptionThrown', () => {
+    const types = [{}, function () { }, [], false, true, '', ' '];
+    types.forEach((type) => {
+        test(`${ type }`, () => {
+            expect(() => Injector.AddScoped(type as any, Implementation))
+                .toThrowError(ArgumentException);
+        })
+    });
 });
 
-test('AddService_ServiceExistWithDifferentLifetime_InvalidOperationExceptionThrown', () => {
-
-    Injector.instance.AddService(Service, null, ServiceLifetime.Singleton);
-
-    expect(() => {
-        Injector.instance.AddService(Service, null, ServiceLifetime.Transient);
-    })
-        .toThrowError(InvalidOperationException);
-
+describe('AddTransient_PrimitiveTypeAsImplementationType_ArgumentExceptionThrown', () => {
+    const types = [{}, function () { }, [], false, true, '', ' '];
+    types.forEach((type) => {
+        test(`${ type }`, () => {
+            expect(() => Injector.AddTransient(type as any, Implementation))
+                .toThrowError(ArgumentException);
+        })
+    });
 });
 
+test('AddSingleton_ServiceExist_ServiceExistExceptionThrown', () => {
+    try {
+        Injector.AddSingleton(Service);
+        Injector.AddSingleton(Service);
+        expect(false).toBeTruthy();
+    } catch (error) {
+        expect(isTypeOf(error, ServiceExistException)).toBeTruthy();
+    }
+});
 
-test('AddService_ServiceTypeOnly_InstanceOfServiceTypeReturned', () => {
-    Injector.instance.AddService(Service, null, ServiceLifetime.Singleton);
+test('AddTransient_ServiceExist_ServiceExistExceptionThrown', () => {
+    try {
+        Injector.AddTransient(Service);
+        Injector.AddTransient(Service);
+        expect(false).toBeTruthy();
+    } catch (error) {
+        expect(isTypeOf(error, ServiceExistException)).toBeTruthy();
+    }
+});
+
+test('AddScoped_ServiceExist_ServiceExistExceptionThrown', () => {
+    try {
+        Injector.AddScoped(Service);
+        Injector.AddScoped(Service);
+        expect(false).toBeTruthy();
+    } catch (error) {
+        expect(isTypeOf(error, ServiceExistException)).toBeTruthy();
+    }
+});
+
+test('AddSingleton_ServiceExistWithTransientLifetime_ServiceExistExceptionThrown', () => {
+    try {
+        Injector.AddSingleton(Service);
+        Injector.AddTransient(Service);
+        expect(false).toBeTruthy();
+    } catch (error) {
+        expect(isTypeOf(error, ServiceExistException)).toBeTruthy();
+    }
+});
+
+test('AddSingleton_ServiceExistWithScopedLifetime_ServiceExistExceptionThrown', () => {
+    try {
+        Injector.AddSingleton(Service);
+        Injector.AddScoped(Service);
+        expect(false).toBeTruthy();
+    } catch (error) {
+        expect(isTypeOf(error, ServiceExistException)).toBeTruthy();
+    }
+});
+
+test('AddTransient_ServiceExistWithScopedLifetime_ServiceExistExceptionThrown', () => {
+    try {
+        Injector.AddTransient(Service);
+        Injector.AddScoped(Service);
+        expect(false).toBeTruthy();
+    } catch (error) {
+        expect(isTypeOf(error, ServiceExistException)).toBeTruthy();
+    }
+});
+
+test('AddTransient_ServiceExistWithSingletonLifetime_ServiceExistExceptionThrown', () => {
+    try {
+        Injector.AddTransient(Service);
+        Injector.AddSingleton(Service);
+        expect(false).toBeTruthy();
+    } catch (error) {
+        expect(isTypeOf(error, ServiceExistException)).toBeTruthy();
+    }
+});
+
+test('AddScoped_ServiceExistWithSingletonLifetime_ServiceExistExceptionThrown', () => {
+    try {
+        Injector.AddScoped(Service);
+        Injector.AddSingleton(Service);
+        expect(false).toBeTruthy();
+    } catch (error) {
+        expect(isTypeOf(error, ServiceExistException)).toBeTruthy();
+    }
+});
+test('AddScoped_ServiceExistWithTransientLifetime_ServiceExistExceptionThrown', () => {
+    try {
+        Injector.AddScoped(Service);
+        Injector.AddTransient(Service);
+        expect(false).toBeTruthy();
+    } catch (error) {
+        expect(isTypeOf(error, ServiceExistException)).toBeTruthy();
+    }
+});
+
+test('AddSingleton_ServiceTypeOnly_InstanceOfServiceTypeReturned', () => {
+    Injector.AddSingleton(Service);
 
     const instance = Injector.Locate(Service);
 
     expect(instance).toBeInstanceOf(Service);
 });
+test('AddTransient_ServiceTypeOnly_InstanceOfServiceTypeReturned', () => {
+    Injector.AddTransient(Service);
 
-test('AddService_ServiceTypeAndImplementationType_InstanceOfImplementationTypeReturned', () => {
-    Injector.instance.AddService(Service, Implementation, ServiceLifetime.Singleton);
+    const instance = Injector.Locate(Service);
+
+    expect(instance).toBeInstanceOf(Service);
+});
+test('AddScoped_ServiceTypeOnly_InstanceOfServiceTypeReturned', () => {
+    Injector.AddScoped(Service);
+    const context = Injector.Create();
+
+    const instance = Injector.Locate(Service, context);
+
+    expect(instance).toBeInstanceOf(Service);
+});
+
+test('AddSingleton_ServiceTypeAndImplementationType_InstanceOfImplementationTypeReturned', () => {
+    Injector.AddSingleton(Service, Implementation);
 
     const instance = Injector.Locate(Service);
 
     expect(instance).toBeInstanceOf(Implementation);
 });
+test('AddTransient_ServiceTypeAndImplementationType_InstanceOfImplementationTypeReturned', () => {
+    Injector.AddTransient(Service, Implementation);
 
-test('AddService_ServiceTypeAndImplementationFactory_ReturnResultOfImplementationTypeReturned', () => {
+    const instance = Injector.Locate(Service);
+
+    expect(instance).toBeInstanceOf(Implementation);
+});
+test('AddScoped_ServiceTypeAndImplementationType_InstanceOfImplementationTypeReturned', () => {
+    Injector.AddScoped(Service, Implementation);
+    const context = Injector.Create();
+
+    const instance = Injector.Locate(Service, context);
+
+    expect(instance).toBeInstanceOf(Implementation);
+});
+
+test('AddSingleton_ServiceTypeAndImplementationFactory_ReturnResultOfImplementationTypeReturned', () => {
     const factoryResult = new Implementation();
-    Injector.instance.AddService(Service, () => factoryResult, ServiceLifetime.Singleton);
+    Injector.AddSingleton(Service, () => factoryResult);
 
     const result = Injector.Locate(Service);
 
     expect(result).toBe(factoryResult);
 });
+test('AddTransient_ServiceTypeAndImplementationFactory_ReturnResultOfImplementationTypeReturned', () => {
+    const factoryResult = new Implementation();
+    Injector.AddTransient(Service, () => factoryResult);
 
-test('AddService_InjectTransientServiceInSingletonService_LifestyleMismatchExceptionThrown', () => {
+    const result = Injector.Locate(Service);
+
+    expect(result).toBe(factoryResult);
+});
+test('AddScoped_ServiceTypeAndImplementationFactory_ReturnResultOfImplementationTypeReturned', () => {
+    const factoryResult = new Implementation();
+    Injector.AddScoped(Service, () => factoryResult);
+    const context = Injector.Create();
+
+    const result = Injector.Locate(Service, context);
+
+    expect(result).toBe(factoryResult);
+});
+
+test('AddSingleton_AddSingletonServiceThatInjectTransientService_LifestyleMismatchExceptionThrown', () => {
     try {
         @Injectable()
         class InjectableService {
@@ -90,14 +245,15 @@ test('AddService_InjectTransientServiceInSingletonService_LifestyleMismatchExcep
                 private service: Service
             ) { }
         }
-        Injector.AddTransient(Service);
         Injector.AddSingleton(InjectableService);
+        Injector.AddTransient(Service);
         expect(true).toBeFalsy();
     } catch (error) {
-        expect(Object.getPrototypeOf(error).constructor === LifestyleMismatchException).toBeTruthy();
+        expect(isTypeOf(error, LifestyleMismatchException)).toBeTruthy();
     }
 });
-test('AddService_InjectScopedServiceInSingletonService_LifestyleMismatchExceptionThrown', () => {
+
+test('AddSingleton_AddSingletonServiceThatInjectScopedService_LifestyleMismatchExceptionThrown', () => {
     try {
         @Injectable()
         class InjectableService {
@@ -133,7 +289,7 @@ test('AddService_InjectedServicesNotAddedYet_InjectedServicesToBeDelegated', () 
     expect(parentService.toBeInjectedService).toBeInstanceOf(ToBeInjectedService);
 });
 
-test('AddService_InjectScopedDelegatedServiceInSingleton_LifestyleMismatchExceptionThrown', () => {
+test('AddSingleton_InjectScopedDelegatedServiceInSingleton_LifestyleMismatchExceptionThrown', () => {
     try {
         @Injectable()
         class ToBeInjectedService {
@@ -152,11 +308,11 @@ test('AddService_InjectScopedDelegatedServiceInSingleton_LifestyleMismatchExcept
 
         expect(true).toBeFalsy();
     } catch (error) {
-        expect(Object.getPrototypeOf(error).constructor === LifestyleMismatchException).toBeTruthy();
+        expect(isTypeOf(error, LifestyleMismatchException)).toBeTruthy();
     }
 });
 
-test('AddService_InjectTransientDelegatedServiceInSingleton_LifestyleMismatchExceptionThrown', () => {
+test('AddSingleton_InjectTransientDelegatedServiceInSingleton_LifestyleMismatchExceptionThrown', () => {
     try {
         @Injectable()
         class ToBeInjectedService {
@@ -180,7 +336,7 @@ test('AddService_InjectTransientDelegatedServiceInSingleton_LifestyleMismatchExc
 });
 
 afterEach(() => {
-    Injector.instance.Remove(Implementation);
-    Injector.instance.Remove(Service);
+    Injector.Locate(AbstractServiceCollection).Remove(Implementation);
+    Injector.Locate(AbstractServiceCollection).Remove(Service);
 });
 

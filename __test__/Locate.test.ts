@@ -1,6 +1,6 @@
 import { ArgumentException } from "../src/Exceptions/ArgumentException";
 import { LifestyleMismatchException } from "../src/Exceptions/LifestyleMismatchException";
-import { Context, Injectable, Injector, ServiceLifetime } from "../src";
+import { AbstractServiceCollection, Context, Injectable, Injector, ServiceLifetime } from "../src";
 @Injectable()
 class Service {
     id = Math.random() * Math.random();
@@ -172,6 +172,6 @@ test('Locate_LocateScopedInTransientServiceWithoutContext_LifestyleMismatchExcep
 });
 
 afterEach(() => {
-    Injector.instance.Remove(Implementation);
-    Injector.instance.Remove(Service);
+    Injector.Locate(AbstractServiceCollection).Remove(Implementation);
+    Injector.Locate(AbstractServiceCollection).Remove(Service);
 });

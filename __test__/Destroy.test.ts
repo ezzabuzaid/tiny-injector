@@ -1,4 +1,4 @@
-import { Context, Injector, ServiceLifetime, Injectable } from "../src";
+import { Context, ServiceLifetime, Injectable, Injector } from "../src";
 import { InvalidOperationException, ArgumentException } from "../src/Exceptions";
 @Injectable()
 class Service {
