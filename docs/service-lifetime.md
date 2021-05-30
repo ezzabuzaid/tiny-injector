@@ -22,7 +22,7 @@ when scope validation is enabled you cannot inject either Transient or Scoped se
 
 Transient lifetime services are created each time they're requested.
 
-if a transient service used in scoped service, it will be disposed along with scoped service.
+if a transient service used in scoped service, it will be disposed along with scoped service which implies that, the Transient will live as long as the Scoped service lives.
 
 ## Scoped
 
