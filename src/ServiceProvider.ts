@@ -1,20 +1,23 @@
 import { AbstractServiceCollection, LocateOptions } from "./AbstractServiceCollection";
 import { Context } from "./Context";
+import { ContextRegistry } from "./ContextRegistry";
 import { ArgumentException, InvalidOperationException, ServiceNotFoundException } from "./Exceptions";
+import { CreateExtensions, GetServiceExtensions } from "./Extensions";
 import { InjectionToken } from "./InjectionToken";
-import { ServiceCollection } from "./ServiceCollection";
 import { ServiceDescriptor } from "./ServiceDescriptor";
 import { ServiceLifetime } from "./ServiceLifetime";
 import { Type } from "./Types";
 import { isConstructor, isTypeOf, lastElement } from "./Utils";
 
-export class ServiceProvider {
-    #serviceCollection: AbstractServiceCollection = new ServiceCollection();
-    #singletonContext = this.Create();
+export class ServiceProvider implements CreateExtensions, GetServiceExtensions {
+    #contextRegistry = ContextRegistry.GetInstance();
+    #singletonContext?: Context;
 
-    private constructor() {
-        this.#serviceCollection.AddService(AbstractServiceCollection, () => this.#serviceCollection, ServiceLifetime.Singleton);
-        this.#serviceCollection.AddService(Context, (context) => context, ServiceLifetime.Scoped);
+    private get singletonContext() {
+        return this.#singletonContext ?? (this.#singletonContext = this.Create());
+    }
+
+    constructor(private serviceCollection: AbstractServiceCollection) {
     }
 
     public GetService(serviceTypeOrOptions: Type<any> | InjectionToken<any> | LocateOptions, context?: Context): any | any[] {
@@ -38,8 +41,7 @@ export class ServiceProvider {
         } else {
             options = serviceTypeOrOptions as typeof options;
         }
-
-        const descriptors = this.#serviceCollection.getServiceDescriptors(options.serviceType);
+        const descriptors = this.serviceCollection.GetServiceDescriptors(options.serviceType);
         if (options.multiple) {
             return descriptors.map(descriptor => this.LocateService(descriptor, options.context));
         }
@@ -54,25 +56,37 @@ export class ServiceProvider {
             throw new ArgumentException(`${ context } should be of type Context`, 'context');
         }
 
-        if (this.#serviceCollection.HasContext(context)) {
+        if (this.#contextRegistry.Has(context)) {
             throw new InvalidOperationException("Context already in use.");
         }
-        this.#serviceCollection.AddContext(context);
+
+        this.#contextRegistry.Add(context)
+
         return context;
     }
 
-    public CreateScope() {
-        throw new Error("Method is not implemented.");
+    public async CreateScope(computation: (context: Context) => void | Promise<void>): Promise<void> {
+        const context = this.Create();
+        await computation(context);
+        this.Destroy(context);
     }
 
-    public Destroy() {
-        throw new Error("Method is not implemented.");
+    public Destroy(context: Context) {
+        if (!(context instanceof Context)) {
+            throw new ArgumentException(`${ context } should be of type Context`, 'context');
+        }
+
+        if (!this.#contextRegistry.Has(context)) {
+            throw new InvalidOperationException("Cannot find context");
+        }
+
+        this.#contextRegistry.Delete(context)
     }
 
     private LocateService(descriptor: ServiceDescriptor, context: Context | undefined) {
         switch (descriptor.lifetime) {
             case ServiceLifetime.Singleton:
-                return descriptor.implementation(descriptor, this.#singletonContext);
+                return descriptor.implementation(descriptor, this.singletonContext);
             case ServiceLifetime.Transient:
                 return descriptor.implementation(descriptor, context);
             case ServiceLifetime.Scoped:
@@ -88,12 +102,6 @@ export class ServiceProvider {
                     `
                 );
         }
-    }
-
-    private static _instance: ServiceProvider;
-
-    static GetInstance() {
-        return ServiceProvider._instance ?? (ServiceProvider._instance = new ServiceProvider());
     }
 
 }

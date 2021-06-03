@@ -1,4 +1,4 @@
-import { Injector } from './Extensions';
+import { Injector } from "./Injector";
 import { InjectionToken } from "./InjectionToken";
 import { Type } from "./Types";
 

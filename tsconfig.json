@@ -3,7 +3,7 @@
   "exclude": [
     "node_modules",
     "dist",
-    "*/__test__"
+    "__test__"
   ],
   "compilerOptions": {
     "incremental": true,

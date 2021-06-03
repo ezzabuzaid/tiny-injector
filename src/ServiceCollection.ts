@@ -1,27 +1,51 @@
 import "reflect-metadata";
 import { AbstractServiceCollection } from "./AbstractServiceCollection";
 import { Context } from "./Context";
+import { ContextRegistry } from "./ContextRegistry";
 import {
     ActivationFailedException,
     ArgumentException,
     InvalidOperationException,
     LifestyleMismatchException,
+    ResolutionFailedException,
     ServiceExistException,
     ServiceNotFoundException
 } from "./Exceptions";
 import { ServiceDescriptor } from "./ServiceDescriptor";
 import { ServiceLifetime } from "./ServiceLifetime";
 import { ServiceProvider } from "./ServiceProvider";
-import { ClassType, ImplementationFactory, Type, TypeOf } from "./Types";
+import { ClassType, ImplementationFactory, InjectMetadata, Type } from "./Types";
 import { isArrowFn, isConstructor, isNullOrUndefined, isTypeOf, lastElement, notNullOrUndefined } from './Utils';
-
 
 export class ServiceCollection extends AbstractServiceCollection {
 
-
     #serviceCollection = new Map<Type<any>, ServiceDescriptor[]>();
-    #contextsContainer = new Map<Context, WeakMap<ServiceDescriptor, TypeOf<any>>>();
     #toBeCreatedServices = new Map<Type<any>, Type<any>>();
+    #serviceProvider!: ServiceProvider;
+
+    AppendTransient(serviceType: any, implementation?: any) {
+        this.AppendService(serviceType, implementation, ServiceLifetime.Transient);
+    }
+
+    AppendSingleton(serviceType: any, implementation?: any) {
+        this.AppendService(serviceType, implementation, ServiceLifetime.Singleton);
+    }
+
+    AppendScoped(serviceType: any, implementation?: any) {
+        this.AppendService(serviceType, implementation, ServiceLifetime.Scoped);
+    }
+
+    AddScoped(serviceType: any, implementation?: any) {
+        this.AddService(serviceType, implementation, ServiceLifetime.Scoped);
+    }
+
+    AddSingleton(serviceType: any, implementation?: any) {
+        this.AddService(serviceType, implementation, ServiceLifetime.Singleton);
+    }
+
+    AddTransient(serviceType: any, implementation?: any) {
+        this.AddService(serviceType, implementation, ServiceLifetime.Transient);
+    }
 
     HasService(serviceType: Type<any>): boolean {
         return this.#serviceCollection.has(serviceType);
@@ -49,12 +73,12 @@ export class ServiceCollection extends AbstractServiceCollection {
 
         const parentServiceType = this.#toBeCreatedServices.get(serviceType);
         if (parentServiceType) {
-            this.ValidateSingletonLifetime(parentServiceType, this.GetServiceTypeDependencies(parentServiceType));
+            this.ValidateSingletonLifetime(parentServiceType, this.GetServiceDependencies(parentServiceType));
             this.#toBeCreatedServices.delete(serviceType);
         }
 
         if (lifetime === ServiceLifetime.Singleton) {
-            this.ValidateSingletonLifetime(serviceType, this.GetServiceTypeDependencies(serviceType));
+            this.ValidateSingletonLifetime(serviceType, this.GetServiceDependencies(serviceType));
         }
 
     }
@@ -99,23 +123,7 @@ export class ServiceCollection extends AbstractServiceCollection {
         this.#serviceCollection.delete(serviceType);
     }
 
-    public DeleteContext(context: Context): void {
-        this.#contextsContainer.delete(context);
-    }
-
-    public HasContext(context: Context): boolean {
-        return this.#contextsContainer.has(context);
-    }
-
-    public GetContext(context: Context) {
-        return this.#contextsContainer.get(context);
-    }
-
-    public AddContext(context: Context): void {
-        this.#contextsContainer.set(context, new WeakMap());
-    }
-
-    public getServiceDescriptors<T>(serviceType: Type<T>) {
+    public GetServiceDescriptors<T>(serviceType: Type<T>) {
         const descriptor = this.#serviceCollection.get(serviceType);
         if (isNullOrUndefined(descriptor)) {
             throw new ServiceNotFoundException(serviceType.name);
@@ -123,71 +131,22 @@ export class ServiceCollection extends AbstractServiceCollection {
         return descriptor;
     }
 
-    private Resolve(serviceType: ClassType<any>, lifetime: ServiceLifetime) {
-        // TODO: add option to disable SingletonLifetime validation
-        return (context?: Context) => {
-            const tokens = this.GetServiceTypeDependencies(serviceType);
-            return new serviceType(...tokens.map((token, index) => {
-                const injectMetadata = Reflect.getMetadata(`DI:Inject:${ index }`, serviceType);
-                const argumentType = injectMetadata?.serviceType ?? token
-
-                // TODO: add option to disable TransientLifetime validation
-                if (lifetime === ServiceLifetime.Transient && !(context instanceof Context)) {
-                    this.ValidateTransientLifetime(serviceType, argumentType);
-                }
-
-                return ServiceProvider.GetInstance().GetRequiredService({ serviceType: argumentType, multiple: token === Array, context })
-            }));
-        }
-    }
-    BuildServiceProvider() {
-        /**
-         * return new ServiceProvider(collection: this);
-         */
+    public BuildServiceProvider() {
+        this.#serviceProvider ??= new ServiceProvider(this)
+        return this.#serviceProvider;
     }
 
-    private MakeServiceDescriptor(serviceType: any, implementation: any, lifetime: ServiceLifetime) {
-        const resolver = (serviceTypeOrFactory: ClassType<any> | ((context?: Context) => any)) => {
-            if (lifetime === ServiceLifetime.Transient) {
-                return (descriptor: ServiceDescriptor, context?: Context) => {
-                    if (isArrowFn(serviceTypeOrFactory)) {
-                        return serviceTypeOrFactory(context);
-                    }
-                    return this.Resolve(serviceTypeOrFactory, lifetime)(context);
-                };
-            }
-            if (isArrowFn(serviceTypeOrFactory)) {
-                return this.Cache(serviceType, serviceTypeOrFactory);
-            }
-            return this.Cache(serviceType, this.Resolve(serviceTypeOrFactory, lifetime));
-        }
-
-        return new ServiceDescriptor(lifetime, resolver(implementation ?? serviceType));
-    }
-
-    private Cache(serviceType: ClassType<any>, fn: Function) {
-        return (descriptor: ServiceDescriptor, context?: Context) => {
-            if (!(context instanceof Context)) {
-                throw new InvalidOperationException(`Wrong context used to retrieve the dependency ${ serviceType.name }, make sure to use the same context that was used before with {Injector.Create}`);
-            }
-            const container = this.#contextsContainer.get(context)!;
-            if (!(container instanceof WeakMap)) {
-                throw new InvalidOperationException(`Context are not registered, use {Injector.Create} to register the context.`);
-            }
-            if (!container.has(descriptor)) {
-                container.set(descriptor, fn(context))
-            }
-            return container.get(descriptor);
-        };
-    }
-
-    private GetServiceTypeDependencies(serviceType: Type<any>): Type<any>[] {
+    private GetServiceDependencies(serviceType: Type<any>): Type<any>[] {
         return Reflect.getMetadata('design:paramtypes', serviceType) ?? [];
+    }
+
+    private GetServiceInjectMeta(serviceType: Type<any>, index: number): InjectMetadata {
+        return Reflect.getMetadata(`DI:Inject:${ index }`, serviceType);
     }
 
     private ValidateService(serviceType: any, implementation: any) {
         if (!isConstructor(serviceType)) {
-            throw new ArgumentException(`serviceType ${ serviceType?.name ?? '' } must be class syntax`, 'serviceType');
+            throw new ArgumentException(`the serviceType ${ serviceType?.name ?? '' } cannot be added. it must be class syntax`, 'serviceType');
         }
 
         if (
@@ -201,11 +160,11 @@ export class ServiceCollection extends AbstractServiceCollection {
 
     private ValidateSingletonLifetime(serviceType: Type<any>, tokens: Type<any>[]) {
         tokens.forEach((token, index) => {
-            const injectMetadata = Reflect.getMetadata(`DI:Inject:${ index }`, serviceType);
+            const injectMetadata = this.GetServiceInjectMeta(serviceType, index);
             const argumentType = injectMetadata?.serviceType ?? token
             let descriptor: ServiceDescriptor;
             try {
-                descriptor = lastElement(this.getServiceDescriptors(argumentType));
+                descriptor = lastElement(this.GetServiceDescriptors(argumentType));
             } catch (error) {
                 this.#toBeCreatedServices.set(argumentType, serviceType);
                 // throw new ActivationFailedException(argumentType, serviceType);
@@ -214,7 +173,7 @@ export class ServiceCollection extends AbstractServiceCollection {
 
             // Only other Singleton services can be injected in Singleton service
             if (descriptor.lifetime !== ServiceLifetime.Singleton) {
-                const serviceTypeDescriptor = lastElement(this.getServiceDescriptors(serviceType));
+                const serviceTypeDescriptor = lastElement(this.GetServiceDescriptors(serviceType));
                 throw new LifestyleMismatchException({
                     serviceType: serviceType,
                     injectedServiceType: argumentType,
@@ -226,16 +185,73 @@ export class ServiceCollection extends AbstractServiceCollection {
         });
     }
 
+    private MakeServiceDescriptor(parentServiceType: any, implementation: any, lifetime: ServiceLifetime) {
+        const resolver = (serviceTypeOrFactory: ClassType<any> | ImplementationFactory<any>) => {
+            if (lifetime === ServiceLifetime.Transient) {
+                return (descriptor: ServiceDescriptor, context?: Context) => {
+                    if (isArrowFn(serviceTypeOrFactory)) {
+                        return serviceTypeOrFactory(context);
+                    }
+                    return this.Resolve(serviceTypeOrFactory, lifetime)(context);
+                };
+            }
+            if (isArrowFn(serviceTypeOrFactory)) {
+                return this.Cache(parentServiceType, serviceTypeOrFactory);
+            }
+            return this.Cache(parentServiceType, this.Resolve(serviceTypeOrFactory, lifetime));
+        }
+
+        return new ServiceDescriptor(lifetime, resolver(implementation ?? parentServiceType));
+    }
+
+    private Resolve(serviceType: ClassType<any>, lifetime: ServiceLifetime): ImplementationFactory<any> {
+        // TODO: add option to disable SingletonLifetime validation
+        return (context?: Context) => {
+            const tokens = this.GetServiceDependencies(serviceType);
+
+            return new serviceType(...tokens.map((token, index) => {
+                const injectMetadata = this.GetServiceInjectMeta(serviceType, index);
+                const argumentType = injectMetadata?.serviceType ?? token
+
+                // TODO: add option to disable TransientLifetime validation
+                if (lifetime === ServiceLifetime.Transient && !(context instanceof Context)) {
+                    this.ValidateTransientLifetime(serviceType, argumentType);
+                }
+                return this.#serviceProvider.GetRequiredService({ serviceType: argumentType, multiple: token === Array, context })
+            }));
+        }
+    }
+
+    private Cache<T extends Type<any>>(serviceType: T, fn: Function) {
+        return (descriptor: ServiceDescriptor, context?: Context) => {
+            if (!(context instanceof Context)) {
+                throw new InvalidOperationException(`Wrong context used to retrieve the dependency ${ serviceType.name }, make sure to use the same context that was used before with {Injector.Create}`);
+            }
+            const container = ContextRegistry.GetInstance().GetContainer(context);
+            if (!(container instanceof WeakMap)) {
+                throw new InvalidOperationException(`Context are not registered, use {Injector.Create} to register the context.`);
+            }
+            if (!container.has(descriptor)) {
+                container.set(descriptor, fn(context))
+            }
+            const result = container.get(descriptor);
+            if (isNullOrUndefined(result)) {
+                throw new ResolutionFailedException(serviceType.name);
+            }
+            return result;
+        };
+    }
+
     private ValidateTransientLifetime(serviceType: Type<any>, argumentType: Type<any>) {
         let descriptor: ServiceDescriptor;
         try {
-            descriptor = lastElement(this.getServiceDescriptors(argumentType));
+            descriptor = lastElement(this.GetServiceDescriptors(argumentType));
         } catch (error) {
             throw new ActivationFailedException(argumentType, serviceType);
         }
 
         if (descriptor.lifetime === ServiceLifetime.Scoped) {
-            const serviceTypeDescriptor = lastElement(this.getServiceDescriptors(serviceType));
+            const serviceTypeDescriptor = lastElement(this.GetServiceDescriptors(serviceType));
             throw new LifestyleMismatchException({
                 serviceType: serviceType,
                 injectedServiceType: argumentType,

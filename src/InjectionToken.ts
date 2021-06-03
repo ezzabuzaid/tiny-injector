@@ -1,8 +1,8 @@
+import RootServiceCollection from "./RootServiceCollection";
 import { AbstractServiceCollection } from "./AbstractServiceCollection";
-import { Injector } from "./Extensions";
-import { ImplementationFactory } from "./Types";
 import { ArgumentException } from "./Exceptions";
 import { ServiceLifetime } from "./ServiceLifetime";
+import { ImplementationFactory } from "./Types";
 import { isArrowFn, isNullOrUndefined, notNullOrUndefined } from "./Utils";
 export type InjectionTokenGenericParam<C extends InjectionToken<any>> = C extends InjectionToken<infer T> ? T : unknown;
 
@@ -25,6 +25,8 @@ interface Options<T> {
      * The factory that creates the service.
      */
     implementationFactory: ImplementationFactory<FactoryType<T>>;
+
+    provideIn?: 'root' | AbstractServiceCollection;
 }
 
 /**
@@ -49,17 +51,27 @@ export class InjectionToken<T> {
         }
 
         if (notNullOrUndefined(options) && isNullOrUndefined(ServiceLifetime[options.lifetime])) {
-            throw new ArgumentException('InjectionToken implementationFactory can only be arrow function', 'options.implementationFactory')
+            throw new ArgumentException('InjectionToken lifetime is unknown', 'options.lifetime')
         }
 
         Object.defineProperty(serviceType, 'name', { value: _name });
 
         if (notNullOrUndefined(options)) {
-            Injector.GetRequiredService(AbstractServiceCollection).AddService(
-                serviceType,
-                options.implementationFactory as any,
-                options.lifetime
-            )
+            options.provideIn ??= 'root';
+            const serviceCollection = options.provideIn === 'root' ? RootServiceCollection : options.provideIn;
+            switch (options.lifetime) {
+                case ServiceLifetime.Scoped:
+                    serviceCollection.AddScoped(serviceType, options.implementationFactory as any)
+                    break;
+                case ServiceLifetime.Singleton:
+                    serviceCollection.AddSingleton(serviceType, options.implementationFactory as any)
+                    break;
+                case ServiceLifetime.Transient:
+                    serviceCollection.AddTransient(serviceType, options.implementationFactory as any)
+                    break;
+                default:
+                    throw new ArgumentException('Injectable lifetime is unknown', 'options.lifetime')
+            }
         }
         return serviceType as any;
     }

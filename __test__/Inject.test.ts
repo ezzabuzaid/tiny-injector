@@ -1,4 +1,4 @@
-import { Inject, Injectable, InjectionToken, Injector, ServiceLifetime } from "../src";
+import { Inject, Injectable, InjectionToken, ServiceLifetime, Injector } from "../src";
 
 test('Inject_MultipleServicesWithArrayType_ReturnArrayOfServices', () => {
     @Injectable()

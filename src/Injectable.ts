@@ -1,7 +1,9 @@
 import { AbstractServiceCollection } from "./AbstractServiceCollection";
-import { Injector } from "./Extensions";
+import { ArgumentException } from "./Exceptions";
+import RootServiceCollection from "./RootServiceCollection";
 import { ServiceLifetime } from "./ServiceLifetime";
 import { Type } from "./Types";
+import { notNullOrUndefined } from "./Utils";
 
 interface Options {
     /**
@@ -31,6 +33,8 @@ interface Options {
      * Lifetime of the service
      */
     lifetime: ServiceLifetime;
+
+    provideIn?: 'root' | AbstractServiceCollection;
 }
 
 /**
@@ -55,8 +59,31 @@ export function Injectable(options?: Options): ClassDecorator {
 
         // TODO: add option to skip adding the service if exist
         // tryAddService: boolean;
-        if (options && ServiceLifetime[options.lifetime]) {
-            Injector.GetRequiredService(AbstractServiceCollection).AddService(options.serviceType ?? target, target as any, options.lifetime)
+
+        if (
+            notNullOrUndefined(options)
+            &&
+            (options.provideIn !== 'root' && !(options.provideIn instanceof AbstractServiceCollection))
+        ) {
+            throw new ArgumentException('Injectable provideIn accepts only "root" or instance of AbstractServiceCollection', 'options.provideIn')
+        }
+
+        if (notNullOrUndefined(options)) {
+            options.provideIn ??= 'root';
+            const serviceCollection = options.provideIn === 'root' ? RootServiceCollection : options.provideIn;
+            switch (options.lifetime) {
+                case ServiceLifetime.Scoped:
+                    serviceCollection.AddScoped(options.serviceType ?? target, target as any)
+                    break;
+                case ServiceLifetime.Singleton:
+                    serviceCollection.AddSingleton(options.serviceType ?? target, target as any)
+                    break;
+                case ServiceLifetime.Scoped:
+                    serviceCollection.AddTransient(options.serviceType ?? target, target as any)
+                    break;
+                default:
+                    throw new ArgumentException('Injectable lifetime is unknown', 'options.lifetime')
+            }
         }
     };
 }

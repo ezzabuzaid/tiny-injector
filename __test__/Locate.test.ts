@@ -1,41 +1,42 @@
+import { Injector } from "../src/Injector";
+import { AbstractServiceCollection, Injectable } from "../src";
 import { ArgumentException } from "../src/Exceptions/ArgumentException";
 import { LifestyleMismatchException } from "../src/Exceptions/LifestyleMismatchException";
-import { AbstractServiceCollection, Context, Injectable, Injector, ServiceLifetime } from "../src";
+import { ServiceCollection } from "../src/ServiceCollection";
 @Injectable()
 class Service {
     id = Math.random() * Math.random();
 }
 
-@Injectable()
-class Implementation { }
+const services = Injector.Of(new ServiceCollection())
 
-test('Locate_LocateSingleton_ReturnSameInstanceOnSubsequentCalls', () => {
-    Injector.AddSingleton(Service);
+test('GetRequiredService_GetSingleton_ReturnSameInstanceOnSubsequentCalls', () => {
+    services.AddSingleton(Service);
 
-    const instance1 = Injector.GetRequiredService(Service);
-    const instance2 = Injector.GetRequiredService(Service);
-    const instance3 = Injector.GetRequiredService(Service);
+    const instance1 = services.GetRequiredService(Service);
+    const instance2 = services.GetRequiredService(Service);
+    const instance3 = services.GetRequiredService(Service);
 
     expect(instance1).toBe(instance2);
     expect(instance2).toBe(instance3);
     expect(instance1).toBe(instance3);
 });
 
-test('Locate_LocateMultipleSingleton_ReturnSameInstanceOnSubsequentCalls', () => {
+test('GetRequiredService_GetMultipleSingleton_ReturnSameInstanceOnSubsequentCalls', () => {
     @Injectable()
     class Service1 extends Service { }
     @Injectable()
     class Service2 extends Service { }
 
-    Injector.AddSingleton(Service);
-    Injector.AppendSingleton(Service, Service1);
-    Injector.AppendSingleton(Service, Service2);
+    services.AddSingleton(Service);
+    services.AppendSingleton(Service, Service1);
+    services.AppendSingleton(Service, Service2);
 
-    const instances = Injector.GetRequiredService({
+    const instances = services.GetRequiredService({
         serviceType: Service,
         multiple: true
     });
-    const instances1 = Injector.GetRequiredService({
+    const instances1 = services.GetRequiredService({
         serviceType: Service,
         multiple: true
     });
@@ -47,27 +48,27 @@ test('Locate_LocateMultipleSingleton_ReturnSameInstanceOnSubsequentCalls', () =>
     expect(instances.every((instance, index) => instances1[index] === instance)).toBeTruthy();
 });
 
-test('Locate_LocateTransient_ReturnNewInstanceOnSubsequentCalls', () => {
-    Injector.AddTransient(Service);
+test('GetRequiredService_GetTransient_ReturnNewInstanceOnSubsequentCalls', () => {
+    services.AddTransient(Service);
 
-    const instance1 = Injector.GetRequiredService(Service);
-    const instance2 = Injector.GetRequiredService(Service);
+    const instance1 = services.GetRequiredService(Service);
+    const instance2 = services.GetRequiredService(Service);
 
     expect(instance1 !== instance2);
 });
 
-test('Locate_LocateMultipleTransient_ReturnNewInstanceOnSubsequentCalls', () => {
+test('GetRequiredService_GetMultipleTransient_ReturnNewInstanceOnSubsequentCalls', () => {
     @Injectable()
     class Service1 extends Service { }
 
-    Injector.AddTransient(Service);
-    Injector.AppendTransient(Service, Service1);
+    services.AddTransient(Service);
+    services.AppendTransient(Service, Service1);
 
-    const instances = Injector.GetRequiredService({
+    const instances = services.GetRequiredService({
         serviceType: Service,
         multiple: true
     });
-    const instances1 = Injector.GetRequiredService({
+    const instances1 = services.GetRequiredService({
         serviceType: Service,
         multiple: true
     });
@@ -80,20 +81,20 @@ test('Locate_LocateMultipleTransient_ReturnNewInstanceOnSubsequentCalls', () => 
 
 });
 
-test('Locate_LocateScoped_ReturnSameInstanceForSameContextInSubsequentCalls', () => {
+test('GetRequiredService_GetScoped_ReturnSameInstanceForSameContextInSubsequentCalls', () => {
     @Injectable()
     class Service1 extends Service { }
 
-    Injector.AddScoped(Service);
-    Injector.AddScoped(Service1);
+    services.AddScoped(Service);
+    services.AddScoped(Service1);
 
-    const context = Injector.Create();
+    const context = services.Create();
 
-    const instance1 = Injector.GetRequiredService(Service, context);
-    const instance2 = Injector.GetRequiredService(Service, context);
-    const instance3 = Injector.GetRequiredService(Service, context);
-    const instance11 = Injector.GetRequiredService(Service1, context);
-    const instance12 = Injector.GetRequiredService(Service1, context);
+    const instance1 = services.GetRequiredService(Service, context);
+    const instance2 = services.GetRequiredService(Service, context);
+    const instance3 = services.GetRequiredService(Service, context);
+    const instance11 = services.GetRequiredService(Service1, context);
+    const instance12 = services.GetRequiredService(Service1, context);
 
     expect(instance1 === instance2).toBeTruthy();
     expect(instance2 === instance1).toBeTruthy();
@@ -102,37 +103,37 @@ test('Locate_LocateScoped_ReturnSameInstanceForSameContextInSubsequentCalls', ()
     expect(instance11 === instance12).toBeTruthy();
 });
 
-test('Locate_LocateScoped_ReturnDifferentInstanceForDifferentContext', () => {
+test('GetRequiredService_GetScoped_ReturnDifferentInstanceForDifferentContext', () => {
     @Injectable()
     class ScopedService {
         id = Math.random() * Math.random();
     }
 
-    Injector.AddScoped(ScopedService);
+    services.AddScoped(ScopedService);
 
-    const context1 = Injector.Create();
-    const context2 = Injector.Create();
+    const context1 = services.Create();
+    const context2 = services.Create();
 
-    const instanceContext1 = Injector.GetRequiredService(ScopedService, context1);
-    const instanceContext2 = Injector.GetRequiredService(ScopedService, context2);
+    const instanceContext1 = services.GetRequiredService(ScopedService, context1);
+    const instanceContext2 = services.GetRequiredService(ScopedService, context2);
     expect(instanceContext1 !== instanceContext2).toBeTruthy();
 });
 
-test('Locate_LocateMultipleScoped_ReturnSameInstanceForSameContextOnSubsequentCallsWith', () => {
+test('GetRequiredService_GetMultipleScoped_ReturnSameInstanceForSameContextOnSubsequentCallsWith', () => {
     @Injectable()
     class Service1 extends Service { }
 
-    Injector.AddScoped(Service);
-    Injector.AppendScoped(Service, Service1);
+    services.AddScoped(Service);
+    services.AppendScoped(Service, Service1);
 
-    const context = Injector.Create();
+    const context = services.Create();
 
-    const instances = Injector.GetRequiredService({
+    const instances = services.GetRequiredService({
         serviceType: Service,
         multiple: true,
         context: context
     });
-    const instances1 = Injector.GetRequiredService({
+    const instances1 = services.GetRequiredService({
         serviceType: Service,
         multiple: true,
         context: context
@@ -145,16 +146,16 @@ test('Locate_LocateMultipleScoped_ReturnSameInstanceForSameContextOnSubsequentCa
 });
 
 
-test('Locate_LocateScopedWithoutContext_ArgumentExceptionThrown', () => {
-    Injector.AddScoped(Service);
+test('GetRequiredService_GetScopedWithoutContext_ArgumentExceptionThrown', () => {
+    services.AddScoped(Service);
 
     expect(() => {
-        Injector.GetRequiredService(Service);
+        services.GetRequiredService(Service);
     })
         .toThrowError(ArgumentException);
 });
 
-test('Locate_LocateScopedInTransientServiceWithoutContext_LifestyleMismatchExceptionThrown', () => {
+test('GetRequiredService_GetScopedInTransientServiceWithoutContext_LifestyleMismatchExceptionThrown', () => {
     @Injectable()
     class InjectableService {
         constructor(
@@ -162,16 +163,15 @@ test('Locate_LocateScopedInTransientServiceWithoutContext_LifestyleMismatchExcep
         ) { }
     }
 
-    Injector.AddScoped(Service);
-    Injector.AddTransient(InjectableService);
+    services.AddScoped(Service);
+    services.AddTransient(InjectableService);
 
     expect(() => {
-        Injector.GetRequiredService(InjectableService);
+        services.GetRequiredService(InjectableService);
     })
         .toThrowError(LifestyleMismatchException);
 });
 
 afterEach(() => {
-    Injector.GetRequiredService(AbstractServiceCollection).Remove(Implementation);
-    Injector.GetRequiredService(AbstractServiceCollection).Remove(Service);
+    services.Remove(Service);
 });

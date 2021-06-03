@@ -1,5 +1,6 @@
 import { isConstructor } from "../src/Utils";
-import { InjectionToken, ServiceLifetime, ArgumentException, Inject, Injectable, Injector } from "../src";
+import { InjectionToken, ServiceLifetime, ArgumentException } from "../src";
+import { Injector } from "../src/Injector";
 
 test('InjectionToken_CreateNewInstance_ReturnReferenceToNewClass', () => {
     const TOKEN = new InjectionToken('UnderTest');
