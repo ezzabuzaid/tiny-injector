@@ -7,7 +7,7 @@ export class ServiceExistException extends InvalidOperationException {
         serviceTypeLifetime: string,
     ) {
         super(
-            `You cannot override registered types. ${ serviceTypeName } already registered as ${ serviceTypeLifetime }`
+            `You cannot override a registered type. the ${ serviceTypeName } is already registered as ${ serviceTypeLifetime }`
         );
     }
 }
