@@ -14,6 +14,7 @@ In software engineering, dependency injection is a technique in which an object 
 In the typical "using" relationship the receiving object is called a client and the passed (that is, "injected") object is called a service.
 
 [Reference](https://en.wikipedia.org/wiki/Dependency_injection)
+[You might check here](https://stackoverflow.com/questions/130794/what-is-dependency-injection/140655#140655)
 
 *in which an object receives other objects that it depends on.*
 Let's say you have two classes `ObjectA` and `ObjectB` , and `ObjectB` depends on `ObjectA` , in this case we call `ObjectA` dependency on `ObjectB` .
