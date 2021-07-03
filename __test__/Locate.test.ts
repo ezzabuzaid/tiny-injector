@@ -1,16 +1,18 @@
-import { Injector } from "../src/Injector";
-import { AbstractServiceCollection, Injectable } from "../src";
+import { Injectable } from "../src";
 import { ArgumentException } from "../src/Exceptions/ArgumentException";
 import { LifestyleMismatchException } from "../src/Exceptions/LifestyleMismatchException";
+import { Injector } from "../src/Injector";
 import { ServiceCollection } from "../src/ServiceCollection";
-@Injectable()
-class Service {
-    id = Math.random() * Math.random();
-}
+
 
 const services = Injector.Of(new ServiceCollection())
 
 test('GetRequiredService_GetSingleton_ReturnSameInstanceOnSubsequentCalls', () => {
+    @Injectable()
+    class Service {
+        id = Math.random() * Math.random();
+    }
+
     services.AddSingleton(Service);
 
     const instance1 = services.GetRequiredService(Service);
@@ -24,6 +26,10 @@ test('GetRequiredService_GetSingleton_ReturnSameInstanceOnSubsequentCalls', () =
 
 test('GetRequiredService_GetMultipleSingleton_ReturnSameInstanceOnSubsequentCalls', () => {
     @Injectable()
+    class Service {
+        id = Math.random() * Math.random();
+    }
+    @Injectable()
     class Service1 extends Service { }
     @Injectable()
     class Service2 extends Service { }
@@ -32,14 +38,8 @@ test('GetRequiredService_GetMultipleSingleton_ReturnSameInstanceOnSubsequentCall
     services.AppendSingleton(Service, Service1);
     services.AppendSingleton(Service, Service2);
 
-    const instances = services.GetRequiredService({
-        serviceType: Service,
-        multiple: true
-    });
-    const instances1 = services.GetRequiredService({
-        serviceType: Service,
-        multiple: true
-    });
+    const instances = services.GetServices(Service);
+    const instances1 = services.GetServices(Service);
 
     [Service, Service1, Service2].forEach((serviceType, index) => {
         expect(instances[index]).toBeInstanceOf(serviceType);
@@ -49,6 +49,11 @@ test('GetRequiredService_GetMultipleSingleton_ReturnSameInstanceOnSubsequentCall
 });
 
 test('GetRequiredService_GetTransient_ReturnNewInstanceOnSubsequentCalls', () => {
+    @Injectable()
+    class Service {
+        id = Math.random() * Math.random();
+    }
+
     services.AddTransient(Service);
 
     const instance1 = services.GetRequiredService(Service);
@@ -59,19 +64,18 @@ test('GetRequiredService_GetTransient_ReturnNewInstanceOnSubsequentCalls', () =>
 
 test('GetRequiredService_GetMultipleTransient_ReturnNewInstanceOnSubsequentCalls', () => {
     @Injectable()
+    class Service {
+        id = Math.random() * Math.random();
+    }
+
+    @Injectable()
     class Service1 extends Service { }
 
     services.AddTransient(Service);
     services.AppendTransient(Service, Service1);
 
-    const instances = services.GetRequiredService({
-        serviceType: Service,
-        multiple: true
-    });
-    const instances1 = services.GetRequiredService({
-        serviceType: Service,
-        multiple: true
-    });
+    const instances = services.GetServices(Service);
+    const instances1 = services.GetServices(Service);
 
     [Service, Service1].forEach((serviceType, index) => {
         expect(instances[index]).toBeInstanceOf(serviceType);
@@ -82,6 +86,11 @@ test('GetRequiredService_GetMultipleTransient_ReturnNewInstanceOnSubsequentCalls
 });
 
 test('GetRequiredService_GetScoped_ReturnSameInstanceForSameContextInSubsequentCalls', () => {
+    @Injectable()
+    class Service {
+        id = Math.random() * Math.random();
+    }
+
     @Injectable()
     class Service1 extends Service { }
 
@@ -121,6 +130,10 @@ test('GetRequiredService_GetScoped_ReturnDifferentInstanceForDifferentContext', 
 
 test('GetRequiredService_GetMultipleScoped_ReturnSameInstanceForSameContextOnSubsequentCallsWith', () => {
     @Injectable()
+    class Service {
+        id = Math.random() * Math.random();
+    }
+    @Injectable()
     class Service1 extends Service { }
 
     services.AddScoped(Service);
@@ -128,16 +141,8 @@ test('GetRequiredService_GetMultipleScoped_ReturnSameInstanceForSameContextOnSub
 
     const context = services.Create();
 
-    const instances = services.GetRequiredService({
-        serviceType: Service,
-        multiple: true,
-        context: context
-    });
-    const instances1 = services.GetRequiredService({
-        serviceType: Service,
-        multiple: true,
-        context: context
-    });
+    const instances = services.GetServices(Service, context);
+    const instances1 = services.GetServices(Service, context);
 
     [Service, Service1].forEach((serviceType, index) => {
         expect(instances[index]).toBeInstanceOf(serviceType);
@@ -147,6 +152,10 @@ test('GetRequiredService_GetMultipleScoped_ReturnSameInstanceForSameContextOnSub
 
 
 test('GetRequiredService_GetScopedWithoutContext_ArgumentExceptionThrown', () => {
+    @Injectable()
+    class Service {
+        id = Math.random() * Math.random();
+    }
     services.AddScoped(Service);
 
     expect(() => {
@@ -156,6 +165,10 @@ test('GetRequiredService_GetScopedWithoutContext_ArgumentExceptionThrown', () =>
 });
 
 test('GetRequiredService_GetScopedInTransientServiceWithoutContext_LifestyleMismatchExceptionThrown', () => {
+    @Injectable()
+    class Service {
+        id = Math.random() * Math.random();
+    }
     @Injectable()
     class InjectableService {
         constructor(
@@ -172,6 +185,3 @@ test('GetRequiredService_GetScopedInTransientServiceWithoutContext_LifestyleMism
         .toThrowError(LifestyleMismatchException);
 });
 
-afterEach(() => {
-    services.Remove(Service);
-});

@@ -1,22 +1,26 @@
-import { AbstractServiceCollection, Injectable } from "../src";
+import { Injectable } from "../src";
 import { ArgumentException, LifestyleMismatchException, ServiceExistException } from "../src/Exceptions";
-import { isTypeOf } from "../src/Utils";
 import { Injector } from "../src/Injector";
 import { ServiceCollection } from "../src/ServiceCollection";
+import { getSupportedImplementationTypeTypes, getSupportedServiceTypeTypes } from "./utils";
 
 const services = Injector.Of(new ServiceCollection());
 
-@Injectable()
-class Service {
-    id = Math.random() * Math.random();
-}
-@Injectable()
-class Implementation implements Service {
-    id = Math.random() * Math.random();
+function setup() {
+    @Injectable()
+    class Service {
+        id = Math.random() * Math.random();
+    }
+    @Injectable()
+    class Implementation implements Service {
+        id = Math.random() * Math.random();
+    }
+    return { Service, Implementation }
 }
 
 describe('AddSingleton_PrimitiveTypeAsServiceType_ArgumentExceptionThrown', () => {
-    const types = [null, undefined, {}, function () { }, () => { }, [], false, true, '', ' '];
+    const { Implementation, Service } = setup();
+    const types = getSupportedServiceTypeTypes();
     types.forEach((type) => {
         test(`${ type }`, () => {
             expect(() => services.AddSingleton(type as any, Implementation))
@@ -26,7 +30,8 @@ describe('AddSingleton_PrimitiveTypeAsServiceType_ArgumentExceptionThrown', () =
 });
 
 describe('AddScoped_PrimitiveTypeAsServiceType_ArgumentExceptionThrown', () => {
-    const types = [null, undefined, {}, function () { }, () => { }, [], false, true, '', ' '];
+    const { Implementation, Service } = setup();
+    const types = getSupportedServiceTypeTypes();
     types.forEach((type) => {
         test(`${ type }`, () => {
             expect(() => services.AddScoped(type as any, Implementation))
@@ -36,7 +41,8 @@ describe('AddScoped_PrimitiveTypeAsServiceType_ArgumentExceptionThrown', () => {
 });
 
 describe('AddTransient_PrimitiveTypeAsServiceType_ArgumentExceptionThrown', () => {
-    const types = [null, undefined, {}, function () { }, () => { }, [], false, true, '', ' '];
+    const { Implementation, Service } = setup();
+    const types = getSupportedServiceTypeTypes();
     types.forEach((type) => {
         test(`${ type }`, () => {
             expect(() => services.AddTransient(type as any, Implementation))
@@ -46,126 +52,112 @@ describe('AddTransient_PrimitiveTypeAsServiceType_ArgumentExceptionThrown', () =
 });
 
 describe('AddSingleton_PrimitiveTypeAsImplementationType_ArgumentExceptionThrown', () => {
-    const types = [{}, function () { }, [], false, true, '', ' '];
+    const { Implementation, Service } = setup();
+    const types = getSupportedImplementationTypeTypes();
     types.forEach((type) => {
         test(`${ type }`, () => {
-            expect(() => services.AddSingleton(type as any, Implementation))
+            expect(() => services.AddSingleton(Service, type as any))
                 .toThrowError(ArgumentException);
         })
     });
 });
 
 describe('AddScoped_PrimitiveTypeAsImplementationType_ArgumentExceptionThrown', () => {
-    const types = [{}, function () { }, [], false, true, '', ' '];
+    const { Implementation, Service } = setup();
+    const types = getSupportedImplementationTypeTypes();
     types.forEach((type) => {
         test(`${ type }`, () => {
-            expect(() => services.AddScoped(type as any, Implementation))
+            expect(() => services.AddScoped(Service, type as any))
                 .toThrowError(ArgumentException);
         })
     });
 });
 
 describe('AddTransient_PrimitiveTypeAsImplementationType_ArgumentExceptionThrown', () => {
-    const types = [{}, function () { }, [], false, true, '', ' '];
+    const { Implementation, Service } = setup();
+    const types = getSupportedImplementationTypeTypes();
     types.forEach((type) => {
         test(`${ type }`, () => {
-            expect(() => services.AddTransient(type as any, Implementation))
+            expect(() => services.AddTransient(Service, type as any))
                 .toThrowError(ArgumentException);
         })
     });
 });
 
 test('AddSingleton_ServiceExist_ServiceExistExceptionThrown', () => {
-    try {
+    const { Implementation, Service } = setup();
+    expect(() => {
         services.AddSingleton(Service);
         services.AddSingleton(Service);
-        expect(false).toBeTruthy();
-    } catch (error) {
-        expect(isTypeOf(error, ServiceExistException)).toBeTruthy();
-    }
+    }).toThrowErrorOfType(ServiceExistException);
 });
 
 test('AddTransient_ServiceExist_ServiceExistExceptionThrown', () => {
-    try {
+    const { Implementation, Service } = setup();
+    expect(() => {
         services.AddTransient(Service);
         services.AddTransient(Service);
-        expect(false).toBeTruthy();
-    } catch (error) {
-        expect(isTypeOf(error, ServiceExistException)).toBeTruthy();
-    }
+    }).toThrowErrorOfType(ServiceExistException);
 });
 
 test('AddScoped_ServiceExist_ServiceExistExceptionThrown', () => {
-    try {
+    const { Implementation, Service } = setup();
+    expect(() => {
         services.AddScoped(Service);
         services.AddScoped(Service);
-        expect(false).toBeTruthy();
-    } catch (error) {
-        expect(isTypeOf(error, ServiceExistException)).toBeTruthy();
-    }
+    }).toThrowErrorOfType(ServiceExistException);
 });
 
 test('AddSingleton_ServiceExistWithTransientLifetime_ServiceExistExceptionThrown', () => {
-    try {
+    const { Implementation, Service } = setup();
+    expect(() => {
         services.AddSingleton(Service);
         services.AddTransient(Service);
-        expect(false).toBeTruthy();
-    } catch (error) {
-        expect(isTypeOf(error, ServiceExistException)).toBeTruthy();
-    }
+    }).toThrowErrorOfType(ServiceExistException);
 });
 
 test('AddSingleton_ServiceExistWithScopedLifetime_ServiceExistExceptionThrown', () => {
-    try {
+    const { Implementation, Service } = setup();
+    expect(() => {
         services.AddSingleton(Service);
         services.AddScoped(Service);
-        expect(false).toBeTruthy();
-    } catch (error) {
-        expect(isTypeOf(error, ServiceExistException)).toBeTruthy();
-    }
+    }).toThrowErrorOfType(ServiceExistException);
 });
 
 test('AddTransient_ServiceExistWithScopedLifetime_ServiceExistExceptionThrown', () => {
-    try {
+    const { Implementation, Service } = setup();
+    expect(() => {
         services.AddTransient(Service);
         services.AddScoped(Service);
-        expect(false).toBeTruthy();
-    } catch (error) {
-        expect(isTypeOf(error, ServiceExistException)).toBeTruthy();
-    }
+    }).toThrowErrorOfType(ServiceExistException);
 });
 
 test('AddTransient_ServiceExistWithSingletonLifetime_ServiceExistExceptionThrown', () => {
-    try {
+    const { Implementation, Service } = setup();
+    expect(() => {
         services.AddTransient(Service);
         services.AddSingleton(Service);
-        expect(false).toBeTruthy();
-    } catch (error) {
-        expect(isTypeOf(error, ServiceExistException)).toBeTruthy();
-    }
+    }).toThrowErrorOfType(ServiceExistException);
 });
 
 test('AddScoped_ServiceExistWithSingletonLifetime_ServiceExistExceptionThrown', () => {
-    try {
+    const { Implementation, Service } = setup();
+    expect(() => {
         services.AddScoped(Service);
         services.AddSingleton(Service);
-        expect(false).toBeTruthy();
-    } catch (error) {
-        expect(isTypeOf(error, ServiceExistException)).toBeTruthy();
-    }
+    }).toThrowErrorOfType(ServiceExistException);
 });
 
 test('AddScoped_ServiceExistWithTransientLifetime_ServiceExistExceptionThrown', () => {
-    try {
+    const { Implementation, Service } = setup();
+    expect(() => {
         services.AddScoped(Service);
         services.AddTransient(Service);
-        expect(false).toBeTruthy();
-    } catch (error) {
-        expect(isTypeOf(error, ServiceExistException)).toBeTruthy();
-    }
+    }).toThrowErrorOfType(ServiceExistException);
 });
 
 test('AddSingleton_ServiceTypeOnly_InstanceOfServiceTypeReturned', () => {
+    const { Implementation, Service } = setup();
     services.AddSingleton(Service);
 
     const instance = services.GetRequiredService(Service);
@@ -174,6 +166,7 @@ test('AddSingleton_ServiceTypeOnly_InstanceOfServiceTypeReturned', () => {
 });
 
 test('AddTransient_ServiceTypeOnly_InstanceOfServiceTypeReturned', () => {
+    const { Implementation, Service } = setup();
     services.AddTransient(Service);
 
     const instance = services.GetRequiredService(Service);
@@ -182,6 +175,7 @@ test('AddTransient_ServiceTypeOnly_InstanceOfServiceTypeReturned', () => {
 });
 
 test('AddScoped_ServiceTypeOnly_InstanceOfServiceTypeReturned', () => {
+    const { Implementation, Service } = setup();
     services.AddScoped(Service);
     const context = services.Create();
 
@@ -191,6 +185,7 @@ test('AddScoped_ServiceTypeOnly_InstanceOfServiceTypeReturned', () => {
 });
 
 test('AddSingleton_ServiceTypeAndImplementationType_InstanceOfImplementationTypeReturned', () => {
+    const { Implementation, Service } = setup();
     services.AddSingleton(Service, Implementation);
 
     const instance = services.GetRequiredService(Service);
@@ -199,6 +194,7 @@ test('AddSingleton_ServiceTypeAndImplementationType_InstanceOfImplementationType
 });
 
 test('AddTransient_ServiceTypeAndImplementationType_InstanceOfImplementationTypeReturned', () => {
+    const { Implementation, Service } = setup();
     services.AddTransient(Service, Implementation);
 
     const instance = services.GetRequiredService(Service);
@@ -206,6 +202,7 @@ test('AddTransient_ServiceTypeAndImplementationType_InstanceOfImplementationType
     expect(instance).toBeInstanceOf(Implementation);
 });
 test('AddScoped_ServiceTypeAndImplementationType_InstanceOfImplementationTypeReturned', () => {
+    const { Implementation, Service } = setup();
     services.AddScoped(Service, Implementation);
     const context = services.Create();
 
@@ -215,6 +212,7 @@ test('AddScoped_ServiceTypeAndImplementationType_InstanceOfImplementationTypeRet
 });
 
 test('AddSingleton_ServiceTypeAndImplementationFactory_ReturnResultOfImplementationTypeReturned', () => {
+    const { Implementation, Service } = setup();
     const factoryResult = new Implementation();
     services.AddSingleton(Service, () => factoryResult);
 
@@ -223,6 +221,7 @@ test('AddSingleton_ServiceTypeAndImplementationFactory_ReturnResultOfImplementat
     expect(result).toBe(factoryResult);
 });
 test('AddTransient_ServiceTypeAndImplementationFactory_ReturnResultOfImplementationTypeReturned', () => {
+    const { Implementation, Service } = setup();
     const factoryResult = new Implementation();
     services.AddTransient(Service, () => factoryResult);
 
@@ -232,6 +231,7 @@ test('AddTransient_ServiceTypeAndImplementationFactory_ReturnResultOfImplementat
 });
 
 test('AddScoped_ServiceTypeAndImplementationFactory_ReturnResultOfImplementationTypeReturned', () => {
+    const { Implementation, Service } = setup();
     const factoryResult = new Implementation();
     services.AddScoped(Service, () => factoryResult);
     const context = services.Create();
@@ -242,7 +242,11 @@ test('AddScoped_ServiceTypeAndImplementationFactory_ReturnResultOfImplementation
 });
 
 test('AddSingleton_AddSingletonServiceThatInjectTransientService_LifestyleMismatchExceptionThrown', () => {
-    try {
+    @Injectable()
+    class Service {
+        id = Math.random() * Math.random();
+    }
+    expect(() => {
         @Injectable()
         class InjectableService {
             constructor(
@@ -251,14 +255,15 @@ test('AddSingleton_AddSingletonServiceThatInjectTransientService_LifestyleMismat
         }
         services.AddSingleton(InjectableService);
         services.AddTransient(Service);
-        expect(true).toBeFalsy();
-    } catch (error) {
-        expect(isTypeOf(error, LifestyleMismatchException)).toBeTruthy();
-    }
+    }).toThrowErrorOfType(LifestyleMismatchException);
 });
 
 test('AddSingleton_AddSingletonServiceThatInjectScopedService_LifestyleMismatchExceptionThrown', () => {
-    try {
+    @Injectable()
+    class Service {
+        id = Math.random() * Math.random();
+    }
+    expect(() => {
         @Injectable()
         class InjectableService {
             constructor(
@@ -267,10 +272,7 @@ test('AddSingleton_AddSingletonServiceThatInjectScopedService_LifestyleMismatchE
         }
         services.AddScoped(Service);
         services.AddSingleton(InjectableService);
-        expect(true).toBeFalsy();
-    } catch (error) {
-        expect(Object.getPrototypeOf(error).constructor === LifestyleMismatchException).toBeTruthy();
-    }
+    }).toThrowErrorOfType(LifestyleMismatchException);
 });
 
 test('AddService_InjectedServicesNotAddedYet_InjectedServicesToBeDelegated', () => {
@@ -294,7 +296,7 @@ test('AddService_InjectedServicesNotAddedYet_InjectedServicesToBeDelegated', () 
 });
 
 test('AddSingleton_InjectScopedDelegatedServiceInSingleton_LifestyleMismatchExceptionThrown', () => {
-    try {
+    expect(() => {
         @Injectable()
         class ToBeInjectedService {
             constructor() { }
@@ -309,15 +311,11 @@ test('AddSingleton_InjectScopedDelegatedServiceInSingleton_LifestyleMismatchExce
 
         services.AddSingleton(ParentService);
         services.AddScoped(ToBeInjectedService);
-
-        expect(true).toBeFalsy();
-    } catch (error) {
-        expect(isTypeOf(error, LifestyleMismatchException)).toBeTruthy();
-    }
+    }).toThrowErrorOfType(LifestyleMismatchException);
 });
 
 test('AddSingleton_InjectTransientDelegatedServiceInSingleton_LifestyleMismatchExceptionThrown', () => {
-    try {
+    expect(() => {
         @Injectable()
         class ToBeInjectedService {
             constructor() { }
@@ -332,15 +330,5 @@ test('AddSingleton_InjectTransientDelegatedServiceInSingleton_LifestyleMismatchE
 
         services.AddSingleton(ParentService);
         services.AddTransient(ToBeInjectedService);
-
-        expect(true).toBeFalsy();
-    } catch (error) {
-        expect(Object.getPrototypeOf(error).constructor === LifestyleMismatchException).toBeTruthy();
-    }
-});
-
-
-afterEach(() => {
-    services.Remove(Service);
-    services.Remove(Implementation);
+    }).toThrowErrorOfType(LifestyleMismatchException);
 });
