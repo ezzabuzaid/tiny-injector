@@ -5,6 +5,8 @@ export abstract class CreateExtensions {
 
     /**
      * Create a context and immediately destroy it after computation is done.
+     * 
+     * @returns return value of `computation`
      *
      * @param computation
      */

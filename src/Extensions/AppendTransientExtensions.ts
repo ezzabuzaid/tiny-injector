@@ -37,7 +37,7 @@ export abstract class AppendTransientExtensions {
      * @param serviceType The type of the service to add.
      * @param implementationType The type of the implementation to use.
      */
-    abstract AppendTransient<T, I extends T>(serviceType: T, implementationType: T): void;
+    abstract AppendTransient<T extends Type<any>, I extends ClassType<TypeOf<T>>>(serviceType: T, implementationType: T): void;
     /**
      * Appends a singleton service of the type specified in serviceType.
      *

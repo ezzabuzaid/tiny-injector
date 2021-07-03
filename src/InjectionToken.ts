@@ -9,7 +9,7 @@ export type InjectionTokenGenericParam<C extends InjectionToken<any>> = C extend
 type FactoryType<T extends
     (new (...args: any) => any)
     |
-    String
+    string
     |
     Array<T>
     |
@@ -39,6 +39,7 @@ interface Options<T> {
  * @link https://github.com/angular/angular/blob/master/packages/core/src/di/injection_token.ts
  */
 export class InjectionToken<T> {
+    #InjectionTokenDifferentiator = null;
     constructor(_name: string, options?: Options<T>) {
         class serviceType extends InjectionToken<T> { };
 

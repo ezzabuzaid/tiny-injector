@@ -38,7 +38,7 @@ export abstract class AppendSingletonExtensions {
      * @param serviceType The type of the service to add.
      * @param implementationType The type of the implementation to use.
      */
-    abstract AppendSingleton<T, I extends T>(serviceType: T, implementationType: T): void;
+    abstract AppendSingleton<T extends Type<any>, I extends ClassType<TypeOf<T>>>(serviceType: T, implementationType: T): void;
     /**
      * Appends a singleton service of the type specified in serviceType.
      *

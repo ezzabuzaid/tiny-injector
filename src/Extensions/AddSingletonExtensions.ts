@@ -39,7 +39,7 @@ export abstract class AddSingletonExtensions {
      * @param serviceType The type of the service to add.
      * @param implementationType The type of the implementation to use.
      */
-    abstract AddSingleton<T extends Type<any>, I extends (T & ClassType<any>)>(serviceType: T, implementationType: I): void;
+    abstract AddSingleton<T extends Type<any>, I extends ClassType<TypeOf<T>>>(serviceType: T, implementationType: I): void;
     /**
      * Add a singleton service of the type specified in serviceType.
      *

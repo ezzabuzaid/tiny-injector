@@ -36,7 +36,7 @@ export abstract class AddTransientExtensions {
      * @param serviceType - The type of the service to add.
      * @param implementationType - The type of the implementation to use.
      */
-    abstract AddTransient<T extends Type<any>, I extends T>(serviceType: T, implementationType: I): void;
+    abstract AddTransient<T extends Type<any>, I extends ClassType<TypeOf<T>>>(serviceType: T, implementationType: I): void;
     /**
      * Add a transient service of the type specified in serviceType.
      *
@@ -45,5 +45,5 @@ export abstract class AddTransientExtensions {
      *
      * @param serviceType - The type of the service to add.
      */
-    abstract AddTransient<T extends ClassType<I>, I>(serviceType: T): void;
+    abstract AddTransient<T extends ClassType<any>>(serviceType: T): void;
 }

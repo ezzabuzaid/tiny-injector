@@ -4,7 +4,8 @@ The context is a special object that binds a set of services, it is purpose is t
 
 It is primarly existed to limit the lifetime of a service or set of services.
 
-Imagine in an express app, each time the user requests the server you create a context to limit all service with *Scoped lifetime* to it, and after responding to that request, you remove the context so all services are removed. for instance, there's an internal context used to group all singleton services, what made them singleton is that the context will live throughout the application lifetime.
+Imagine in an express app, each time the user requests the server you create a context to limit all service with *Scoped lifetime* to it, and after responding to that request, you remove the context so all services are removed.
+for instance, there's an internal context used to group all singleton services, what made them singleton is that the context will live throughout the application lifetime.
 
 ## Create Context
 

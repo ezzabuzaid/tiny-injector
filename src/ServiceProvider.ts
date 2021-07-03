@@ -65,10 +65,11 @@ export class ServiceProvider implements CreateExtensions, GetServiceExtensions {
         return context;
     }
 
-    public async CreateScope(computation: (context: Context) => void | Promise<void>): Promise<void> {
+    public async CreateScope<T>(computation: (context: Context) => T | Promise<T>): Promise<T> {
         const context = this.Create();
-        await computation(context);
+        const result = await computation(context);
         this.Destroy(context);
+        return result;
     }
 
     public Destroy(context: Context) {

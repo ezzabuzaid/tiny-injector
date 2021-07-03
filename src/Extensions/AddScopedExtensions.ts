@@ -43,7 +43,7 @@ export abstract class AddScopedExtensions {
      * @param serviceType The type of the service to add.
      * @param implementationType The type of the implementation to use.
      */
-    abstract AddScoped<T extends Type<any>, I extends T>(serviceType: T, implementationType: I): void;
+    abstract AddScoped<T extends Type<any>, I extends ClassType<TypeOf<T>>>(serviceType: T, implementationType: I): void;
     /**
      * Add a scoped service of the type specified in serviceType.
      * 
@@ -55,5 +55,5 @@ export abstract class AddScopedExtensions {
      *
      * @param serviceType The type of the service to add.
      */
-    abstract AddScoped<T extends ClassType<I>, I>(serviceType: T): void;
+    abstract AddScoped<T extends ClassType<any>>(serviceType: T): void;
 }

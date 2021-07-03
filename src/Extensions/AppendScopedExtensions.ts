@@ -37,7 +37,7 @@ export abstract class AppendScopedExtensions {
      * @param serviceType The type of the service to add.
      * @param implementationType The type of the implementation to use.
      */
-    abstract AppendScoped<T, I extends T>(serviceType: T, implementationType: T): void;
+    abstract AppendScoped<T extends Type<any>, I extends ClassType<TypeOf<T>>>(serviceType: T, implementationType: T): void;
     /**
      * Add a singleton service of the type specified in serviceType.
      *

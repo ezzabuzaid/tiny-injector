@@ -1,4 +1,3 @@
-import { ServiceLifetime } from "../ServiceLifetime";
 import { InvalidOperationException } from "./InvalidOperationException";
 
 export class ServiceExistException extends InvalidOperationException {
