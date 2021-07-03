@@ -19,13 +19,13 @@ interface Options {
      * Alias to
      * ```
      * Injector.AddSingleton(Test, MyService)
-     * Injector.Locate(Test) // will return MyService instance
+     * Injector.GetRequiredService(Test) // will return MyService instance
      * ```
      * 
      * if not specifed, the serviceType will be the implementationType
      * ```
      * Injector.AddSingleton(MyService, MyService)
-     * Injector.Locate(MyService) // will return MyService instance
+     * Injector.GetRequiredService(MyService) // will return MyService instance
      * ```
      */
     serviceType?: Type<any>;

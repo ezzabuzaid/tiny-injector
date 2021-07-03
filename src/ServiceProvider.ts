@@ -29,15 +29,15 @@ export class ServiceProvider implements ServiceProviderServiceExtensions {
         }
     }
 
-    GetServices<T>(serviceType: any, context?: any): T[] {
-        const descriptors = this.serviceCollection.GetServiceDescriptors(serviceType);
-        return descriptors.map(descriptor => this.LocateService(descriptor, context));
+    GetServices<T>(serviceTypeOrInjectionToken: any, context?: any): T[] {
+        const descriptors = this.serviceCollection.GetServiceDescriptors(serviceTypeOrInjectionToken);
+        return descriptors.map(descriptor => this.GetImplementation(descriptor, context));
     }
 
 
     GetRequiredService<T>(serviceTypeOrInjectionToken: any, context?: Context): T {
         const descriptors = this.serviceCollection.GetServiceDescriptors(serviceTypeOrInjectionToken);
-        return this.LocateService(lastElement(descriptors), context);
+        return this.GetImplementation(lastElement(descriptors)!, context);
     }
 
     public Create() {
@@ -75,7 +75,7 @@ export class ServiceProvider implements ServiceProviderServiceExtensions {
         this.#contextRegistry.Delete(context)
     }
 
-    private LocateService(descriptor: ServiceDescriptor, context: Context | undefined) {
+    private GetImplementation(descriptor: ServiceDescriptor, context: Context | undefined) {
         switch (descriptor.lifetime) {
             case ServiceLifetime.Singleton:
                 return descriptor.implementation(descriptor, this.singletonContext);

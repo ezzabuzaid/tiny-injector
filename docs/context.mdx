@@ -18,7 +18,7 @@ for instance, there's an internal context used to group all singleton services, 
 class Logger { }
 
 const context = Injector.Create();
-const logger = Injector.Locate(Logger, context);
+const logger = Injector.GetRequiredService(Logger, context);
 
 // Remove the context and everything bound to it.  
 Injector.Destroy(context);
@@ -49,14 +49,14 @@ In this sample, the context created internally and provided as argument, the `ge
 
 the `Destroy` method is no longer needed since it will be called internally immediately after the function execution is done.
 
-notice that we used the `get` method instead of `Locate` , the `get` method is just helper method that uses `Locate` .
+notice that we used the `get` method instead of `GetRequiredService` , the `get` method is just helper method that uses `GetRequiredService` .
 
 ```typescript
 const context = Injector.Create();
 
 const logger = context.get(Logger);
 // equivalent to 
-Injector.Locate(serviceType, context);
+Injector.GetRequiredService(serviceType, context);
 ```
 
 ## Context Extras

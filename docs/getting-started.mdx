@@ -96,7 +96,7 @@ class DataProvider {
 
 Injector.AddSingleton(DataProvider);
 
-const dataProvider = Injector.Locate(DataProvider);
+const dataProvider = Injector.GetRequiredService(DataProvider);
 dataProvider.fetchData();
 ```
 

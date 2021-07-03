@@ -109,7 +109,7 @@ For Singleton there's a context that is used internally, but for Scoped service 
 class SingletonService {}
 Injector.AddSingleton(SingletonService);
 
-const service = Injector.Locate(SingletonService);
+const service = Injector.GetRequiredService(SingletonService);
 ```
 
 ### Scoped
@@ -122,11 +122,11 @@ class ScopedService {}
 Injector.AddScoped(ScopedService); 
 
 const context = Injector.Create(); 
-const scopedService1 = Injector.Locate(ScopedService, context); 
-const scopedService2 = Injector.Locate(ScopedService, context); // return the same instance as above, scopedService1 === scopedService2
+const scopedService1 = Injector.GetRequiredService(ScopedService, context); 
+const scopedService2 = Injector.GetRequiredService(ScopedService, context); // return the same instance as above, scopedService1 === scopedService2
 
 const secondContext = Injector.Create(); 
-const scopedService3 = Injector.Locate(ScopedService, secondContext); // will return new instance
+const scopedService3 = Injector.GetRequiredService(ScopedService, secondContext); // will return new instance
 ```
 
 Don't forgot to destroy the context when you done using it.
@@ -145,7 +145,7 @@ class TransientService {
     constructor() { }
 }
 
-const transientService = Injector.Locate(TransientService); 
+const transientService = Injector.GetRequiredService(TransientService); 
 ```
 
 In case you did inject a *Scoped* service into a *Transient* service, you'll have to provide context, otherwise `LifestyleMismatchException` will be thrown.
@@ -166,12 +166,12 @@ class TransientService {
 }
 
 // Will throw an exception
-const transientService = Injector.Locate(TransientService);
+const transientService = Injector.GetRequiredService(TransientService);
 
 // works fine.
 const context = Injector.Create();
-const logger1 = Injector.Locate(TransientService, context);
-const logger2 = Injector.Locate(TransientService, context);
+const logger1 = Injector.GetRequiredService(TransientService, context);
+const logger2 = Injector.GetRequiredService(TransientService, context);
 
 /**
  * Now, logger1 and logger2 are different instances but, 
@@ -195,7 +195,7 @@ class WarningLogger extends Logger { }
 Injector.AppendSingleton(Logger, InformativeLogger);
 Injector.AppendSingleton(Logger, WarningLogger);
 
-Injector.Locate({serviceType: Logger, multiple: true, context: /** In case of Scoped or Transient */});
+Injector.GetRequiredService({serviceType: Logger, multiple: true, context: /** In case of Scoped or Transient */});
 ```
 
 ## Lifetime and registration options
@@ -239,7 +239,7 @@ class Application {
 }
 
 const context = Injector.Create();
-const app = Injector.Locate(Application, context);
+const app = Injector.GetRequiredService(Application, context);
 
 console.log(app.transientOperation1.operationId === app.transientOperation2.operationId); // false
 

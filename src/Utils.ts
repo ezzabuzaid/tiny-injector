@@ -25,8 +25,8 @@ export function notNullOrUndefined<T>(value: T): value is Exclude<T, null | unde
     return !isNullOrUndefined(value);
 }
 
-export function lastElement<T>(list: T[]): T {
-    return list[list.length - 1] as T;
+export function lastElement<T>(list: T[]): T | undefined {
+    return list[list.length - 1];
 }
 /**
  * Check if error is instanceOf type but not any of it's parent

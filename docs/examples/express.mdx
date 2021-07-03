@@ -29,7 +29,7 @@ application.use((req, res, next) => {
     // Helper function to be able to retrieve services easily
     req.locate = (serviceType) => context.get(serviceType);
     // Or
-    req.locate = (serviceType) => Injector.Locate(serviceType, context);
+    req.locate = (serviceType) => Injector.GetRequiredService(serviceType, context);
     next();
 });
 ```
