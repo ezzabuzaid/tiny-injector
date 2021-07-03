@@ -52,7 +52,7 @@ Injector.AddSingleton(Application);
 
 The sample declares `Logger` abstract class and register it as Singleton with two concrete implementation.
 
-The `@Inject` decorator is requried to get array of implementations for a service type but also you have to make sure that the type of parameter is Array as `Logger[]` or `Array<Logger>`
+The `@Inject` decorator is required to get array of implementations for a service type but also you have to make sure that the type of parameter is Array as `Logger[]` or `Array<Logger>`
 
 ```typescript
 @Injectable()
@@ -63,7 +63,7 @@ class Application {
 }
 ```
 
-if the array type omitted the last registerd implementation will be returned.
+if the array type omitted the last registered implementation will be returned.
 
 ### Injecting context
 
@@ -94,7 +94,7 @@ class Service {
 
 ```
 
-Another approche where you use service locator approche to get the requested instance
+Another approache where you use service locator approache to get the requested instance
 
 ## Locating A Service
 
@@ -281,4 +281,4 @@ class Application {
 
 * Last implementation will always returned if you don't use array type.
 
-* Inject `Context` to resolve deffered dependencies.
+* Inject `Context` to resolve deferred dependencies.

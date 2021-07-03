@@ -1,10 +1,11 @@
 {
     "name": "Tiny Injector",
     "noindex": false,
+    "twitter": "ezzabuzaid",
     "sidebar": [
         [
             "Overview",
-            "/"
+            "/index.mdx"
         ],
         [
             "Getting Started",
@@ -40,7 +41,12 @@
         ],
         [
             "Examples",
-            "/examples"
+            [
+                [
+                    "Express",
+                    "/examples"
+                ]
+            ]
         ]
     ]
 }
