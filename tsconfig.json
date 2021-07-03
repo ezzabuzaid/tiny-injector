@@ -1,10 +1,5 @@
 {
   "compileOnSave": true,
-  "exclude": [
-    "node_modules",
-    "dist",
-    "__test__"
-  ],
   "compilerOptions": {
     "incremental": true,
     "target": "ES2015",
@@ -37,5 +32,5 @@
     "emitDecoratorMetadata": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true
-  },
+  }
 }

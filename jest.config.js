@@ -11,4 +11,9 @@ module.exports = {
     },
     "clearMocks": true,
     "resetMocks": true,
+    globals: {
+        'ts-jest': {
+            tsconfig: 'tsconfig.test.json'
+        }
+    }
 }

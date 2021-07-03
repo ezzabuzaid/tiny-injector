@@ -6,9 +6,9 @@
   "scripts": {
     "test": "jest --runInBand --detectOpenHandles",
     "test:majestic": "majestic",
-    "watch": "tsc --watch",
+    "watch": "tsc  --project tsconfig.app.json --watch",
     "release": "dotenv release-it",
-    "build": "tsc",
+    "build": "tsc --project tsconfig.app.json",
     "start": "ts-node src/index.ts",
     "prebuild": "del ./dist/",
     "postbuild": "cpy 'README.md' 'package*.json' ./dist/ --no-overwrite --parents"
