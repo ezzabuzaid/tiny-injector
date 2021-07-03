@@ -1,9 +1,7 @@
-import { AbstractServiceCollection, LocateOptions } from "./AbstractServiceCollection";
+import { AbstractServiceCollection } from "./AbstractServiceCollection";
 import { Context } from "./Context";
-import { AddScopedExtensions, AddSingletonExtensions, AddTransientExtensions, AppendScopedExtensions, AppendSingletonExtensions, AppendTransientExtensions, CreateExtensions, DestroyServiceExtensions, GetServiceExtensions, ReplaceScopedExtensions, ReplaceSingletonExtensions, ReplaceTransientExtensions } from "./Extensions";
-import { InjectionToken } from "./InjectionToken";
+import { AddScopedExtensions, AddSingletonExtensions, AddTransientExtensions, AppendScopedExtensions, AppendSingletonExtensions, AppendTransientExtensions, ReplaceScopedExtensions, ReplaceSingletonExtensions, ReplaceTransientExtensions, ServiceProviderServiceExtensions } from "./Extensions";
 import RootServiceCollection from "./RootServiceCollection";
-import { Type } from "./Types";
 
 
 type Extensions =
@@ -16,9 +14,7 @@ type Extensions =
     ReplaceSingletonExtensions &
     ReplaceTransientExtensions &
     ReplaceScopedExtensions &
-    CreateExtensions &
-    GetServiceExtensions &
-    DestroyServiceExtensions;
+    ServiceProviderServiceExtensions;
 
 type Of = {
     Of(serviceCollection: AbstractServiceCollection): Extensions;
@@ -40,18 +36,6 @@ class _Injector implements Extensions {
 
     ReplaceSingleton(serviceType: any, implementationType?: any): void {
         this.serviceCollection.ReplaceSingleton(serviceType, implementationType);
-    }
-
-    Remove(serviceType: Type<any>): void {
-        this.serviceCollection.Remove(serviceType);
-    }
-
-    GetRequiredService(serviceType: any, context?: any) {
-        return this.serviceProvider.GetRequiredService(serviceType, context);
-    }
-
-    GetService(serviceTypeOrOptions: Type<any> | InjectionToken<any> | LocateOptions, context?: Context) {
-        return this.serviceProvider.GetService(serviceTypeOrOptions, context);
     }
 
     AppendTransient(serviceType: any, implementation?: any) {
@@ -78,18 +62,29 @@ class _Injector implements Extensions {
         this.serviceCollection.AddTransient(serviceType, implementation);
     }
 
-    CreateScope(computation: (context: Context) => void | Promise<void>): Promise<void> {
-        return this.serviceProvider.CreateScope(computation);
+    GetRequiredService<T>(injectionToken: any, context?: any): T {
+        return this.serviceProvider.GetRequiredService(injectionToken, context);
     }
 
-    Create(): Context {
-        return this.serviceProvider.Create()
+    GetService<T>(injectionToken: any, context?: any): T | null {
+        return this.serviceProvider.GetService(injectionToken, context);
+    }
+
+    GetServices<T>(serviceType: any, context?: any): T[] {
+        return this.serviceProvider.GetServices(serviceType, context);
+    }
+
+    CreateScope<T>(computation: (context: Context) => T | Promise<T>): Promise<T> {
+        return this.serviceProvider.CreateScope(computation);
     }
 
     Destroy(context: Context): void {
         return this.serviceProvider.Destroy(context);
     }
 
+    Create(): Context {
+        return this.serviceProvider.Create();
+    }
 }
 export const Injector: Extensions & Of = new _Injector(RootServiceCollection) as any;
 

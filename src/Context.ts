@@ -1,6 +1,6 @@
 import { Injector } from "./Injector";
-import { InjectionToken } from "./InjectionToken";
-import { Type } from "./Types";
+import { InjectionToken, InjectionTokenGenericParam } from "./InjectionToken";
+import { Type, TypeOf } from "./Types";
 
 export class Context {
     #extras = new Map<string, any>();
@@ -9,7 +9,9 @@ export class Context {
         Object.seal(this);
     }
 
-    get<T>(serviceType: Type<T> | InjectionToken<T>): T {
+    get<T extends InjectionToken<any>>(serviceType: T): InjectionTokenGenericParam<T>;
+    get<T extends Type<any>>(serviceType: T): TypeOf<T>;
+    get<T>(serviceType: any) {
         return Injector.GetRequiredService<T>(serviceType, this);
     }
 

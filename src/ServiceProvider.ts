@@ -1,15 +1,13 @@
-import { AbstractServiceCollection, LocateOptions } from "./AbstractServiceCollection";
+import { AbstractServiceCollection } from "./AbstractServiceCollection";
 import { Context } from "./Context";
 import { ContextRegistry } from "./ContextRegistry";
 import { ArgumentException, InvalidOperationException, ServiceNotFoundException } from "./Exceptions";
-import { CreateExtensions, GetServiceExtensions } from "./Extensions";
-import { InjectionToken } from "./InjectionToken";
+import { ServiceProviderServiceExtensions } from "./Extensions";
 import { ServiceDescriptor } from "./ServiceDescriptor";
 import { ServiceLifetime } from "./ServiceLifetime";
-import { Type } from "./Types";
-import { isConstructor, isTypeOf, lastElement } from "./Utils";
+import { isTypeOf, lastElement } from "./Utils";
 
-export class ServiceProvider implements CreateExtensions, GetServiceExtensions {
+export class ServiceProvider implements ServiceProviderServiceExtensions {
     #contextRegistry = ContextRegistry.GetInstance();
     #singletonContext?: Context;
 
@@ -20,33 +18,26 @@ export class ServiceProvider implements CreateExtensions, GetServiceExtensions {
     constructor(private serviceCollection: AbstractServiceCollection) {
     }
 
-    public GetService(serviceTypeOrOptions: Type<any> | InjectionToken<any> | LocateOptions, context?: Context): any | any[] {
+    GetService<T>(serviceTypeOrInjectionToken: any, context?: Context): T | null {
         try {
-            return this.GetRequiredService(serviceTypeOrOptions, context);
+            return this.GetRequiredService(serviceTypeOrInjectionToken, context);
         } catch (error) {
             if (!isTypeOf(error, ServiceNotFoundException)) {
                 throw error;
             }
+            return null;
         }
     }
 
-    public GetRequiredService(serviceTypeOrOptions: Type<any> | InjectionToken<any> | LocateOptions, context?: Context): any | any[] {
-        let options: LocateOptions;
-        if (isConstructor(serviceTypeOrOptions) || isTypeOf(serviceTypeOrOptions, InjectionToken)) {
-            options = {
-                serviceType: serviceTypeOrOptions,
-                multiple: false,
-                context: context
-            };
-        } else {
-            options = serviceTypeOrOptions as typeof options;
-        }
-        const descriptors = this.serviceCollection.GetServiceDescriptors(options.serviceType);
-        if (options.multiple) {
-            return descriptors.map(descriptor => this.LocateService(descriptor, options.context));
-        }
-        return this.LocateService(lastElement(descriptors), options.context);
+    GetServices<T>(serviceType: any, context?: any): T[] {
+        const descriptors = this.serviceCollection.GetServiceDescriptors(serviceType);
+        return descriptors.map(descriptor => this.LocateService(descriptor, context));
+    }
 
+
+    GetRequiredService<T>(serviceTypeOrInjectionToken: any, context?: Context): T {
+        const descriptors = this.serviceCollection.GetServiceDescriptors(serviceTypeOrInjectionToken);
+        return this.LocateService(lastElement(descriptors), context);
     }
 
     public Create() {

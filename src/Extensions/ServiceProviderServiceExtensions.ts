@@ -1,4 +1,3 @@
-import { GetServiceOptions } from "AbstractServiceCollection";
 import { Context } from "../Context";
 import { InjectionToken } from "../InjectionToken";
 import { Type } from "../Types";
@@ -56,24 +55,13 @@ export abstract class ServiceProviderServiceExtensions {
     abstract GetRequiredService<T>(injectionToken: InjectionToken<T>, context: Context): T;
 
     /**
-     * Get service or multiple services of type `serviceTypeOrOptions.serviceType`.
-     *
-     * @param serviceTypeOrOptions An option object that have the information about what to return.
-     *
-     * @throws {ServiceNotFoundException} in case no service of type `serviceTypeOrOptions.serviceType` is registered.
-     *
-     * @returns A service of type `serviceTypeOrOptions.serviceType`.
-     */
-    abstract GetRequiredService<T>(serviceTypeOrOptions: GetServiceOptions<T>): T[];
-
-    /**
      * Get service of type serviceType.
      * 
      * @param serviceType The type of the service to get.
      * 
      * @returns A service of type serviceType or null if there is no such service.
      */
-    abstract GetService<T>(serviceType: Type<T>): T;
+    abstract GetService<T>(serviceType: Type<T>): T | null;
 
     /**
      * Get return value of `InjectionToken` implementationFactory.
@@ -82,7 +70,7 @@ export abstract class ServiceProviderServiceExtensions {
      *
      * @returns Return value of implementationFactory or null if there is no such service.
      */
-    abstract GetService<T>(injectionToken: InjectionToken<T>): T;
+    abstract GetService<T>(injectionToken: InjectionToken<T>): T | null;
 
     /**
      * Get service of type serviceType that is bound to that context.
@@ -94,7 +82,7 @@ export abstract class ServiceProviderServiceExtensions {
      *
      * @returns A scoped service of type serviceType or null if there is no such service.
      */
-    abstract GetService<T>(serviceType: Type<T>, context: Context): T;
+    abstract GetService<T>(serviceType: Type<T>, context: Context): T | null;
 
     /**
      * Get return value of `InjectionToken` implementationFactory.
@@ -106,16 +94,7 @@ export abstract class ServiceProviderServiceExtensions {
      *
      * @returns Return value of implementationFactory or null if there is no such service.
      */
-    abstract GetService<T>(injectionToken: InjectionToken<T>, context: Context): T;
-
-    /**
-     * Get service or multiple services of type `serviceTypeOrOptions.serviceType`.
-     *
-     * @param serviceTypeOrOptions An option object that have the information about what to return.
-     *
-     * @returns A service of type `serviceTypeOrOptions.serviceType` or null if there is no such service.
-     */
-    abstract GetService<T>(serviceTypeOrOptions: GetServiceOptions<T>): T[];
+    abstract GetService<T>(injectionToken: InjectionToken<T>, context: Context): T | null;
 
     /**
      * Get array of services of type serviceType.
@@ -141,5 +120,21 @@ export abstract class ServiceProviderServiceExtensions {
      * @returns An array of services of type serviceType
      */
     abstract GetServices<T>(serviceType: Type<T>, context: Context): T[];
+
+    /**
+     * Create a context and immediately destroy it after computation is done.
+     * 
+     * @returns return value of `computation`
+     *
+     * @param computation
+     */
+    abstract CreateScope<T>(computation: (context: Context) => Promise<T> | T): Promise<T>;
+
+    /**
+     * Create context
+     */
+    abstract Create(): Context;
+
+    abstract Destroy(context: Context): void;
 
 }

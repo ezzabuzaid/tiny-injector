@@ -19,7 +19,7 @@ import { isArrowFn, isConstructor, isNullOrUndefined, isTypeOf, lastElement, not
 
 export class ServiceCollection extends AbstractServiceCollection {
 
-    #serviceCollection = new Map<Type<any>, ServiceDescriptor[]>();
+    #serviceTypeToServiceDescriptor = new Map<Type<any>, ServiceDescriptor[]>();
     #toBeCreatedServices = new Map<Type<any>, Type<any>>();
     #serviceProvider!: ServiceProvider;
 
@@ -65,7 +65,7 @@ export class ServiceCollection extends AbstractServiceCollection {
     private AddService<T>(serviceType: Type<T>, implementation: ClassType<T> | ImplementationFactory<T>, lifetime: ServiceLifetime): void {
         this.ValidateService(serviceType, implementation);
 
-        const currentDescriptors = this.#serviceCollection.get(serviceType);
+        const currentDescriptors = this.#serviceTypeToServiceDescriptor.get(serviceType);
         if (currentDescriptors) {
             const descriptor = currentDescriptors[0] as ServiceDescriptor;
             throw new ServiceExistException(
@@ -75,9 +75,9 @@ export class ServiceCollection extends AbstractServiceCollection {
         }
         const descriptor = this.MakeServiceDescriptor(serviceType, implementation, lifetime);
 
-        const descriptors = this.#serviceCollection.get(serviceType) ?? [];
+        const descriptors = this.#serviceTypeToServiceDescriptor.get(serviceType) ?? [];
         descriptors.push(descriptor);
-        this.#serviceCollection.set(serviceType, descriptors);
+        this.#serviceTypeToServiceDescriptor.set(serviceType, descriptors);
 
         const parentServiceType = this.#toBeCreatedServices.get(serviceType);
         if (parentServiceType) {
@@ -104,27 +104,20 @@ export class ServiceCollection extends AbstractServiceCollection {
         }
     }
 
-    /**
-     * @internal
-     */
     private AppendService<T>(serviceType: Type<T>, implementation: ClassType<T> | ImplementationFactory<T>, lifetime: ServiceLifetime): void {
         this.ValidateService(serviceType, implementation);
 
         const descriptor = this.MakeServiceDescriptor(serviceType, implementation, lifetime);
 
-        const descriptors = this.#serviceCollection.get(serviceType) ?? [];
+        const descriptors = this.#serviceTypeToServiceDescriptor.get(serviceType) ?? [];
         descriptors.push(descriptor);
-        this.#serviceCollection.set(serviceType, descriptors);
+        this.#serviceTypeToServiceDescriptor.set(serviceType, descriptors);
     }
 
-    /**
-     * @internal
-     * 
-     */
     private ReplaceService<T>(serviceType: Type<T>, implementation: ClassType<T> | ImplementationFactory<T>, lifetime: ServiceLifetime): void {
         this.ValidateService(serviceType, implementation);
 
-        const descriptors = this.#serviceCollection.get(serviceType);
+        const descriptors = this.#serviceTypeToServiceDescriptor.get(serviceType);
         if (isNullOrUndefined(descriptors)) {
             throw new ServiceNotFoundException(serviceType.name);
         }
@@ -135,11 +128,11 @@ export class ServiceCollection extends AbstractServiceCollection {
     }
 
     public Remove<T>(serviceType: Type<T>) {
-        this.#serviceCollection.delete(serviceType);
+        this.#serviceTypeToServiceDescriptor.delete(serviceType);
     }
 
     public GetServiceDescriptors<T>(serviceType: Type<T>) {
-        const descriptor = this.#serviceCollection.get(serviceType);
+        const descriptor = this.#serviceTypeToServiceDescriptor.get(serviceType);
         if (isNullOrUndefined(descriptor)) {
             throw new ServiceNotFoundException(serviceType.name);
         }
@@ -232,7 +225,11 @@ export class ServiceCollection extends AbstractServiceCollection {
                 if (lifetime === ServiceLifetime.Transient && !(context instanceof Context)) {
                     this.ValidateTransientLifetime(serviceType, argumentType);
                 }
-                return this.#serviceProvider.GetRequiredService({ serviceType: argumentType, multiple: token === Array, context })
+                if (token === Array) {
+                    return this.#serviceProvider.GetServices(argumentType, context);
+                } else {
+                    return this.#serviceProvider.GetRequiredService(argumentType, context);
+                }
             }));
         }
     }

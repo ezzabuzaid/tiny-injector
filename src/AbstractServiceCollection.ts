@@ -62,9 +62,7 @@ export abstract class AbstractServiceCollection implements
 
     public abstract BuildServiceProvider(): ServiceProvider;
 
-    public abstract GetServiceDescriptors<T>(serviceType: Type<T>): ServiceDescriptor[];
+    public abstract GetServiceDescriptors<T>(serviceType: Type<T> | InjectionToken<any>): ServiceDescriptor[];
 
     public abstract Remove(serviceType: Type<any>): void;
 }
-
-export type LocateOptions = { serviceType: Type<any>, multiple: boolean, context?: Context };

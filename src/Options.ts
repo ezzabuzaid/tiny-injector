@@ -1,4 +1,4 @@
-export class InjectorOptions {
+export class ServiceProviderOptions {
     constructor(
         public disableSingletonLifetimeValidation: boolean,
         public disableTransientLifetimeValidation: boolean,
