@@ -4,6 +4,6 @@ export class ServiceNotFoundException extends InvalidOperationException {
     constructor(
         serviceTypeName: string,
     ) {
-        super(`Unable to resolve service for type ${ serviceTypeName }`);
+        super(`There is no service of type ${ serviceTypeName }`);
     }
 }

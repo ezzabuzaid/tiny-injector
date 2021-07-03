@@ -1,7 +1,7 @@
 import { ClassType, Type } from "./Types";
 
 
-export function isConstructor<T = Type<any>>(value: any): value is T {
+export function isConstructor(value: any): value is Type<any> {
     if (isNullOrUndefined(value)) {
         return false;
     }
