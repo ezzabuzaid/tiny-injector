@@ -7,4 +7,7 @@ export * from './AppendTransientExtensions';
 export * from './CreateExtensions';
 export * from './DestroyServiceExtensions';
 export * from './GetServiceExtensions';
+export * from './ReplaceSingletonExtensions';
+export * from './ReplaceScopedExtensions';
+export * from './ReplaceTransientExtensions';
 

@@ -1,6 +1,6 @@
 import { AbstractServiceCollection, LocateOptions } from "./AbstractServiceCollection";
 import { Context } from "./Context";
-import { AddScopedExtensions, AddSingletonExtensions, AddTransientExtensions, AppendScopedExtensions, AppendSingletonExtensions, AppendTransientExtensions, CreateExtensions, DestroyServiceExtensions, GetServiceExtensions } from "./Extensions";
+import { AddScopedExtensions, AddSingletonExtensions, AddTransientExtensions, AppendScopedExtensions, AppendSingletonExtensions, AppendTransientExtensions, CreateExtensions, DestroyServiceExtensions, GetServiceExtensions, ReplaceScopedExtensions, ReplaceSingletonExtensions, ReplaceTransientExtensions } from "./Extensions";
 import { InjectionToken } from "./InjectionToken";
 import RootServiceCollection from "./RootServiceCollection";
 import { Type } from "./Types";
@@ -13,9 +13,12 @@ type Extensions =
     AppendScopedExtensions &
     AppendSingletonExtensions &
     AppendTransientExtensions &
+    ReplaceSingletonExtensions &
+    ReplaceTransientExtensions &
+    ReplaceScopedExtensions &
     CreateExtensions &
-    GetServiceExtensions
-    & DestroyServiceExtensions;
+    GetServiceExtensions &
+    DestroyServiceExtensions;
 
 type Of = {
     Of(serviceCollection: AbstractServiceCollection): Extensions;
@@ -26,6 +29,18 @@ class _Injector implements Extensions {
     constructor(
         private serviceCollection: AbstractServiceCollection
     ) { }
+
+    ReplaceTransient(serviceType: any, implementationType?: any): void {
+        this.serviceCollection.ReplaceTransient(serviceType, implementationType);
+    }
+
+    ReplaceScoped(serviceType: any, implementationType?: any): void {
+        this.serviceCollection.ReplaceScoped(serviceType, implementationType);
+    }
+
+    ReplaceSingleton(serviceType: any, implementationType?: any): void {
+        this.serviceCollection.ReplaceSingleton(serviceType, implementationType);
+    }
 
     Remove(serviceType: Type<any>): void {
         this.serviceCollection.Remove(serviceType);
@@ -75,17 +90,9 @@ class _Injector implements Extensions {
         return this.serviceProvider.Destroy(context);
     }
 
-
-    // static of(serviceCollection: AbstractServiceCollection): Extensions {
-    //     return new _Injector(serviceCollection);
-    // }
-
-    // Of(serviceCollection: AbstractServiceCollection) {
-    //     return new _Injector(serviceCollection);
-    // }
-
 }
 export const Injector: Extensions & Of = new _Injector(RootServiceCollection) as any;
+
 
 Injector.Of = (serviceCollection: AbstractServiceCollection) => {
     return new _Injector(serviceCollection);

@@ -23,38 +23,46 @@ export class ServiceCollection extends AbstractServiceCollection {
     #toBeCreatedServices = new Map<Type<any>, Type<any>>();
     #serviceProvider!: ServiceProvider;
 
-    AppendTransient(serviceType: any, implementation?: any) {
+    public ReplaceScoped(serviceType: any, implementationType?: any): void {
+        this.ReplaceService(serviceType, implementationType, ServiceLifetime.Scoped);
+    }
+
+    public ReplaceTransient(serviceType: any, implementationType?: any): void {
+        this.ReplaceService(serviceType, implementationType, ServiceLifetime.Transient);
+    }
+
+    public ReplaceSingleton(serviceType: any, implementationType?: any): void {
+        this.ReplaceService(serviceType, implementationType, ServiceLifetime.Singleton);
+    }
+
+    public AppendTransient(serviceType: any, implementation?: any) {
         this.AppendService(serviceType, implementation, ServiceLifetime.Transient);
     }
 
-    AppendSingleton(serviceType: any, implementation?: any) {
+    public AppendSingleton(serviceType: any, implementation?: any) {
         this.AppendService(serviceType, implementation, ServiceLifetime.Singleton);
     }
 
-    AppendScoped(serviceType: any, implementation?: any) {
+    public AppendScoped(serviceType: any, implementation?: any) {
         this.AppendService(serviceType, implementation, ServiceLifetime.Scoped);
     }
 
-    AddScoped(serviceType: any, implementation?: any) {
+    public AddScoped(serviceType: any, implementation?: any) {
         this.AddService(serviceType, implementation, ServiceLifetime.Scoped);
     }
 
-    AddSingleton(serviceType: any, implementation?: any) {
+    public AddSingleton(serviceType: any, implementation?: any) {
         this.AddService(serviceType, implementation, ServiceLifetime.Singleton);
     }
 
-    AddTransient(serviceType: any, implementation?: any) {
+    public AddTransient(serviceType: any, implementation?: any) {
         this.AddService(serviceType, implementation, ServiceLifetime.Transient);
-    }
-
-    HasService(serviceType: Type<any>): boolean {
-        return this.#serviceCollection.has(serviceType);
     }
 
     /**
      * @internal
      */
-    public AddService<T>(serviceType: Type<T>, implementation: ClassType<T> | ImplementationFactory<T>, lifetime: ServiceLifetime): void {
+    private AddService<T>(serviceType: Type<T>, implementation: ClassType<T> | ImplementationFactory<T>, lifetime: ServiceLifetime): void {
         this.ValidateService(serviceType, implementation);
 
         const currentDescriptors = this.#serviceCollection.get(serviceType);
@@ -86,7 +94,7 @@ export class ServiceCollection extends AbstractServiceCollection {
     /**
      * @internal
      */
-    public TryAddService<T>(serviceType: Type<T>, implementation: ClassType<T> | ImplementationFactory<T>, lifetime: ServiceLifetime): void {
+    private TryAddService<T>(serviceType: Type<T>, implementation: ClassType<T> | ImplementationFactory<T>, lifetime: ServiceLifetime): void {
         try {
             this.AddService(serviceType, implementation, lifetime);
         } catch (error) {
@@ -99,7 +107,7 @@ export class ServiceCollection extends AbstractServiceCollection {
     /**
      * @internal
      */
-    public AppendService<T>(serviceType: Type<T>, implementation: ClassType<T> | ImplementationFactory<T>, lifetime: ServiceLifetime): void {
+    private AppendService<T>(serviceType: Type<T>, implementation: ClassType<T> | ImplementationFactory<T>, lifetime: ServiceLifetime): void {
         this.ValidateService(serviceType, implementation);
 
         const descriptor = this.MakeServiceDescriptor(serviceType, implementation, lifetime);
@@ -113,10 +121,17 @@ export class ServiceCollection extends AbstractServiceCollection {
      * @internal
      * 
      */
-    public ReplaceService<T>(serviceType: Type<T>, implementation: ClassType<T> | ImplementationFactory<T>, lifetime: ServiceLifetime): void {
+    private ReplaceService<T>(serviceType: Type<T>, implementation: ClassType<T> | ImplementationFactory<T>, lifetime: ServiceLifetime): void {
         this.ValidateService(serviceType, implementation);
 
-        const descriptor = this.MakeServiceDescriptor(serviceType, implementation, lifetime);
+        const descriptors = this.#serviceCollection.get(serviceType);
+        if (isNullOrUndefined(descriptors)) {
+            throw new ServiceNotFoundException(serviceType.name);
+        }
+
+        this.Remove(serviceType);
+
+        this.AddService(serviceType, implementation, lifetime);
     }
 
     public Remove<T>(serviceType: Type<T>) {
