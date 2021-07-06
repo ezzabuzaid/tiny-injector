@@ -172,7 +172,7 @@ export class ServiceCollection extends AbstractServiceCollection {
             const argumentType = injectMetadata?.serviceType ?? token
             let descriptor: ServiceDescriptor;
             try {
-                descriptor = lastElement(this.GetServiceDescriptors(argumentType));
+                descriptor = lastElement(this.GetServiceDescriptors(argumentType))!;
             } catch (error) {
                 this.#toBeCreatedServices.set(argumentType, serviceType);
                 // throw new ActivationFailedException(argumentType, serviceType);
@@ -181,7 +181,7 @@ export class ServiceCollection extends AbstractServiceCollection {
 
             // Only other Singleton services can be injected in Singleton service
             if (descriptor.lifetime !== ServiceLifetime.Singleton) {
-                const serviceTypeDescriptor = lastElement(this.GetServiceDescriptors(serviceType));
+                const serviceTypeDescriptor = lastElement(this.GetServiceDescriptors(serviceType))!;
                 throw new LifestyleMismatchException({
                     serviceType: serviceType,
                     injectedServiceType: argumentType,
@@ -257,13 +257,13 @@ export class ServiceCollection extends AbstractServiceCollection {
     private ValidateTransientLifetime(serviceType: Type<any>, argumentType: Type<any>) {
         let descriptor: ServiceDescriptor;
         try {
-            descriptor = lastElement(this.GetServiceDescriptors(argumentType));
+            descriptor = lastElement(this.GetServiceDescriptors(argumentType))!;
         } catch (error) {
             throw new ActivationFailedException(argumentType, serviceType);
         }
 
         if (descriptor.lifetime === ServiceLifetime.Scoped) {
-            const serviceTypeDescriptor = lastElement(this.GetServiceDescriptors(serviceType));
+            const serviceTypeDescriptor = lastElement(this.GetServiceDescriptors(serviceType))!;
             throw new LifestyleMismatchException({
                 serviceType: serviceType,
                 injectedServiceType: argumentType,
