@@ -1,5 +1,5 @@
 import { Context } from "../Context";
-import { ClassType, Type, TypeOf } from "../Types";
+import { ClassType, ServiceType, TypeOf } from "../Types";
 
 
 export abstract class AppendSingletonExtensions {
@@ -21,7 +21,7 @@ export abstract class AppendSingletonExtensions {
      * @param implementationFactory the factory that creates the service.
      * 
      */
-    abstract AppendSingleton<T extends Type<any>>(serviceType: T, implementationFactory: (context: Context) => TypeOf<T>): void;
+    abstract AppendSingleton<T extends ServiceType<any>>(serviceType: T, implementationFactory: (context: Context) => TypeOf<T>): void;
     /**
      * Appends a singleton service of the type specified in serviceType with an implementation of the type specified in implementationType.
      * 
@@ -38,7 +38,7 @@ export abstract class AppendSingletonExtensions {
      * @param serviceType The type of the service to add.
      * @param implementationType The type of the implementation to use.
      */
-    abstract AppendSingleton<T extends Type<any>, I extends ClassType<TypeOf<T>>>(serviceType: T, implementationType: T): void;
+    abstract AppendSingleton<T extends ServiceType<any>, I extends ClassType<TypeOf<T>>>(serviceType: T, implementationType: T): void;
     /**
      * Appends a singleton service of the type specified in serviceType.
      *

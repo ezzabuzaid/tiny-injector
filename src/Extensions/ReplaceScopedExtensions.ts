@@ -1,6 +1,6 @@
 import { Context } from "../Context";
 import { InjectionToken, InjectionTokenGenericParam } from "../InjectionToken";
-import { ClassType, Type, TypeOf } from "../Types";
+import { ClassType, ServiceType, TypeOf } from "../Types";
 
 
 export abstract class ReplaceScopedExtensions {
@@ -16,7 +16,7 @@ export abstract class ReplaceScopedExtensions {
      * @param serviceType The type of the service to replace.
      * @param implementationType The type of the implementation to use.
      */
-    abstract ReplaceScoped<T extends Type<any>, I extends ClassType<TypeOf<T>>>(serviceType: T, implementationType: I): void;
+    abstract ReplaceScoped<T extends ServiceType<any>, I extends ClassType<TypeOf<T>>>(serviceType: T, implementationType: I): void;
 
     /**
      * Replace scoped service of the type specified in serviceType with a factory specified in implementationFactory.
@@ -30,7 +30,7 @@ export abstract class ReplaceScopedExtensions {
      * @param implementationFactory the factory that creates the service.
      * 
      */
-    abstract ReplaceScoped<T extends Type<any>>(serviceType: T, implementationFactory: (context: Context) => TypeOf<T>): void;
+    abstract ReplaceScoped<T extends ServiceType<any>>(serviceType: T, implementationFactory: (context: Context) => TypeOf<T>): void;
 
     /**
      * Replace a scoped service of the injection token with a factory specified in implementationFactory.

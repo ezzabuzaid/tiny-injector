@@ -1,6 +1,6 @@
 import { Context } from "../Context";
 import { InjectionToken, InjectionTokenGenericParam } from "../InjectionToken";
-import { ClassType, Type, TypeOf } from "../Types";
+import { ClassType, ServiceType, TypeOf } from "../Types";
 
 
 export abstract class ReplaceTransientExtensions {
@@ -16,7 +16,7 @@ export abstract class ReplaceTransientExtensions {
      * @param serviceType The type of the service to replace.
      * @param implementationType The type of the implementation to use.
      */
-    abstract ReplaceTransient<T extends Type<any>, I extends ClassType<TypeOf<T>>>(serviceType: T, implementationType: I): void;
+    abstract ReplaceTransient<T extends ServiceType<any>, I extends ClassType<TypeOf<T>>>(serviceType: T, implementationType: I): void;
 
     /**
      * Replace singleton service of the type specified in serviceType with a factory specified in implementationFactory.
@@ -30,7 +30,7 @@ export abstract class ReplaceTransientExtensions {
      * @param implementationFactory the factory that creates the service.
      * 
      */
-    abstract ReplaceTransient<T extends Type<any>>(serviceType: T, implementationFactory: (context: Context) => TypeOf<T>): void;
+    abstract ReplaceTransient<T extends ServiceType<any>>(serviceType: T, implementationFactory: (context: Context) => TypeOf<T>): void;
 
     /**
      * Replace a singleton service of the injection token with a factory specified in implementationFactory.

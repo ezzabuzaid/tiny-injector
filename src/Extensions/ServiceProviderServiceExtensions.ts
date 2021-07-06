@@ -1,6 +1,6 @@
 import { Context } from "../Context";
 import { InjectionToken } from "../InjectionToken";
-import { Type } from "../Types";
+import { ServiceType } from "../Types";
 
 export abstract class ServiceProviderServiceExtensions {
 
@@ -13,7 +13,7 @@ export abstract class ServiceProviderServiceExtensions {
      * 
      * @returns A service of type serviceType.
      */
-    abstract GetRequiredService<T>(serviceType: Type<T>): T;
+    abstract GetRequiredService<T>(serviceType: ServiceType<T>): T;
 
     /**
      * Get return value of `InjectionToken` implementationFactory.
@@ -38,7 +38,7 @@ export abstract class ServiceProviderServiceExtensions {
      *
      * @returns A scoped service of type serviceType.
      */
-    abstract GetRequiredService<T>(serviceType: Type<T>, context: Context): T;
+    abstract GetRequiredService<T>(serviceType: ServiceType<T>, context: Context): T;
 
     /**
      * Get return value of `InjectionToken` implementationFactory.
@@ -61,7 +61,7 @@ export abstract class ServiceProviderServiceExtensions {
      * 
      * @returns A service of type serviceType or null if there is no such service.
      */
-    abstract GetService<T>(serviceType: Type<T>): T | null;
+    abstract GetService<T>(serviceType: ServiceType<T>): T | null;
 
     /**
      * Get return value of `InjectionToken` implementationFactory.
@@ -82,7 +82,7 @@ export abstract class ServiceProviderServiceExtensions {
      *
      * @returns A scoped service of type serviceType or null if there is no such service.
      */
-    abstract GetService<T>(serviceType: Type<T>, context: Context): T | null;
+    abstract GetService<T>(serviceType: ServiceType<T>, context: Context): T | null;
 
     /**
      * Get return value of `InjectionToken` implementationFactory.
@@ -105,7 +105,7 @@ export abstract class ServiceProviderServiceExtensions {
      * 
      * @returns An array of services of type serviceType
      */
-    abstract GetServices<T>(serviceType: Type<T>): T[];
+    abstract GetServices<T>(serviceType: ServiceType<T>): T[];
 
     /**
      * Get array of services of type serviceType that is bound to that context.
@@ -119,7 +119,7 @@ export abstract class ServiceProviderServiceExtensions {
      *
      * @returns An array of services of type serviceType
      */
-    abstract GetServices<T>(serviceType: Type<T>, context: Context): T[];
+    abstract GetServices<T>(serviceType: ServiceType<T>, context: Context): T[];
 
     /**
      * Create a context and immediately destroy it after computation is done.

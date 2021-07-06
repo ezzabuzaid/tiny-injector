@@ -1,6 +1,6 @@
 import { Context } from "../Context";
 import { InjectionToken, InjectionTokenGenericParam } from "../InjectionToken";
-import { ClassType, Type, TypeOf } from "../Types";
+import { ClassType, ServiceType, TypeOf } from "../Types";
 
 export abstract class AddScopedExtensions {
 
@@ -16,7 +16,7 @@ export abstract class AddScopedExtensions {
      * @param serviceType The type of the service to add.
      * @param implementationFactory the factory that creates the service.
      */
-    abstract AddScoped<T extends Type<any>>(serviceType: T, implementationFactory: (context: Context) => TypeOf<T>): void;
+    abstract AddScoped<T extends ServiceType<any>>(serviceType: T, implementationFactory: (context: Context) => TypeOf<T>): void;
     /**
      * Add a scoped service of the injection token with a factory specified in implementationFactory.
      *
@@ -43,7 +43,7 @@ export abstract class AddScopedExtensions {
      * @param serviceType The type of the service to add.
      * @param implementationType The type of the implementation to use.
      */
-    abstract AddScoped<T extends Type<any>, I extends ClassType<TypeOf<T>>>(serviceType: T, implementationType: I): void;
+    abstract AddScoped<T extends ServiceType<any>, I extends ClassType<TypeOf<T>>>(serviceType: T, implementationType: I): void;
     /**
      * Add a scoped service of the type specified in serviceType.
      * 

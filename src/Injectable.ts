@@ -2,7 +2,7 @@ import { AbstractServiceCollection } from "./AbstractServiceCollection";
 import { ArgumentException } from "./Exceptions";
 import RootServiceCollection from "./RootServiceCollection";
 import { ServiceLifetime } from "./ServiceLifetime";
-import { Type } from "./Types";
+import { ServiceType } from "./Types";
 import { isNullOrUndefined, notNullOrUndefined } from "./Utils";
 
 interface InjectableOptions {
@@ -28,7 +28,7 @@ interface InjectableOptions {
      * Injector.GetRequiredService(MyService) // will return MyService instance
      * ```
      */
-    serviceType?: Type<any>;
+    serviceType?: ServiceType<any>;
     /**
      * Lifetime of the service
      */

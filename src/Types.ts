@@ -7,16 +7,16 @@ export declare interface AbstractClassType<T> extends Function {
     prototype: T;
 }
 
-export type Type<T> = ClassType<T> | AbstractClassType<T>;
+export type ServiceType<T> = ClassType<T> | AbstractClassType<T>;
 
 
-export type TypeOf<T extends Type<any>> = T extends new (...args: any) => infer R
+export type TypeOf<T extends ServiceType<any>> = T extends new (...args: any) => infer R
     ? R : T extends { prototype: infer R } ? R : any;
 
 export type ImplementationFactory<T> = (context?: Context) => T;
 
 export interface InjectMetadata {
-    serviceType: Type<any>;
+    serviceType: ServiceType<any>;
     parameterIndex: number;
     propertyKey: string | symbol;
 }

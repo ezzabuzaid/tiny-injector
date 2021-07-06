@@ -14,13 +14,13 @@ import {
 import { ServiceDescriptor } from "./ServiceDescriptor";
 import { ServiceLifetime } from "./ServiceLifetime";
 import { ServiceProvider } from "./ServiceProvider";
-import { ClassType, ImplementationFactory, InjectMetadata, Type } from "./Types";
+import { ClassType, ImplementationFactory, InjectMetadata, ServiceType } from "./Types";
 import { isArrowFn, isConstructor, isNullOrUndefined, isTypeOf, lastElement, notNullOrUndefined } from './Utils';
 
 export class ServiceCollection extends AbstractServiceCollection {
 
-    #serviceTypeToServiceDescriptor = new Map<Type<any>, ServiceDescriptor[]>();
-    #toBeCreatedServices = new Map<Type<any>, Type<any>>();
+    #serviceTypeToServiceDescriptor = new Map<ServiceType<any>, ServiceDescriptor[]>();
+    #toBeCreatedServices = new Map<ServiceType<any>, ServiceType<any>>();
     #serviceProvider!: ServiceProvider;
 
     public ReplaceScoped(serviceType: any, implementationType?: any): void {
@@ -62,7 +62,7 @@ export class ServiceCollection extends AbstractServiceCollection {
     /**
      * @internal
      */
-    private AddService<T>(serviceType: Type<T>, implementation: ClassType<T> | ImplementationFactory<T>, lifetime: ServiceLifetime): void {
+    private AddService<T>(serviceType: ServiceType<T>, implementation: ClassType<T> | ImplementationFactory<T>, lifetime: ServiceLifetime): void {
         this.ValidateService(serviceType, implementation);
 
         const currentDescriptors = this.#serviceTypeToServiceDescriptor.get(serviceType);
@@ -94,7 +94,7 @@ export class ServiceCollection extends AbstractServiceCollection {
     /**
      * @internal
      */
-    private TryAddService<T>(serviceType: Type<T>, implementation: ClassType<T> | ImplementationFactory<T>, lifetime: ServiceLifetime): void {
+    private TryAddService<T>(serviceType: ServiceType<T>, implementation: ClassType<T> | ImplementationFactory<T>, lifetime: ServiceLifetime): void {
         try {
             this.AddService(serviceType, implementation, lifetime);
         } catch (error) {
@@ -104,7 +104,7 @@ export class ServiceCollection extends AbstractServiceCollection {
         }
     }
 
-    private AppendService<T>(serviceType: Type<T>, implementation: ClassType<T> | ImplementationFactory<T>, lifetime: ServiceLifetime): void {
+    private AppendService<T>(serviceType: ServiceType<T>, implementation: ClassType<T> | ImplementationFactory<T>, lifetime: ServiceLifetime): void {
         this.ValidateService(serviceType, implementation);
 
         const descriptor = this.MakeServiceDescriptor(serviceType, implementation, lifetime);
@@ -114,7 +114,7 @@ export class ServiceCollection extends AbstractServiceCollection {
         this.#serviceTypeToServiceDescriptor.set(serviceType, descriptors);
     }
 
-    private ReplaceService<T>(serviceType: Type<T>, implementation: ClassType<T> | ImplementationFactory<T>, lifetime: ServiceLifetime): void {
+    private ReplaceService<T>(serviceType: ServiceType<T>, implementation: ClassType<T> | ImplementationFactory<T>, lifetime: ServiceLifetime): void {
         this.ValidateService(serviceType, implementation);
 
         const descriptors = this.#serviceTypeToServiceDescriptor.get(serviceType);
@@ -127,11 +127,11 @@ export class ServiceCollection extends AbstractServiceCollection {
         this.AddService(serviceType, implementation, lifetime);
     }
 
-    public Remove<T>(serviceType: Type<T>) {
+    public Remove<T>(serviceType: ServiceType<T>) {
         this.#serviceTypeToServiceDescriptor.delete(serviceType);
     }
 
-    public GetServiceDescriptors<T>(serviceType: Type<T>) {
+    public GetServiceDescriptors<T>(serviceType: ServiceType<T>) {
         const descriptor = this.#serviceTypeToServiceDescriptor.get(serviceType);
         if (isNullOrUndefined(descriptor)) {
             throw new ServiceNotFoundException(serviceType.name);
@@ -144,11 +144,11 @@ export class ServiceCollection extends AbstractServiceCollection {
         return this.#serviceProvider;
     }
 
-    private GetServiceDependencies(serviceType: Type<any>): Type<any>[] {
+    private GetServiceDependencies(serviceType: ServiceType<any>): ServiceType<any>[] {
         return Reflect.getMetadata('design:paramtypes', serviceType) ?? [];
     }
 
-    private GetServiceInjectMeta(serviceType: Type<any>, index: number): InjectMetadata {
+    private GetServiceInjectMeta(serviceType: ServiceType<any>, index: number): InjectMetadata {
         return Reflect.getMetadata(`DI:Inject:${ index }`, serviceType);
     }
 
@@ -166,7 +166,7 @@ export class ServiceCollection extends AbstractServiceCollection {
         }
     }
 
-    private ValidateSingletonLifetime(serviceType: Type<any>, tokens: Type<any>[]) {
+    private ValidateSingletonLifetime(serviceType: ServiceType<any>, tokens: ServiceType<any>[]) {
         tokens.forEach((token, index) => {
             const injectMetadata = this.GetServiceInjectMeta(serviceType, index);
             const argumentType = injectMetadata?.serviceType ?? token
@@ -234,7 +234,7 @@ export class ServiceCollection extends AbstractServiceCollection {
         }
     }
 
-    private Cache<T extends Type<any>>(serviceType: T, fn: Function) {
+    private Cache<T extends ServiceType<any>>(serviceType: T, fn: Function) {
         return (descriptor: ServiceDescriptor, context?: Context) => {
             if (!(context instanceof Context)) {
                 throw new InvalidOperationException(`Wrong context used to retrieve the dependency ${ serviceType.name }, make sure to use the same context that was used before with {Injector.Create}`);
@@ -254,7 +254,7 @@ export class ServiceCollection extends AbstractServiceCollection {
         };
     }
 
-    private ValidateTransientLifetime(serviceType: Type<any>, argumentType: Type<any>) {
+    private ValidateTransientLifetime(serviceType: ServiceType<any>, argumentType: ServiceType<any>) {
         let descriptor: ServiceDescriptor;
         try {
             descriptor = lastElement(this.GetServiceDescriptors(argumentType))!;

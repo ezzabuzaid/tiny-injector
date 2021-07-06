@@ -1,6 +1,6 @@
 import { Context } from "../Context";
 import { InjectionToken, InjectionTokenGenericParam } from "../InjectionToken";
-import { ClassType, Type, TypeOf } from "../Types";
+import { ClassType, ServiceType, TypeOf } from "../Types";
 
 
 export abstract class AddSingletonExtensions {
@@ -16,7 +16,7 @@ export abstract class AddSingletonExtensions {
      * @param implementationFactory the factory that creates the service.
      * 
      */
-    abstract AddSingleton<T extends Type<any>>(serviceType: T, implementationFactory: (context: Context) => TypeOf<T>): void;
+    abstract AddSingleton<T extends ServiceType<any>>(serviceType: T, implementationFactory: (context: Context) => TypeOf<T>): void;
     /**
      * Add a singleton service of the injection token with a factory specified in implementationFactory.
      *
@@ -39,7 +39,7 @@ export abstract class AddSingletonExtensions {
      * @param serviceType The type of the service to add.
      * @param implementationType The type of the implementation to use.
      */
-    abstract AddSingleton<T extends Type<any>, I extends ClassType<TypeOf<T>>>(serviceType: T, implementationType: I): void;
+    abstract AddSingleton<T extends ServiceType<any>, I extends ClassType<TypeOf<T>>>(serviceType: T, implementationType: I): void;
     /**
      * Add a singleton service of the type specified in serviceType.
      *

@@ -1,9 +1,9 @@
-import { Type } from "./Types";
+import { ServiceType } from "./Types";
 import { Injectable } from "./Injectable";
 import { ServiceLifetime } from "./ServiceLifetime";
 
 interface Options {
-    serviceType?: Type<any>;
+    serviceType?: ServiceType<any>;
 }
 
 /**

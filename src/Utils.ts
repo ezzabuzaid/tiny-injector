@@ -1,7 +1,7 @@
-import { ClassType, Type } from "./Types";
+import { ClassType, ServiceType } from "./Types";
 
 
-export function isConstructor(value: any): value is Type<any> {
+export function isConstructor(value: any): value is ServiceType<any> {
     if (isNullOrUndefined(value)) {
         return false;
     }

@@ -1,10 +1,10 @@
-import { Type } from "../Types";
+import { ServiceType } from "../Types";
 import { InvalidOperationException } from "./InvalidOperationException";
 
 export class LifestyleMismatchException extends InvalidOperationException {
     constructor(details: {
-        serviceType: Type<any>,
-        injectedServiceType: Type<any>,
+        serviceType: ServiceType<any>,
+        injectedServiceType: ServiceType<any>,
         serviceTypeLifetimeType: string,
         injectedServiceLifetimeType: string,
         needContext?: boolean

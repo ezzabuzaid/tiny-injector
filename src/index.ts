@@ -8,3 +8,4 @@ export * from './InjectionToken';
 export * from './Injector';
 export * from './ServiceLifetime';
 
+export { ServiceType } from './Types';
