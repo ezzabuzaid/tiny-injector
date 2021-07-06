@@ -15,14 +15,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ezzabuzaid/dependency-injection.git"
+    "url": "git+https://github.com/ezzabuzaid/tiny-injector.git"
   },
   "author": "ezzabuzaid",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/ezzabuzaid/dependency-injection/issues"
+    "url": "https://github.com/ezzabuzaid/tiny-injector/issues"
   },
-  "homepage": "https://github.com/ezzabuzaid/dependency-injection#readme",
+  "homepage": "https://github.com/ezzabuzaid/tiny-injector#readme",
   "keywords": [
     "dependency injection",
     "inversion of control",
