@@ -1,4 +1,4 @@
-import { InjectionToken } from "InjectionToken";
+import { InjectionToken } from "./InjectionToken";
 import { InjectMetadata, ServiceType } from "./Types";
 
 export function Inject<T extends (ServiceType<any> | InjectionToken<any>)>(serviceType: T): ParameterDecorator {
