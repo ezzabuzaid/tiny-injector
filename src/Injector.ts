@@ -1,6 +1,20 @@
 import { AbstractServiceCollection } from "./AbstractServiceCollection";
 import { Context } from "./Context";
-import { AddScopedExtensions, AddSingletonExtensions, AddTransientExtensions, AppendScopedExtensions, AppendSingletonExtensions, AppendTransientExtensions, ReplaceScopedExtensions, ReplaceSingletonExtensions, ReplaceTransientExtensions, ServiceProviderServiceExtensions } from "./Extensions";
+import {
+    AddScopedExtensions,
+    AddSingletonExtensions,
+    AddTransientExtensions,
+    AppendScopedExtensions,
+    AppendSingletonExtensions,
+    AppendTransientExtensions,
+    ReplaceScopedExtensions,
+    ReplaceSingletonExtensions,
+    ReplaceTransientExtensions,
+    ServiceProviderServiceExtensions,
+    TryAddScopedExtensions,
+    TryAddSingletonExtensions,
+    TryAddTransientExtensions
+} from "./Extensions";
 import RootServiceCollection from "./RootServiceCollection";
 
 
@@ -14,6 +28,9 @@ type Extensions =
     ReplaceSingletonExtensions &
     ReplaceTransientExtensions &
     ReplaceScopedExtensions &
+    TryAddScopedExtensions &
+    TryAddSingletonExtensions &
+    TryAddTransientExtensions &
     ServiceProviderServiceExtensions;
 
 type Of = {
@@ -60,6 +77,18 @@ class _Injector implements Extensions {
 
     AddTransient(serviceType: any, implementation?: any) {
         this.serviceCollection.AddTransient(serviceType, implementation);
+    }
+
+    TryAddScoped(serviceType: any, implementation?: any) {
+        this.serviceCollection.TryAddScoped(serviceType, implementation);
+    }
+
+    TryAddSingleton(serviceType: any, implementation?: any) {
+        this.serviceCollection.TryAddSingleton(serviceType, implementation);
+    }
+
+    TryAddTransient(serviceType: any, implementation?: any) {
+        this.serviceCollection.TryAddTransient(serviceType, implementation);
     }
 
     GetRequiredService<T>(injectionToken: any, context?: any): T {

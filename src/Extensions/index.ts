@@ -8,4 +8,7 @@ export * from './ServiceProviderServiceExtensions';
 export * from './ReplaceSingletonExtensions';
 export * from './ReplaceScopedExtensions';
 export * from './ReplaceTransientExtensions';
+export * from './TryAddScopedExtensions';
+export * from './TryAddSingletonExtensions';
+export * from './TryAddTransientExtensions';
 

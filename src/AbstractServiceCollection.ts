@@ -31,6 +31,21 @@ export abstract class AbstractServiceCollection implements
     public abstract AddTransient<T extends ServiceType<any>, I extends ClassType<TypeOf<T>>>(serviceType: T, implementationType: I): void;
     public abstract AddTransient<T extends ClassType<any>>(serviceType: T): void;
 
+    public abstract TryAddScoped<T extends ServiceType<any>>(serviceType: T, implementationFactory: (context: Context) => TypeOf<T>): void;
+    public abstract TryAddScoped<T extends InjectionToken<any>>(injectionToken: T, implementationFactory: (context: Context) => InjectionTokenGenericParam<T>): void;
+    public abstract TryAddScoped<T extends ServiceType<any>, I extends ClassType<TypeOf<T>>>(serviceType: T, implementationType: I): void;
+    public abstract TryAddScoped<T extends ClassType<any>>(serviceType: T): void;
+
+    public abstract TryAddSingleton<T extends ServiceType<any>>(serviceType: T, implementationFactory: (context: Context) => TypeOf<T>): void;
+    public abstract TryAddSingleton<T extends InjectionToken<any>>(injectionToken: T, implementationFactory: (context: Context) => InjectionTokenGenericParam<T>): void;
+    public abstract TryAddSingleton<T extends ServiceType<any>, I extends ClassType<TypeOf<T>>>(serviceType: T, implementationType: I): void;
+    public abstract TryAddSingleton<T extends ClassType<any>>(serviceType: T): void;
+
+    public abstract TryAddTransient<T extends ServiceType<any>>(serviceType: T, implementationFactory: (context: Context) => TypeOf<T>): void;
+    public abstract TryAddTransient<T extends InjectionToken<any>>(injectionToken: T, implementationFactory: (context: Context) => InjectionTokenGenericParam<T>): void;
+    public abstract TryAddTransient<T extends ServiceType<any>, I extends ClassType<TypeOf<T>>>(serviceType: T, implementationType: I): void;
+    public abstract TryAddTransient<T extends ClassType<any>>(serviceType: T): void;
+
     public abstract ReplaceSingleton<T extends ServiceType<any>>(serviceType: T, implementationFactory: (context: Context) => TypeOf<T>): void;
     public abstract ReplaceSingleton<T extends InjectionToken<any>>(injectionToken: T, implementationFactory: (context: Context) => InjectionTokenGenericParam<T>): void;
     public abstract ReplaceSingleton<T extends ServiceType<any>, I extends ClassType<TypeOf<T>>>(serviceType: T, implementationType: I): void;
@@ -57,8 +72,6 @@ export abstract class AbstractServiceCollection implements
     public abstract AppendSingleton<T extends ServiceType<any>>(serviceType: T, implementationFactory: (context: Context) => TypeOf<T>): void;
     public abstract AppendSingleton<T extends ServiceType<any>, I extends ClassType<TypeOf<T>>>(serviceType: T, implementationType: T): void;
     public abstract AppendSingleton<T extends ClassType<any>>(serviceType: T): void;
-
-
 
     public abstract BuildServiceProvider(): ServiceProvider;
 

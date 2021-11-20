@@ -4,7 +4,7 @@
   "description": "Lightweight dependency injection library for TypeScript applications",
   "main": "index.js",
   "scripts": {
-    "test": "jest --runInBand --detectOpenHandles",
+    "test": "jest --runInBand --detectOpenHandles --no-cache",
     "test:majestic": "majestic",
     "watch": "tsc  --project tsconfig.app.json --watch",
     "release": "dotenv release-it",

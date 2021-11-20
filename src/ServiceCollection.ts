@@ -59,6 +59,17 @@ export class ServiceCollection extends AbstractServiceCollection {
         this.AddService(serviceType, implementation, ServiceLifetime.Transient);
     }
 
+    public TryAddScoped(serviceType: any, implementation?: any) {
+        this.TryAddService(serviceType, implementation, ServiceLifetime.Scoped);
+    }
+
+    public TryAddSingleton(serviceType: any, implementation?: any) {
+        this.TryAddService(serviceType, implementation, ServiceLifetime.Singleton);
+    }
+
+    public TryAddTransient(serviceType: any, implementation?: any) {
+        this.TryAddService(serviceType, implementation, ServiceLifetime.Transient);
+    }
     /**
      * @internal
      */
