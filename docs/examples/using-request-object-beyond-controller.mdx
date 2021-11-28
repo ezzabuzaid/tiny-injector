@@ -1,0 +1,41 @@
+## Add request injection token
+
+From the previous example
+
+1. Set reference to request object
+
+```typescript
+application.use((req, res, next) => {
+  // Create context ...
+
+  // attach the request to the context so you can refernce it later on
+  context.setExtra("request", req);
+
+  // rest of code
+});
+```
+
+2. Create _InjectionToken_
+
+`request_token.ts` file
+
+```typescript
+import { Request } from "express";
+export const REQUEST_TOKEN = new InjectionToken<Request>("TOKEN_REQUEST", {
+  lifetime: ServiceLifetime.Scoped,
+  implementationFactory: (context) => context.getExtra("request"),
+});
+```
+
+4. Use `@Inject` to reference `REQUEST_TOKEN`
+
+```typescript
+@Injectable({
+  lifetime: ServiceLifetime.Scoped,
+})
+export class DataService {
+  constructor(@Inject(REQUEST_TOKEN) private request: Request) {
+    const userAgent = request.headers["user-agent"];
+  }
+}
+```

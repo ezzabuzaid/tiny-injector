@@ -7,11 +7,11 @@ There's several service registration methods that are useful in different scenar
 
 ## Using Lifetime methods
 
-| Syntax      | Example |
-| ----------- | ----------- |
-| Injector. Add{LIFETIME}({SERVICE}, {IMPLEMENTATION})      | Injector. AddSingleton(AbstractDep, ConcreteDep)       |
-| Injector. Add{LIFETIME}({SERVICE}, context => new {IMPLEMENTATION})   | Injector. AddSingleton(AbstractDep, context => new ConcreteDep())        |
-| Injector. Add{LIFETIME}<{IMPLEMENTATION}>()   | Injector. AddSingleton(ConcreteDep)        |
+| Syntax                                                              | Example                                                           |
+| ------------------------------------------------------------------- | ----------------------------------------------------------------- |
+| Injector. Add{LIFETIME}({SERVICE}, {IMPLEMENTATION})                | Injector. AddSingleton(AbstractDep, ConcreteDep)                  |
+| Injector. Add{LIFETIME}({SERVICE}, context => new {IMPLEMENTATION}) | Injector. AddSingleton(AbstractDep, context => new ConcreteDep()) |
+| Injector. Add{LIFETIME}({IMPLEMENTATION})                           | Injector. AddSingleton(ConcreteDep)                               |
 
 Registering a service with only an implementation type is equivalent to registering that service with the same implementation and service type.
 
@@ -26,20 +26,20 @@ Angular way would be
 
 ```typescript
 providers: [
-    serviceType,
-    {
-        provide: serviceType,
-        useClass: serviceType
-    },
-    {
-        provide: serviceType,
-        useClass: implementationType
-    },
-    {
-        provide: serviceType,
-        useFactory: factoryFn
-    }
-]
+  serviceType,
+  {
+    provide: serviceType,
+    useClass: serviceType,
+  },
+  {
+    provide: serviceType,
+    useClass: implementationType,
+  },
+  {
+    provide: serviceType,
+    useFactory: factoryFn,
+  },
+];
 ```
 
 Example
@@ -57,8 +57,8 @@ using factory as implementation
 
 ```typescript
 Injector.AddSingleton(Logger, (context) => {
-    // Some interesting logic
-   return new InformativeLogger();
+  // Some interesting logic
+  return new InformativeLogger();
 });
 ```
 
@@ -73,7 +73,7 @@ Although in somecase you might need to use Add{Lifetime} methods such as, deffer
 
 ```typescript
 @Injectable({
-    lifetime: ServiceLifetime.Singleton
+  lifetime: ServiceLifetime.Singleton,
 })
 class ServiceType {}
 ```
@@ -84,11 +84,10 @@ Example
 abstract class Logger {}
 
 @Injectable({
-    lifetime: ServiceLifetime.Singleton,
-    serviceType: Logger
+  lifetime: ServiceLifetime.Singleton,
+  serviceType: Logger,
 })
 class InformativeLogger extends Logger {}
-
 ```
 
 keep in mind that `@Injectable` is always needed in order to resolve the class constructor parameters type.
@@ -132,17 +131,17 @@ e.g
 ```typescript
 @Injectable()
 class Vehicle {
-    start() {}
+  start() {}
 }
 
 @Injectable()
 class Weapon {
-    shoot() {}
+  shoot() {}
 }
 
 Injector.AddSingleton(Vehicle, Weapon);
 
-Injector.AddSingleton(Vehicle, context => new Weapon());
+Injector.AddSingleton(Vehicle, (context) => new Weapon());
 ```
 
 the above sample won't work since `Weapon` is not subtype of `Vehicle`
@@ -150,36 +149,36 @@ the above sample won't work since `Weapon` is not subtype of `Vehicle`
 ```typescript
 @Injectable()
 class Vehicle {
-    start() {}
+  start() {}
 }
 
 @Injectable()
 class Truck extends Vehicle {
-    warmUp() {}
+  warmUp() {}
 }
 
 Injector.AddSingleton(Vehicle, Truck);
 
-Injector.AddSingleton(Vehicle, context => new Truck());
+Injector.AddSingleton(Vehicle, (context) => new Truck());
 ```
 
 now the implementation either factory or type will work just find since the Truck is subtype of Vehicle.
 
 ### Type Equivalence
 
-Because of JavaScript nature, having different classes with the same properties and methods make them equivalent in regards to type, 
+Because of JavaScript nature, having different classes with the same properties and methods make them equivalent in regards to type,
 so the below code will work with no errors, although, this code can be handled at runtime using `instanceof` keyword
 
 ```typescript
 class Test {
-    variable = 10;
+  variable = 10;
 }
 
 class Service {
-    variable = 10;
+  variable = 10;
 }
 
-class Implementation extends Test { }
+class Implementation extends Test {}
 
 Injector.AddSingleton(Service, Implementation);
 ```

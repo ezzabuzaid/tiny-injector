@@ -10,7 +10,7 @@
     "release": "dotenv release-it",
     "build": "tsc --project tsconfig.app.json",
     "start": "ts-node src/index.ts",
-    "prebuild": "del ./dist/",
+    "prebuild": "del-cli ./dist/",
     "postbuild": "cpy 'README.md' 'package*.json' ./dist/ --no-overwrite --parents"
   },
   "repository": {

@@ -5,7 +5,7 @@
     "sidebar": [
         [
             "Overview",
-            "/index.mdx"
+            "/"
         ],
         [
             "Getting Started",
@@ -45,6 +45,10 @@
                 [
                     "Express",
                     "/examples/express"
+                ],
+                [
+                    "Using Request Object Beyond Controller",
+                    "/examples/using-request-object-beyond-controller"
                 ]
             ]
         ]
