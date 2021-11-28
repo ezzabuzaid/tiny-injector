@@ -2,6 +2,7 @@ import { ArgumentException, Injectable, Injector, ServiceLifetime } from "../src
 import RootServiceCollection from "../src/RootServiceCollection";
 import { ServiceCollection } from "../src/ServiceCollection";
 import './utils';
+
 describe('Injectable', () => {
     test.todo('PrimitiveTypeAsServiceType_ArgumentExceptionThrown');
     test('NonRootStringAsProvidedIn_ArgumentExceptionThrown', () => {
