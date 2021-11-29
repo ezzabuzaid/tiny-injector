@@ -1,8 +1,6 @@
 ## Add request injection token
 
-From the previous example
-
-1. Set reference to request object
+### Set reference to request object
 
 ```typescript
 application.use((req, res, next) => {
@@ -15,7 +13,7 @@ application.use((req, res, next) => {
 });
 ```
 
-2. Create _InjectionToken_
+### Create _InjectionToken_
 
 `request_token.ts` file
 
@@ -27,7 +25,7 @@ export const REQUEST_TOKEN = new InjectionToken<Request>("TOKEN_REQUEST", {
 });
 ```
 
-4. Use `@Inject` to reference `REQUEST_TOKEN`
+### Use `@Inject` to reference `REQUEST_TOKEN`
 
 ```typescript
 @Injectable({
@@ -39,3 +37,10 @@ export class DataService {
   }
 }
 ```
+
+---
+
+Make sure that the service that utilize the `REQUEST_TOKEN` is
+
+1. Either `Transient` or `Scoped`.
+2. Descendant of `Scoped` controller
