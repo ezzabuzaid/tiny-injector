@@ -15,7 +15,7 @@ application.listen("8080", () => {
 });
 ```
 
-### Create top level express middleware that will create new context for each request
+### Create top level express middleware that will create a new context at the beginning of a request and dispose at the end of it
 
 ```tsx
 application.use((req, res, next) => {
@@ -142,6 +142,11 @@ application
   });
 ```
 
-And thus, you've working example with dependency injection installed.
+## Key Takeaways
+
+- We assumed that the "end" and "error" events occured when the request is fullfilled therefore we disposed the associated context.
+- Context disposal at the end of each request is important to free up the memory.
+- If you were intending to use the request context in an express middleware, make sure it is added after the custom set up middleware.
+- It is recommended to register the controller as **Scoped** so it won't instantiate new instance from it when you ask for it.
 
 Source Code: [Express-Tiny-Injector](https://github.com/ezzabuzaid/tiny-injector-express)
