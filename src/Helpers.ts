@@ -1,13 +1,13 @@
-import { ServiceType } from "./Types";
 import { Injectable } from "./Injectable";
 import { ServiceLifetime } from "./ServiceLifetime";
+import { ServiceType } from "./Types";
 
 interface Options {
     serviceType?: ServiceType<any>;
 }
 
 /**
- * A class level decorator used to add the class as Singleton
+ * A class level decorator used to registere the class as Singleton
  */
 export function Singleton(options?: Options): ClassDecorator {
     return Injectable({
@@ -17,7 +17,7 @@ export function Singleton(options?: Options): ClassDecorator {
 }
 
 /**
- * A class level decorator used to add the class as Transient
+ * A class level decorator used to registere the class as Transient
  */
 export function Transient(options?: Options): ClassDecorator {
     return Injectable({
@@ -27,7 +27,7 @@ export function Transient(options?: Options): ClassDecorator {
 }
 
 /**
- * A class level decorator used to add the class as Scoped
+ * A class level decorator used to registere the class as Scoped
  */
 export function Scoped(options?: Options): ClassDecorator {
     return Injectable({

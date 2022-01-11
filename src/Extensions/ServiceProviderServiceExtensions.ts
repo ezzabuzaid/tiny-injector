@@ -6,11 +6,11 @@ export abstract class ServiceProviderServiceExtensions {
 
     /**
      * Get service of type serviceType.
-     * 
+     *
      * @param serviceType The type of the service to get.
-     * 
+     *
      * @throws {ServiceNotFoundException} in case no service of type serviceType is registered.
-     * 
+     *
      * @returns A service of type serviceType.
      */
     abstract GetRequiredService<T>(serviceType: ServiceType<T>): T;
@@ -28,7 +28,7 @@ export abstract class ServiceProviderServiceExtensions {
 
     /**
      * Get service of type serviceType that is bound to that context.
-     * 
+     *
      * Use this overload to get scoped or transient service.
      *
      * @param serviceType The type of the service to get.
@@ -42,7 +42,7 @@ export abstract class ServiceProviderServiceExtensions {
 
     /**
      * Get return value of `InjectionToken` implementationFactory.
-     * 
+     *
      * Use this overload to resolve scoped or transient InjectionToken implementationFactory.
      *
      * @param injectionToken Instance of InjectionToken.
@@ -56,9 +56,9 @@ export abstract class ServiceProviderServiceExtensions {
 
     /**
      * Get service of type serviceType.
-     * 
+     *
      * @param serviceType The type of the service to get.
-     * 
+     *
      * @returns A service of type serviceType or null if there is no such service.
      */
     abstract GetService<T>(serviceType: ServiceType<T>): T | null;
@@ -74,7 +74,7 @@ export abstract class ServiceProviderServiceExtensions {
 
     /**
      * Get service of type serviceType that is bound to that context.
-     * 
+     *
      * Use this overload to get scoped or transient service.
      *
      * @param serviceType The type of the service to get.
@@ -86,7 +86,7 @@ export abstract class ServiceProviderServiceExtensions {
 
     /**
      * Get return value of `InjectionToken` implementationFactory.
-     * 
+     *
      * Use this overload to resolve scoped or transient InjectionToken implementationFactory.
      *
      * @param injectionToken Instance of InjectionToken.
@@ -98,18 +98,18 @@ export abstract class ServiceProviderServiceExtensions {
 
     /**
      * Get array of services of type serviceType.
-     * 
+     *
      * @param serviceType The type of the service to get.
-     * 
+     *
      * @throws {ServiceNotFoundException} in case no service of type serviceType is registered.
-     * 
+     *
      * @returns An array of services of type serviceType
      */
     abstract GetServices<T>(serviceType: ServiceType<T>): T[];
 
     /**
      * Get array of services of type serviceType that is bound to that context.
-     * 
+     *
      * Use this overload to get list of scoped or transient service.
      *
      * @param serviceType The type of the service to get.
@@ -120,21 +120,4 @@ export abstract class ServiceProviderServiceExtensions {
      * @returns An array of services of type serviceType
      */
     abstract GetServices<T>(serviceType: ServiceType<T>, context: Context): T[];
-
-    /**
-     * Create a context and immediately destroy it after computation is done.
-     * 
-     * @returns return value of `computation`
-     *
-     * @param computation
-     */
-    abstract CreateScope<T>(computation: (context: Context) => Promise<T> | T): Promise<T>;
-
-    /**
-     * Create context
-     */
-    abstract Create(): Context;
-
-    abstract Destroy(context: Context): void;
-
 }

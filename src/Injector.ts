@@ -7,6 +7,7 @@ import {
     AppendScopedExtensions,
     AppendSingletonExtensions,
     AppendTransientExtensions,
+    ContextExtensions,
     ReplaceScopedExtensions,
     ReplaceSingletonExtensions,
     ReplaceTransientExtensions,
@@ -31,7 +32,8 @@ type Extensions =
     TryAddScopedExtensions &
     TryAddSingletonExtensions &
     TryAddTransientExtensions &
-    ServiceProviderServiceExtensions;
+    ServiceProviderServiceExtensions &
+    ContextExtensions
 
 type Of = {
     Of(serviceCollection: AbstractServiceCollection): Extensions;

@@ -2,12 +2,12 @@ import { AbstractServiceCollection } from "./AbstractServiceCollection";
 import { Context } from "./Context";
 import { ContextRegistry } from "./ContextRegistry";
 import { ArgumentException, InvalidOperationException, ServiceNotFoundException } from "./Exceptions";
-import { ServiceProviderServiceExtensions } from "./Extensions";
+import { ContextExtensions, ServiceProviderServiceExtensions } from "./Extensions";
 import { ServiceDescriptor } from "./ServiceDescriptor";
 import { ServiceLifetime } from "./ServiceLifetime";
 import { isTypeOf, lastElement } from "./Utils";
 
-export class ServiceProvider implements ServiceProviderServiceExtensions {
+export class ServiceProvider implements ServiceProviderServiceExtensions, ContextExtensions {
     #contextRegistry = ContextRegistry.GetInstance();
     #singletonContext?: Context;
 
