@@ -1,33 +1,31 @@
 # Context
 
-The context is a special object that binds a set of services, it is purpose is to define a scope for a group of services.
+The context is a special object that binds a set of services altogether. It is primarly existed to limit the existance of a service or set of services.
 
-It is primarly existed to limit the lifetime of a service or set of services.
-
-Imagine in an express app, each time the user requests the server you create a context to limit all service with *Scoped lifetime* to it, and after responding to that request, you remove the context so all services are removed.
+Imagine in an express app, each time the user requests the server you create a context to limit all service with _Scoped lifetime_ to it, and after responding to that request, you remove the context so all services are removed.
 for instance, there's an internal context used to group all singleton services, what made them singleton is that the context will live throughout the application lifetime.
 
 ## Create Context
 
-* A Context can be created using `Create()` method.
+- A Context can be created using `Create()` method.
 
 ```typescript
 @Injectable({
-    lifetime: ServiceLifetime.Scoped
+	lifetime: ServiceLifetime.Scoped,
 })
-class Logger { }
+class Logger {}
 
 const context = Injector.Create();
 const logger = Injector.GetRequiredService(Logger, context);
 
-// Remove the context and everything bound to it.  
+// Remove the context and everything bound to it.
 Injector.Destroy(context);
 ```
 
-The above sample creates a context and used it to return an instance of `Logger` type, 
+The above sample creates a context and used it to return an instance of `Logger` type,
 when the context is no longer needed you have to destroy it to free up the memory.
 
-* Using `CreateScope()`
+- Using `CreateScope()`
 
 The other way is to use `CreateScope()` which simplifies the consumption of Scoped services.
 
@@ -35,14 +33,13 @@ The other way is to use `CreateScope()` which simplifies the consumption of Scop
 
 ```typescript
 @Injectable({
-    lifetime: ServiceLifetime.Scoped
+	lifetime: ServiceLifetime.Scoped,
 })
-class Logger { }
+class Logger {}
 
 Injector.CreateScope((context) => {
-   const logger = context.get(Logger);
+	const logger = context.get(Logger);
 });
-
 ```
 
 In this sample, the context created internally and provided as argument, the `get` method used to request a `Logger` instance.
@@ -55,20 +52,20 @@ notice that we used the `get` method instead of `GetRequiredService` , the `get`
 const context = Injector.Create();
 
 const logger = context.get(Logger);
-// equivalent to 
+// equivalent to
 Injector.GetRequiredService(serviceType, context);
 ```
 
 ## Context Extras
 
-A context can holds *extras* which you could use to store additional data
+A context can holds _extras_ which you could use to store additional data
 
 ```typescript
 const context = Injector.Create();
 
-context.setExtra('data', {});
+context.setExtra("data", {});
 
-context.getExtra('data');
+context.getExtra("data");
 ```
 
 it's most useful when you want to store some data at the creation of context and use it later on when requesting or registering a service.

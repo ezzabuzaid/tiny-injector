@@ -10,11 +10,11 @@
         ],
         [
             "Getting Started",
-            "/getting-started"
+            "/GettingStarted"
         ],
         [
             "Service Lifetime",
-            "/service-lifetime"
+            "/ServiceLifetime"
         ],
         [
             "Service Registration",
@@ -22,23 +22,23 @@
         ],
         [
             "Context",
-            "/context"
+            "/Context"
         ],
         [
-            "Use Dependency Injection",
-            "/use-dependency-injection"
+            "Using Dependency Injection",
+            "/UsingDependencyInjection"
         ],
         [
             "Injection Token",
-            "/injection-token"
+            "/InjectionToken"
         ],
         [
             "Configuration",
-            "/configuration"
+            "/Configuration"
         ],
         [
             "Contributing",
-            "/contributing"
+            "/Contributing"
         ],
         [
             "Examples",

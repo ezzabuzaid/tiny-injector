@@ -1,0 +1,213 @@
+# Service lifetime
+
+Service lifetime is the total time for a service starting from the time it has been requested up till it is disposed of.
+
+The lifetime of a service can be either
+
+- Transient
+
+- Scoped
+
+- Singleton
+
+## Singleton
+
+Singleton lifetime services are created The first time they're requested which means the same instance will be returned for each subsequent request.
+
+Singleton services are created only one time per container, aka `ServiceProvider`. for instance, a `RootServiceProvider` will be created implictly at app startup which will holds the singletons.
+Creating new `ServiceProvider` will lead to have different instances of a singleton service.
+
+The sample app demonstrates the difference between using the root service provider and custom one
+
+```typescript
+import { Injector, ServiceCollection, ServiceProvider } from "tiny-injector";
+
+// Service Type
+class Operation {}
+
+// Implictly it uses the root service provider
+Injector.AddSingleton(Operation);
+
+const dedicatedServiceCollection = new ServiceCollection();
+dedicatedServiceCollection.AddSingleton(Operation);
+
+const dedicatedServiceProvider =
+	dedicatedServiceCollection.BuildServiceProvider();
+console.log(
+	Injector.GetRequiredService(Operation) ===
+		dedicatedServiceProvider.GetRequiredService(Operation)
+	// Will log false, because Operation have been requested from a different service provider
+);
+
+// or you can user the Of method to build the service provider internally
+// worth mention that the same service provider will be used for the same serviceCollection instance
+console.log(
+	Injector.GetRequiredService(Operation) ===
+		Injector.Of(dedicatedServiceCollection).GetRequiredService(Operation)
+);
+```
+
+Check the _Architecture_ section to learn more.
+
+When scope validation is enabled you cannot inject either Transient or Scoped service.
+
+## Transient
+
+Transient lifetime services are created each time they're requested.
+
+if a transient service used in scoped service, it will be disposed along with scoped service which implies that, the Transient will live as long as the Scoped service lives.
+
+## Scoped
+
+Scoped services are created once per context.
+
+Scoped objects are the same for each context but different across each context.
+
+Context is special object that usually will be created with each web request when using routing framework such as `express.js`
+
+[Read More](https://docs.microsoft.com/en-us/dotnet/core/extensions/dependency-injection#scoped)
+
+## Scope validation
+
+1. Using Scoped or Transient service in a Singleton service will eventually be singleton since singleton service will be available througot the application lifetime which leads to [**Captive Dependency**](https://blog.ploeh.dk/2014/06/02/captive-dependency/), when occured, `LifestyleMismatchException` will be thrown.
+
+2. Injecting Scoped service in Transient service will require context to resolve the Transient service, if no context provided, `LifestyleMismatchException` will be thrown.
+
+Look at _Configuration_ section to disable this behaviour.
+
+## [Reference](https://docs.microsoft.com/en-us/dotnet/core/extensions/dependency-injection)
+
+## Example
+
+To demonstrate the difference between service lifetimes and their registration options,
+consider the following abstractions that represent an operation with an identifier, `operationId`.
+Depending on how the lifetime of an operation's service is configured for the following abstractions, the `Injector` provides
+either the same or different instances of the service when requested:
+
+```typescript
+abstract class AbstractOperation {
+	abstract operationId: number;
+}
+
+abstract class AbstractOperationTransient extends AbstractOperation {}
+abstract class AbstractOperationScoped extends AbstractOperation {}
+abstract class AbstractOperationSingleton extends AbstractOperation {}
+```
+
+The following Operation class implements `AbstractOperation` then generates a random number and stores in in the `operationId` property:
+
+```typescript
+class Operation extends AbstractOperation {
+	constructor() {
+		super();
+		this.operationId = Math.random();
+	}
+}
+```
+
+The following code creates multiple registrations of the Operation class according to the named lifetimes:
+
+```typescript
+Injector.AddTransient(AbstractOperationTransient, Operation);
+Injector.AddScoped(AbstractOperationScoped, Operation);
+Injector.AddSingleton(AbstractOperationSingleton, Operation);
+```
+
+The sample demonstrates transient lifetime when being requested multiple times.
+requesting `AbstractOperationTransient` multiple times will results in constructing new instance each time
+
+```typescript
+const firstOperationTransient = Injector.GetRequiredService(
+	AbstractOperationTransient
+);
+const secondOperationTransient = Injector.GetRequiredService(
+	AbstractOperationTransient
+);
+
+console.log(firstOperationTransient.operationId);
+console.log(secondOperationTransient.operationId);
+// operationId from differnet instances won't be the same due to the transient lifetime.
+console.log(
+	firstOperationTransient.operationId === secondOperationTransient.operationId
+	// Will log "false"
+);
+```
+
+The sample demonstrates scoped lifetime when being requested multiple times.
+requesting `AbstractOperationScoped` multiple times will results in returning the same instance for a giving context
+
+```typescript
+const context = Injector.Create();
+
+const firstOperationScoped = Injector.GetRequiredService(
+	AbstractOperationScoped,
+	context
+);
+const secondOperationScoped = Injector.GetRequiredService(
+	AbstractOperationScoped,
+	context
+);
+
+console.log(firstOperationScoped.operationId);
+console.log(secondOperationScoped.operationId);
+// operationId will equal since the same instance is returning, because we used the same context in each requeest
+console.log(
+	firstOperationScoped.operationId === secondOperationScoped.operationId
+	// Will log "true"
+);
+```
+
+The sample demonstrates scoped lifetime when being requested multiple times but for different contexts.
+
+```typescript
+const firstContext = Injector.Create();
+const secondContext = Injector.Create();
+
+const firstOperationScoped = Injector.GetRequiredService(
+	AbstractOperationTransient,
+	context
+);
+const secondOperationScoped = Injector.GetRequiredService(
+	AbstractOperationTransient,
+	context
+);
+
+console.log(firstOperationScoped.operationId);
+console.log(secondOperationScoped.operationId);
+// operationId will not equal since the different instance returned, because we used different context in each requeest
+console.log(
+	firstOperationScoped.operationId === secondOperationScoped.operationId
+	// Will log "false"
+);
+```
+
+The sample demonstrates singleton lifetime when being requested multiple times.
+requesting `AbstractOperationSingleton` multiple times will results in returning the same instance
+
+```typescript
+const firstOperationSingleton = Injector.GetRequiredService(
+	AbstractOperationSingleton
+);
+const secondOperationSingleton = Injector.GetRequiredService(
+	AbstractOperationSingleton
+);
+
+console.log(firstOperationSingleton.operationId);
+console.log(secondOperationSingleton.operationId);
+// operationId from differnet instances will be the same.
+console.log(
+	firstOperationSingleton.operationId === secondOperationSingleton.operationId
+	// Will log "true"
+);
+```
+
+## Summary
+
+- **Transient** objects are always different. The transient `operationId` value is different in each instance.
+- **Scoped** objects are the same for a given context but differ across each new context.
+- **Singleton** objects are the same everytime.
+- The default container is `RootServiceProvider`
+- Do not resolve a scoped service from a singleton and be careful not to do so indirectly, for example, through a transient service. It may cause the service to have incorrect state when processing subsequent requests. It's fine to:
+
+  - Resolve a singleton service from a scoped or transient service.
+  - Resolve a scoped service from another scoped or transient service.

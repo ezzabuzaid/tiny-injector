@@ -1,7 +1,7 @@
 # Tiny Injector
 
-Tiny Injector is a tiny yet powerful and flexible Dependency Injection library for web projects that uses TypeScript.
-It could be used on top of existing projects.
+Tiny Injector is a tiny yet powerful and flexible Dependency Injection library for projects that uses TypeScript.
+It could be used on top of existing projects althought it is recommended to be used as first-class citizen
 
 The work heavily inspired by . NET Dependency Injection, Angular +2 and [This Answer](https://stackoverflow.com/a/48187842/10415423).
 
@@ -17,6 +17,7 @@ In the typical "using" relationship the receiving object is called a client and 
 
 [Reference](https://en.wikipedia.org/wiki/Dependency_injection)
 [You might check here](https://stackoverflow.com/questions/130794/what-is-dependency-injection/140655#140655)
+[And here as well](<https://docs.microsoft.com/en-us/dotnet/core/extensions/dependency-injection#:~:text=which%20is%20a%20technique%20for%20achieving%20Inversion%20of%20Control%20(IoC)%20between%20classes%20and%20their%20dependencies.%20Dependency%20injection%20in%20.NET%20is%20a%20first%2Dclass%20citizen%2C%20along%20with%20configuration%2C%20logging%2C%20and%20the%20options%20pattern.>)
 
 _in which an object receives other objects that it depends on._
 Let's say you have two classes `ObjectA` and `ObjectB` , and `ObjectB` depends on `ObjectA` , in this case we call `ObjectA` dependency on `ObjectB` .
@@ -50,10 +51,14 @@ With dependency injection you won't care how the service "injected object" is cr
 
 _Entities must depend on abstractions, not on concretions. It states that the high-level module must not depend on the low-level module, but they should depend on abstractions._
 
-so to truly have loosely coupled application you should start thinking abstractions instead of using concretions direclty.
+so to truly have loosely coupled application you should start thinking abstractions instead of using concretions directly.
 
 ```typescript
 class SqlConnection {
+	connect() {}
+}
+
+class MySqlConnection {
 	connect() {}
 }
 
@@ -65,9 +70,12 @@ class DataRepository {
 		return connection.find();
 	}
 }
+
+const connection = new SqlConnection();
+const repository = new DataRepository(connection);
 ```
 
-this sample violates the Dependency Inversion Principle because if you thought about changing the `SqlConnection` to `MySqlConnection` you would have to change `DataRepository` as well since it depends on `SqlConnection` .
+this sample violates the **Dependency Inversion Principle** because if you thought about changing the `SqlConnection` to `MySqlConnection` you would have to change `DataRepository` as well since it depends on `SqlConnection` .
 
 to overcome this issue you need to create abstract class for database connection
 
@@ -92,9 +100,13 @@ class DataRepository {
 		return connection.find();
 	}
 }
+
+const sqlConnection = new SqlConnection();
+const mySqlConnection = new mySqlConnection();
+const repository = new DataRepository(mySqlConnection);
 ```
 
-no wether you chosed `SqlConnection` or `MySqlConnection` you won't change the `DataRepository` since it depends on the abstraction and not on any of concretions.
+now, whether you choose `SqlConnection` or `MySqlConnection` you won't change the `DataRepository` since it depends on the abstraction and not on any of the concretions.
 
 ## Features
 
@@ -116,8 +128,10 @@ TODO:
 1. Service disposal.
 2. Asynchronous registration.
 3. Provide user-defined options.
-4. ~~Replace service functionality~~
-5. ~~Error less service registration via `Try{ServiceLifetime}` methods~~
+4. ~~Replace service functionalit.~~
+5. ~~Error less service registration via `Try{ServiceLifetime}` methods.~~
+6. User defined extensions.
+7. Injector hierarchy resolver.
 
 ## Other third-party libraries
 
@@ -134,4 +148,4 @@ Worth to mention other great libraries.
 
 - See [LICENSE](/LICENSE)
 
-Built and maintained with <3 by [ezzabuzaid](https://github.com/ezzabuzaid)
+Built and maintained with ❤️ by [ezzabuzaid](https://github.com/ezzabuzaid)

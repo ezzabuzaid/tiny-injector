@@ -1,0 +1,59 @@
+# Configuration
+
+TBD
+
+## Injector
+
+## Context
+
+The context is a special object that binds a set of services altogether. It is primarly existed to limit the existance of a service or set of services.
+
+## Service Collection
+
+```typescript
+import {
+	Injector,
+	ServiceCollection,
+	ServiceProvider,
+	Injectable,
+} from "tiny-injector";
+
+@Injectable()
+class ServiceType {}
+
+const serviceCollection = new ServiceCollection();
+serviceCollection.AddTransient(ServiceType);
+```
+
+The `ServiceCollection` is the collection of the service descriptors. We can register our services in this collection with different lifetimes (Transient, Scoped, Singleton).
+ServiceProvider is the simple built-in container that is included and supports constructor injection by default.
+
+## Service Provider
+
+The `ServiceProvider` is responsible for resolving instances of types at runtime, as required by the application. These instances can be injected into other services resolved from the same dependency injection container. The ServiceProvider ensures that resolved services live for the expected lifetime.
+
+A root service provider will be created implictly at application startup and its lifetime corresponds to the app's lifetime.
+The The root service provider is disposed when the app shuts down.
+
+Service porvider comes as part of `ServiceCollection`,
+
+```typescript
+import {
+	Injector,
+	ServiceCollection,
+	ServiceProvider,
+	Injectable,
+} from "tiny-injector";
+
+@Injectable()
+class ServiceType {}
+const serviceCollection = new ServiceCollection();
+const serviceProvider = serviceCollection.BuildServiceProvider();
+
+serviceCollection.AddTransient(ServiceType);
+const serviceType = serviceProvider.GetRequiredService(ServiceType);
+```
+
+## Service Descriptor
+
+## Activator
