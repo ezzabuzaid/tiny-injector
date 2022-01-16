@@ -5,7 +5,7 @@ import { ArgumentException, InvalidOperationException, ServiceNotFoundException 
 import { ContextExtensions, ServiceProviderServiceExtensions } from "./Extensions";
 import { ServiceDescriptor } from "./ServiceDescriptor";
 import { ServiceLifetime } from "./ServiceLifetime";
-import { isTypeOf, lastElement } from "./Utils";
+import { isNullOrUndefined, isTypeOf, lastElement } from "./Utils";
 
 export class ServiceProvider implements ServiceProviderServiceExtensions, ContextExtensions {
     #contextRegistry = ContextRegistry.GetInstance();
@@ -30,12 +30,18 @@ export class ServiceProvider implements ServiceProviderServiceExtensions, Contex
     }
 
     GetServices<T>(serviceTypeOrInjectionToken: any, context?: any): T[] {
+        if (isNullOrUndefined(serviceTypeOrInjectionToken)) {
+            throw new ArgumentException('Must provide service type', 'serviceType');
+        }
         const descriptors = this.serviceCollection.GetServiceDescriptors(serviceTypeOrInjectionToken);
         return descriptors.map(descriptor => this.GetImplementation(descriptor, context));
     }
 
 
     GetRequiredService<T>(serviceTypeOrInjectionToken: any, context?: Context): T {
+        if (isNullOrUndefined(serviceTypeOrInjectionToken)) {
+            throw new ArgumentException('Must provide service type', 'serviceType');
+        }
         const descriptors = this.serviceCollection.GetServiceDescriptors(serviceTypeOrInjectionToken);
         return this.GetImplementation(lastElement(descriptors)!, context);
     }
@@ -44,7 +50,7 @@ export class ServiceProvider implements ServiceProviderServiceExtensions, Contex
         const context = new Context();
 
         if (!(context instanceof Context)) {
-            throw new ArgumentException(`${ context } should be of type Context`, 'context');
+            throw new ArgumentException(`${context} should be of type Context`, 'context');
         }
 
         if (this.#contextRegistry.Has(context)) {
@@ -65,7 +71,7 @@ export class ServiceProvider implements ServiceProviderServiceExtensions, Contex
 
     public Destroy(context: Context) {
         if (!(context instanceof Context)) {
-            throw new ArgumentException(`${ context } should be of type Context`, 'context');
+            throw new ArgumentException(`${context} should be of type Context`, 'context');
         }
 
         if (!this.#contextRegistry.Has(context)) {
@@ -83,12 +89,12 @@ export class ServiceProvider implements ServiceProviderServiceExtensions, Contex
                 return descriptor.implementation(descriptor, context);
             case ServiceLifetime.Scoped:
                 if (!(context instanceof Context)) {
-                    throw new ArgumentException(`${ context } should be of type Context`, 'context');
+                    throw new ArgumentException(`${context} should be of type Context`, 'context');
                 }
                 return descriptor.implementation(descriptor, context);
             default:
                 throw new InvalidOperationException(
-                    `Lifetime ${ ServiceLifetime[descriptor.lifetime] } is not supported.
+                    `Lifetime ${ServiceLifetime[descriptor.lifetime]} is not supported.
                      it looks like problem with the library it self, please create an issue in Github
                      so it could be fixed.
                     `
