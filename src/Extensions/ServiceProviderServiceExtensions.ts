@@ -1,5 +1,5 @@
 import { Context } from "../Context";
-import { InjectionToken } from "../InjectionToken";
+import { InjectionToken, InjectionTokenGenericParam } from "../InjectionToken";
 import { ServiceType } from "../Types";
 
 export abstract class ServiceProviderServiceExtensions {
@@ -85,7 +85,7 @@ export abstract class ServiceProviderServiceExtensions {
     abstract GetService<T>(serviceType: ServiceType<T>, context: Context): T | null;
 
     /**
-     * Get return value of `InjectionToken` implementationFactory.
+     * Get the value of `InjectionToken` implementationFactory.
      *
      * Use this overload to resolve scoped or transient InjectionToken implementationFactory.
      *
@@ -106,7 +106,16 @@ export abstract class ServiceProviderServiceExtensions {
      * @returns An array of services of type serviceType
      */
     abstract GetServices<T>(serviceType: ServiceType<T>): T[];
-
+    /**
+     * Get array of registered `InjectionToken` implementationFactory values.
+     *
+     * @param injectionToken Instance of InjectionToken.
+     *
+     * @throws {ServiceNotFoundException} in case no service of type serviceType is registered.
+     *
+     * @returns An array of registered implementationFactory values
+     */
+    abstract GetServices<T extends InjectionToken<any>>(injectionToken: T): InjectionTokenGenericParam<T>[];
     /**
      * Get array of services of type serviceType that is bound to that context.
      *
