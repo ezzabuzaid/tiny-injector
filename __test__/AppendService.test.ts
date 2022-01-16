@@ -1,11 +1,11 @@
-import { Injector, Injectable, ArgumentException } from "../src";
+import { ArgumentException, Injectable, Injector } from "../src";
 import { getSupportedImplementationTypeTypes, getSupportedServiceTypeTypes } from "./utils";
 
 describe('AppendSingleton', () => {
     describe('PrimitiveTypeAsServiceType_ArgumentExceptionThrown', () => {
         const types = getSupportedServiceTypeTypes();
         types.forEach((type) => {
-            test(`${ type }`, () => {
+            test(`${type}`, () => {
                 expect(() => Injector.AppendSingleton(type as any))
                     .toThrowError(ArgumentException);
             });
@@ -18,7 +18,7 @@ describe('AppendSingleton', () => {
 
         const types = getSupportedImplementationTypeTypes();
         types.forEach((type) => {
-            test(`${ type }`, () => {
+            test(`${type}`, () => {
                 expect(() => Injector.AppendSingleton(Service, type as any))
                     .toThrowError(ArgumentException);
             })
@@ -48,13 +48,28 @@ describe('AppendSingleton', () => {
         expect(services[1]).toBeInstanceOf(FirstService);
         expect(services[2]).toBeInstanceOf(SecondService);
     });
+
+    it('RegisterSameTypeMultipleTimes_RetrunsDifferentInstancesOfTheSameImplementationType', () => {
+        @Injectable()
+        class Service {
+            id = Math.random();
+        }
+
+        Injector.AppendSingleton(Service);
+        Injector.AppendSingleton(Service);
+        Injector.AppendSingleton(Service);
+        const services = Injector.GetServices(Service);
+        expect(services[0]).toBeInstanceOf(Service);
+        expect(services[1]).toBeInstanceOf(Service);
+        expect(services[2]).toBeInstanceOf(Service);
+    });
 });
 
 describe('AppendTransient', () => {
     describe('PrimitiveTypeAsServiceType_ArgumentExceptionThrown', () => {
         const types = getSupportedServiceTypeTypes();
         types.forEach((type) => {
-            test(`${ type }`, () => {
+            test(`${type}`, () => {
                 expect(() => Injector.AppendTransient(type as any))
                     .toThrowError(ArgumentException);
             });
@@ -67,7 +82,7 @@ describe('AppendTransient', () => {
 
         const types = getSupportedImplementationTypeTypes();
         types.forEach((type) => {
-            test(`${ type }`, () => {
+            test(`${type}`, () => {
                 expect(() => Injector.AppendTransient(Service, type as any))
                     .toThrowError(ArgumentException);
             })
@@ -103,7 +118,7 @@ describe('AppendScoped', () => {
     describe('PrimitiveTypeAsServiceType_ArgumentExceptionThrown', () => {
         const types = getSupportedServiceTypeTypes();
         types.forEach((type) => {
-            test(`${ type }`, () => {
+            test(`${type}`, () => {
                 expect(() => Injector.AppendTransient(type as any))
                     .toThrowError(ArgumentException);
             });
@@ -116,7 +131,7 @@ describe('AppendScoped', () => {
 
         const types = getSupportedImplementationTypeTypes();
         types.forEach((type) => {
-            test(`${ type }`, () => {
+            test(`${type}`, () => {
                 expect(() => Injector.AppendTransient(Service, type as any))
                     .toThrowError(ArgumentException);
             })
@@ -148,3 +163,4 @@ describe('AppendScoped', () => {
         expect(services[2]).toBeInstanceOf(SecondService);
     });
 });
+

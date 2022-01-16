@@ -16,7 +16,7 @@ expect.extend({
             return { pass: false, message: () => 'No error thrown' };
         } catch (error) {
             const pass = isTypeOf(error, actual);
-            return { pass: isTypeOf(error, actual), message: () => pass ? '' : `${ error.name } is not ${ actual.name }` };
+            return { pass: isTypeOf(error, actual), message: () => pass ? '' : `${(<Error> error).name} is not ${actual.name}` };
         }
     }
 });
