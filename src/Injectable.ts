@@ -3,29 +3,27 @@ import { ArgumentException } from "./Exceptions";
 import RootServiceCollection from "./RootServiceCollection";
 import { ServiceLifetime } from "./ServiceLifetime";
 import { ServiceType } from "./Types";
-import { isNullOrUndefined, notNullOrUndefined } from "./Utils";
+import { isNullOrUndefined } from "./Utils";
 
 interface InjectableOptions {
     /**
      * ```
      * class Test {}
-     * 
      * @Injectable({
      *  serviceType: Test,
      *  lifetime: ServiceLifetime.Singleton
      * })
      * class MyService {}
      * ```
+     *
      * Alias to
      * ```
      * Injector.AddSingleton(Test, MyService)
-     * Injector.GetRequiredService(Test) // will return MyService instance
      * ```
-     * 
+     *
      * if not specifed, the serviceType will be the implementationType
      * ```
      * Injector.AddSingleton(MyService, MyService)
-     * Injector.GetRequiredService(MyService) // will return MyService instance
      * ```
      */
     serviceType?: ServiceType<any>;
@@ -34,12 +32,22 @@ interface InjectableOptions {
      */
     lifetime: ServiceLifetime;
 
+    /**
+     * The service collection to contain the service. default to RootServiceCollection if not specifed
+     */
     provideIn?: 'root' | AbstractServiceCollection;
+
+    /**
+     * Use `TryAdd{lifetime}` instead of `Add{lifetime}` with respect to serviceType option.
+     *
+     * Injector.TryAdd{lifetime}
+     */
+    tryAddService?: boolean;
 }
 
 /**
  * Decorator that makes a service available to be injected as a dependency.
- * 
+ *
  * it takes option parameter that used to add the class to the injector directly
  * ```
  * "@Injectable({
@@ -47,7 +55,7 @@ interface InjectableOptions {
  * })
  * class MySingletonService { }"
  * ```
- * @param options 
+ * @param options
  */
 export function Injectable(options?: InjectableOptions): ClassDecorator {
     return function (target: Function) {
@@ -75,13 +83,25 @@ export function Injectable(options?: InjectableOptions): ClassDecorator {
 
         switch (injectableOptions.lifetime) {
             case ServiceLifetime.Scoped:
-                serviceCollection.AddScoped(injectableOptions.serviceType ?? target, target as any)
+                if (options.tryAddService) {
+                    serviceCollection.TryAddScoped(injectableOptions.serviceType ?? target, target as any)
+                } else {
+                    serviceCollection.AddScoped(injectableOptions.serviceType ?? target, target as any)
+                }
                 break;
             case ServiceLifetime.Singleton:
-                serviceCollection.AddSingleton(injectableOptions.serviceType ?? target, target as any)
+                if (options.tryAddService) {
+                    serviceCollection.TryAddSingleton(injectableOptions.serviceType ?? target, target as any)
+                } else {
+                    serviceCollection.AddSingleton(injectableOptions.serviceType ?? target, target as any)
+                }
                 break;
             case ServiceLifetime.Transient:
-                serviceCollection.AddTransient(injectableOptions.serviceType ?? target, target as any)
+                if (options.tryAddService) {
+                    serviceCollection.TryAddSingleton(injectableOptions.serviceType ?? target, target as any)
+                } else {
+                    serviceCollection.AddSingleton(injectableOptions.serviceType ?? target, target as any)
+                }
                 break;
             default:
                 throw new ArgumentException('@Injectable lifetime is unknown', 'options.lifetime')
