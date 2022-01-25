@@ -164,12 +164,12 @@ const firstContext = Injector.Create();
 const secondContext = Injector.Create();
 
 const firstOperationScoped = Injector.GetRequiredService(
-	AbstractOperationTransient,
-	context
+	AbstractOperationScoped,
+	firstContext
 );
 const secondOperationScoped = Injector.GetRequiredService(
-	AbstractOperationTransient,
-	context
+	AbstractOperationScoped,
+	secondContext
 );
 
 console.log(firstOperationScoped.operationId);
@@ -194,7 +194,7 @@ const secondOperationSingleton = Injector.GetRequiredService(
 
 console.log(firstOperationSingleton.operationId);
 console.log(secondOperationSingleton.operationId);
-// operationId from differnet instances will be the same.
+// operationId will be the same since it is the same instance.
 console.log(
 	firstOperationSingleton.operationId === secondOperationSingleton.operationId
 	// Will log "true"
