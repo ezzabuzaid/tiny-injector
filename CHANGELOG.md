@@ -1,3 +1,33 @@
+# 0.1.0 (2022-01-27)
+
+
+### Bug Fixes
+
+* **Context:** remove get method from context and only rely on Injector as service locator ([25164ea](https://github.com/ezzabuzaid/tiny-injector/commit/25164ea4b21d3e79ba0287d6305ef70bd33c3b8b))
+* escape mdx variable ServiceLifetime ([4708b05](https://github.com/ezzabuzaid/tiny-injector/commit/4708b05f4a46e79cf0766441c9765f63f20be0a9))
+* **Injectable:** use root as default providedIn ([02be573](https://github.com/ezzabuzaid/tiny-injector/commit/02be573364a858b21ef2c154114770747ff96651))
+* **InjectionToken:** add private field to prevent collision with empty classes ([26f93d7](https://github.com/ezzabuzaid/tiny-injector/commit/26f93d7210947763314ddfd9b51051bc9d9da263))
+* **Injector:** cache implementationFactory result based on ServiceLifetime ([6e13a08](https://github.com/ezzabuzaid/tiny-injector/commit/6e13a08e3bc132533e7ebb78053e19ea8029882b))
+* **Injector:** move InjectionToken overrides after plain class orderrides ([be10cf0](https://github.com/ezzabuzaid/tiny-injector/commit/be10cf0568d6a95ae9d74a3f1572e2f608cbf081))
+
+
+### Features
+
+* add AbstractServiceCollection to make it replacable ([ead6608](https://github.com/ezzabuzaid/tiny-injector/commit/ead660869687bd22da494b3828993650b605a746))
+* add support for abstract class ([0dbf3e7](https://github.com/ezzabuzaid/tiny-injector/commit/0dbf3e71794c4c94776050203e30238188994441))
+* add TryAddService functionality ([870a698](https://github.com/ezzabuzaid/tiny-injector/commit/870a698b0730385b429598bad5465e32c1e0f9c0))
+* add tryAddService option to Injectable ([0dc3799](https://github.com/ezzabuzaid/tiny-injector/commit/0dc37990afeec19a40dbc16eb192081ecc40e5f9))
+* **AppendExtensions:** add support for InjectionToken ([e3a7df8](https://github.com/ezzabuzaid/tiny-injector/commit/e3a7df85f89464bec7e45ea516d7aa13c76e663b))
+* create concrete class of AbstractServiceCollection ([e3fe2f3](https://github.com/ezzabuzaid/tiny-injector/commit/e3fe2f3f17b161912327b4c0af9360f0157e3759))
+* export RootServiceCollection as public API ([0d48d32](https://github.com/ezzabuzaid/tiny-injector/commit/0d48d3248dd4b3550439bd3d406345d67a574fa8))
+* implement abstract Extensions system with RootInjector ([e9f0f7f](https://github.com/ezzabuzaid/tiny-injector/commit/e9f0f7fc2d5413bd31119f8da3c163b3c8323c93))
+* **Injector:** add replace service extensions ([75e0b51](https://github.com/ezzabuzaid/tiny-injector/commit/75e0b51ee70cb7cfc0145f7fc8493c6615500288))
+* **Injector:** throw ServiceExistException from AddService if a service already exist ([078103a](https://github.com/ezzabuzaid/tiny-injector/commit/078103a58522912910f15c4152639ea0b9b6185e))
+* **ServiceProviderServiceExtensions:** add support for InjectionToken ([da25744](https://github.com/ezzabuzaid/tiny-injector/commit/da25744e72fa68cf330a9da9225803da4573866b))
+* **ServiceProvider:** throw ArgumentException if GetRequiredService or GetServices received null or undefined as service type ([e7227ed](https://github.com/ezzabuzaid/tiny-injector/commit/e7227ed2f73054aeb3492992a94f581f9556ff71))
+* split context binding to seperate class (ContextRegistry) ([a69fe63](https://github.com/ezzabuzaid/tiny-injector/commit/a69fe63fdf4633b8fa3feb03468ed124f7572548))
+* throw ServiceNotFoundException if service not added ([4a37bba](https://github.com/ezzabuzaid/tiny-injector/commit/4a37bba92fd55d1d23678771e9aa016c2b8c4f4f))
+
 ### Changelog
 
 All notable changes to this project will be documented in this file. Dates are displayed in UTC.
