@@ -98,9 +98,9 @@ export function Injectable(options?: InjectableOptions): ClassDecorator {
                 break;
             case ServiceLifetime.Transient:
                 if (options.tryAddService) {
-                    serviceCollection.TryAddSingleton(injectableOptions.serviceType ?? target, target as any)
+                    serviceCollection.TryAddTransient(injectableOptions.serviceType ?? target, target as any)
                 } else {
-                    serviceCollection.AddSingleton(injectableOptions.serviceType ?? target, target as any)
+                    serviceCollection.AddTransient(injectableOptions.serviceType ?? target, target as any)
                 }
                 break;
             default:

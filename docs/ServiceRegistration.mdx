@@ -10,33 +10,56 @@ There are several service registration methods that are useful in different scen
 
 ### Single registration
 
-| Syntax                                                                  | Example                                                                         |
-| ----------------------------------------------------------------------- | ------------------------------------------------------------------------------- |
-| Injector.Add{LIFETIME}({IMPLEMENTATION})                                | Injector.AddSingleton(ConcreteDep)                                              |
-| Injector.Add{LIFETIME}({SERVICE}, {IMPLEMENTATION})                     | Injector.AddSingleton(AbstractDep, ConcreteDep)                                 |
-| Injector.Add{LIFETIME}({SERVICE}, (context) => new {IMPLEMENTATION})    | Injector.AddSingleton(AbstractDep, (context) => new ConcreteDep())              |
-| Injector.Add{LIFETIME}({InjectionToken}, (context) => {IMPLEMENTATION}) | Injector.AddSingleton(new InjectionToken<{number}>('A Token'), (context) => 10) |
+| Syntax                                                                    | Example                                                                           |
+| ------------------------------------------------------------------------- | --------------------------------------------------------------------------------- |
+| `Injector.Add{LIFETIME}({IMPLEMENTATION})`                                | `Injector.AddSingleton(ConcreteDep)`                                              |
+| `Injector.Add{LIFETIME}({SERVICE}, {IMPLEMENTATION})`                     | `Injector.AddSingleton(AbstractDep, ConcreteDep)`                                 |
+| `Injector.Add{LIFETIME}({SERVICE}, (context) => new {IMPLEMENTATION}`)    | `Injector.AddSingleton(AbstractDep, (context) => new ConcreteDep())`              |
+| `Injector.Add{LIFETIME}({InjectionToken}, (context) => {IMPLEMENTATION})` | `Injector.AddSingleton(new InjectionToken<{number}>('A Token'), (context) => 10)` |
 
-Registering a service with only an implementation type is equivalent to registering that service with the same implementation and service type.
+> Registering a service with only an implementation type is equivalent to registering that service with the same implementation and service type.
 
 ```typescript
 Injector.AddSingleton(ServiceType);
 Injector.AddSingleton(ServiceType, ServiceType);
 ```
 
-> Calling `Add{Lifetime}` more than one time will result in throwing `ServiceExistException`, if your intentions
-> to have register multiple implementations, check out `Append{lifetime}` instead.
+> Calling `Add{Lifetime}` more than one time will result in throwing `ServiceExistException`, if your intentions to register multiple implementations, check out `Append{lifetime}` instead.
 
 ### Multiple registrations
 
-| Syntax                                                                     | Example                                                                            |
-| -------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
-| Injector.Append{LIFETIME}({IMPLEMENTATION})                                | Injector.AppendSingleton(ConcreteDep)                                              |
-| Injector.Append{LIFETIME}({SERVICE}, {IMPLEMENTATION})                     | Injector.AppendSingleton(AbstractDep, ConcreteDep)                                 |
-| Injector.Append{LIFETIME}({SERVICE}, (context) => new {IMPLEMENTATION})    | Injector.AppendSingleton(AbstractDep, (context) => new ConcreteDep())              |
-| Injector.Append{LIFETIME}({InjectionToken}, (context) => {IMPLEMENTATION}) | Injector.AppendSingleton(new InjectionToken<{number}>('A Token'), (context) => 10) |
+| Syntax                                                                       | Example                                                                              |
+| ---------------------------------------------------------------------------- | ------------------------------------------------------------------------------------ |
+| `Injector.Append{LIFETIME}({IMPLEMENTATION})`                                | `Injector.AppendSingleton(ConcreteDep)`                                              |
+| `Injector.Append{LIFETIME}({SERVICE}, {IMPLEMENTATION})`                     | `Injector.AppendSingleton(AbstractDep, ConcreteDep)`                                 |
+| `Injector.Append{LIFETIME}({SERVICE}, (context) => new {IMPLEMENTATION})`    | `Injector.AppendSingleton(AbstractDep, (context) => new ConcreteDep())`              |
+| `Injector.Append{LIFETIME}({InjectionToken}, (context) => {IMPLEMENTATION})` | `Injector.AppendSingleton(new InjectionToken<{number}>('A Token'), (context) => 10)` |
 
-Multiple implementations of a service cannot be registered using the methods that don't take an explicit service type. These methods can register multiple instances of a service, but they will all have the same implementation type.
+```typescript
+Injector.AppendSingleton(ServiceType);
+Injector.AppendSingleton(ServiceType, ServiceType);
+Injector.AppendSingleton(ServiceType, ImplementationType);
+Injector.AppendSingleton(ServiceType, implementationFactory);
+```
+
+Example
+
+```typescript
+abstract class Logger {}
+
+@Injectable()
+class InformativeLogger extends Logger {}
+
+@Injectable()
+class WarningLogger extends Logger {}
+
+Injector.AppendSingleton(Logger, InformativeLogger);
+Injector.AppendSingleton(Logger, WarningLogger);
+```
+
+You can use `AddSingleton` for the first add, but it is recommended to use `AppendSingleton` if you want array of implementations.
+
+> Multiple implementations of a service cannot be registered using the methods that don't take an explicit service type. These methods can register multiple instances of a service, but they will all have the same implementation type.
 
 ```typescript
 Injector.AppendSingleton(ServiceType);
@@ -52,14 +75,14 @@ const services = Injector.GetServices(ServiceType);
 
 ### Safe registration
 
-| Syntax                                                                     | Example                                                                            |
-| -------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
-| Injector.TryAdd{LIFETIME}({IMPLEMENTATION})                                | Injector.TryAddSingleton(ConcreteDep)                                              |
-| Injector.TryAdd{LIFETIME}({SERVICE}, {IMPLEMENTATION})                     | Injector.TryAddSingleton(AbstractDep, ConcreteDep)                                 |
-| Injector.TryAdd{LIFETIME}({SERVICE}, (context) => new {IMPLEMENTATION})    | Injector.TryAddSingleton(AbstractDep, (context) => new ConcreteDep())              |
-| Injector.TryAdd{LIFETIME}({InjectionToken}, (context) => {IMPLEMENTATION}) | Injector.TryAddSingleton(new InjectionToken<{number}>('A Token'), (context) => 10) |
+| Syntax                                                                       | Example                                                                              |
+| ---------------------------------------------------------------------------- | ------------------------------------------------------------------------------------ |
+| `Injector.TryAdd{LIFETIME}({IMPLEMENTATION})`                                | `Injector.TryAddSingleton(ConcreteDep)`                                              |
+| `Injector.TryAdd{LIFETIME}({SERVICE}, {IMPLEMENTATION})`                     | `Injector.TryAddSingleton(AbstractDep, ConcreteDep)`                                 |
+| `Injector.TryAdd{LIFETIME}({SERVICE}, (context) => new {IMPLEMENTATION})`    | `Injector.TryAddSingleton(AbstractDep, (context) => new ConcreteDep())`              |
+| `Injector.TryAdd{LIFETIME}({InjectionToken}, (context) => {IMPLEMENTATION})` | `Injector.TryAddSingleton(new InjectionToken<{number}>('A Token'), (context) => 10)` |
 
-Register the service only if there isn't already an implementation registered.
+> Register the service only if there isn't already an implementation registered.
 
 ```typescript
 Injector.TryAdd(ServiceType, FirstImplementationType);
@@ -95,7 +118,7 @@ Injector.AddSingleton(Logger, (context) => {
 ## Using @Injectable
 
 The other approche is to use `@Injectable` decorator as it is the best choice for tree shaking purposes.
-with `@Injectable` you don't need to explict service registration using Add{Lifetime} methods.
+with `@Injectable` you don't need to explict service registration using `Add{Lifetime}` methods.
 
 > In some cases you might need to use litetime methods such as, deffered registration or if you want to provide factoryFn as implementation
 
@@ -110,8 +133,8 @@ Register `ServiceType` as Singleton,
 class ServiceType {}
 ```
 
-Remember, registering a service with only an implementation type is equivalent to registering that service with the same implementation and service type.
-so this would be registered as this behind the scene
+> Remember, registering a service with only an implementation type is equivalent to registering that service with the same implementation and service type.
+> so this would be registered as this behind the scene
 
 ```typescript
 @Injectable()
@@ -132,43 +155,13 @@ abstract class Logger {}
 class InformativeLogger extends Logger {}
 ```
 
-This would be an alias for
+This is an alias for
 
 ```typescript
 Injector.AddSingleton(Logger, InformativeLogger);
 ```
 
 > keep in mind that `@Injectable` is always needed in order to resolve the class constructor parameters type.
-
-## Multiple registration for the same service type
-
-By default adding more than one ServiceType will throw `InvalidOperationException` .
-so in case where you want to add multiple implementations for the same ServiceType you would use the
-`Append{Lifetime}` methods.
-
-```typescript
-Injector.AppendSingleton(ServiceType);
-Injector.AppendSingleton(ServiceType, ServiceType);
-Injector.AppendSingleton(ServiceType, ImplementationType);
-Injector.AppendSingleton(ServiceType, implementationFactory);
-```
-
-Example
-
-```typescript
-abstract class Logger {}
-
-@Injectable()
-class InformativeLogger extends Logger {}
-
-@Injectable()
-class WarningLogger extends Logger {}
-
-Injector.AppendSingleton(Logger, InformativeLogger);
-Injector.AppendSingleton(Logger, WarningLogger);
-```
-
-> You can use `AddSingleton` for the first add, but to be in safe side use `AppendSingleton` if you want to have array of implementations.
 
 ## Strict Type
 
@@ -229,44 +222,4 @@ class Service {
 class Implementation extends Test {}
 
 Injector.AddSingleton(Service, Implementation);
-```
-
-## Comparison between Tiny Injector, Angular DI, and .Net DI
-
-### Tiny Injector
-
-```typescript
-Injector.AddSingleton(ServiceType);
-Injector.AddSingleton(ServiceType, ServiceType);
-Injector.AddSingleton(ServiceType, ImplementationType);
-Injector.AddSingleton(ServiceType, implementationFactory);
-```
-
-### .Net
-
-```c#
-app.Services.AddSingleton<ServiceType>();
-app.Services.AddSingleton<ServiceType, ServiceType>();
-app.Services.AddSingleton<ServiceType, ImplementationType>();
-app.Services.AddSingleton<ServiceType>(implementationFactory);
-```
-
-### Angular
-
-```typescript
-providers: [
-	ServiceType,
-	{
-		provide: ServiceType,
-		useClass: ServiceType,
-	},
-	{
-		provide: ServiceType,
-		useClass: ImplementationType,
-	},
-	{
-		provide: ServiceType,
-		useFactory: implementationFactory,
-	},
-];
 ```

@@ -1,38 +1,54 @@
+---
+title: Using Dependency Injection In Tiny Injector
+---
+
 # Using Dependency Injection
 
-## Injecting A Service
+If you recall from the [ServiceRegistration](./ServiceRegistration) page, you can have
 
-### Injecting single service
+- One to one relation: one ServiceType to one ImplementationType
+- Many to one: one ServiceType to many ImplementationTypes
 
-1. Declare service and decorate it with `@Injectable()`.
-2. Specify lifetime.
-3. Define it as parameter in class constructor.
+In this page we're gonna learn how to be able to request them back!
+To request a `ServiceType` you can either use **class constructor** or `Service Locator Pattern`
+
+> Any class that is utilzing the DI should have the `@Injectable()` so it can be part of the play!.
+
+## Constructor parameters
 
 ```typescript
+// Abstract Service
 @Injectable()
 abstract class Logger {}
 
+// Concrete Service
 @Injectable()
-class InformativeLogger {}
+class InformativeLogger extends Logger {}
 
+// Client
 @Injectable()
 class Application {
-	constructor(private informativeLogger: InformativeLogger) {}
+	constructor(private logger: Logger) {}
 }
+
 Injector.AddSingleton(Logger, InformativeLogger);
 Injector.AddSingleton(Application);
 ```
 
-### Injecting Array of service type
+In the previous sample the `Application` class declared the abstract `Logger` as dependence.
+the `Logger` class have `InformativeLogger` as implementation type which implies that the `InformativeLogger` will
+be injected in the `Application` class. that's due the registration of `InformativeLogger` against `Logger`
+
+Same case with requesting multiple `ImplementationTypes` from the same `ServiceType`
 
 ```typescript
 abstract class Logger {}
 
 @Injectable()
-class InformativeLogger {}
+class InformativeLogger extends Logger {}
 
 @Injectable()
-class WarningLogger {}
+class WarningLogger extends Logger {}
 
 @Injectable()
 class Application {
@@ -44,9 +60,16 @@ Injector.AppendSingleton(Logger, WarningLogger);
 Injector.AddSingleton(Application);
 ```
 
-The sample declares `Logger` abstract class and register it as Singleton with two concrete implementation.
+In the previous sample the `Application` class declared the abstract `Logger` as dependence but with array type instead of the abstraction
+and with `@Inject` decorator.
 
-The `@Inject` decorator is required to get array of implementations for a service type but also you have to make sure that the type of parameter is Array as `Logger[]` or `Array<Logger>`
+> This is required to know that your intention is to have array of implementations.
+
+The `Logger` class have `InformativeLogger` and `WarningLogger` as implementations which implies that the both `InformativeLogger` and `WarningLogger` will
+be injected in the `Application` class as array type.
+that's due the registration of `InformativeLogger` and `WarningLogger` against `Logger`
+
+> The `@Inject` decorator is required to get array of implementations for a service type but also you have to make sure that the type of parameter is Array as `Logger[]` or `Array<Logger>`
 
 ```typescript
 @Injectable()
@@ -55,37 +78,9 @@ class Application {
 }
 ```
 
-if the array type omitted the last registered implementation will be returned.
+Important: **If the array type omitted the last registered implementation will be returned**.
 
-### Injecting context
-
-In case you don't have the service added yet, you can inject the `Context` serviceType to later use it to locate the deferred service
-
-```typescript
-@Injectable()
-class Test {}
-
-@Injectable()
-class Service {
-	constructor(private context: Context) {
-		// Calling `this.someMethod()` here will throw an error since Test serviceType is not added yet.
-
-		// Supposedly, the Test service will be added before two seconds
-		setTimeout(() => {
-			Injector.AddSingleton(Test);
-			this.someMethod();
-		}, 2000);
-	}
-
-	someMethod() {
-		return context.get(Test);
-	}
-}
-```
-
-Another case where you use service locator to locate a service
-
-## Locating A Service
+## Service Locator Pattern
 
 Singleton and Scoped lifetimes are bound to a context.
 
@@ -176,18 +171,18 @@ It is always preferred to pass context with _Transient_ services to avoid an han
 ### Locating Array of the same service type
 
 ```typescript
-abstract class Logger { }
+abstract class Logger {}
 
 @Injectable()
-class InformativeLogger extends Logger { }
+class InformativeLogger extends Logger {}
 
 @Injectable()
-class WarningLogger extends Logger { }
+class WarningLogger extends Logger {}
 
 Injector.AppendSingleton(Logger, InformativeLogger);
 Injector.AppendSingleton(Logger, WarningLogger);
 
-Injector.GetRequiredService({serviceType: Logger, multiple: true, context: /** In case of Scoped or Transient */});
+const loggers = Injector.GetServices(Logger);
 ```
 
 ## Lifetime and registration options

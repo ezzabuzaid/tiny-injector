@@ -38,20 +38,18 @@ The other way is to use `CreateScope()` which simplifies the consumption of Scop
 class Logger {}
 
 Injector.CreateScope((context) => {
-	const logger = context.get(Logger);
+	const logger = Injector.GetRequiredService(Logger, context);
 });
 ```
 
-In this sample, the context created internally and provided as argument, the `get` method used to request a `Logger` instance.
+In this sample, the context created internally and provided as argument, the `Injector.GetRequiredService` method used to request a `Logger` instance.
 
 the `Destroy` method is no longer needed since it will be called internally immediately after the function execution is done.
-
-notice that we used the `get` method instead of `GetRequiredService` , the `get` method is just helper method that uses `GetRequiredService` .
 
 ```typescript
 const context = Injector.Create();
 
-const logger = context.get(Logger);
+const logger = Injector.GetRequiredService(Logger, context);
 // equivalent to
 Injector.GetRequiredService(serviceType, context);
 ```
@@ -80,6 +78,4 @@ it's most useful when you want to store some data at the creation of context and
 
 4. If you created a context using `Create` make sure to destroy it.
 
-5. Don't use `context.get` with Singleton lifetime.
-
-6. Use context extras as way to manage your code, do not use it to store any dependencies.
+5. The intention of Context Extras as to store data from and transfer it from scope to another and not to store any dependencies.

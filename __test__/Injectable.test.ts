@@ -46,7 +46,6 @@ describe('Injectable', () => {
 
         expect(service).toBeInstanceOf(Service);
     });
-
     test('NotSupportedLifetime_ArgumentExceptionThrown', () => {
         expect(() => {
             @Injectable({

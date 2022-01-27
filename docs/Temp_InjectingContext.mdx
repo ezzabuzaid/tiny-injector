@@ -1,0 +1,41 @@
+## Injecting A Context
+
+Let's say we have this code
+
+```typescript
+@Injectable({
+	lifetime: ServiceLifetime.Scoped,
+})
+class Logger {}
+
+const context = Injector.Create();
+const logger = Injector.GetRequiredService(Logger, context);
+
+Injector.Destroy(context);
+```
+
+In case you don't have the service added yet, you can inject the `Context` serviceType to later use it to locate the deferred service
+
+```typescript
+@Injectable()
+class Test {}
+
+@Injectable()
+class Service {
+	constructor(private context: Context) {
+		// Calling `this.someMethod()` here will throw an error since Test serviceType is not added yet.
+
+		// Supposedly, the Test service will be added before two seconds
+		setTimeout(() => {
+			Injector.AddSingleton(Test);
+			this.someMethod();
+		}, 2000);
+	}
+
+	someMethod() {
+		return context.get(Test);
+	}
+}
+```
+
+Another case where you use service locator to locate a service

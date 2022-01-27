@@ -1,0 +1,43 @@
+---
+title: Comparison between Tiny Injector, Angular DI, and .Net DI
+---
+
+# Comparison between Tiny Injector, Angular DI, and .Net DI
+
+## Tiny Injector
+
+```typescript
+Injector.AddSingleton(ServiceType);
+Injector.AddSingleton(ServiceType, ServiceType);
+Injector.AddSingleton(ServiceType, ImplementationType);
+Injector.AddSingleton(ServiceType, implementationFactory);
+```
+
+## .Net
+
+```c#
+app.Services.AddSingleton<ServiceType>();
+app.Services.AddSingleton<ServiceType, ServiceType>();
+app.Services.AddSingleton<ServiceType, ImplementationType>();
+app.Services.AddSingleton<ServiceType>(implementationFactory);
+```
+
+## Angular
+
+```typescript
+providers: [
+	ServiceType,
+	{
+		provide: ServiceType,
+		useClass: ServiceType,
+	},
+	{
+		provide: ServiceType,
+		useClass: ImplementationType,
+	},
+	{
+		provide: ServiceType,
+		useFactory: implementationFactory,
+	},
+];
+```

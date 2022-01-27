@@ -13,16 +13,12 @@
             "/GettingStarted"
         ],
         [
-            "Service Lifetime",
-            "/ServiceLifetime"
-        ],
-        [
             "Service Registration",
             "/ServiceRegistration"
         ],
         [
-            "Context",
-            "/Context"
+            "Service Lifetime",
+            "/ServiceLifetime"
         ],
         [
             "Using Dependency Injection",
@@ -33,12 +29,57 @@
             "/InjectionToken"
         ],
         [
+            "Context",
+            "/Context"
+        ],
+        [
+            "Service Disposal",
+            "/ServiceDisposal"
+        ],
+        [
             "Configuration",
             "/Configuration"
         ],
         [
-            "Contributing",
-            "/Contributing"
+            "Usage With Deno",
+            "/UsageWithDeno"
+        ],
+        [
+            "Architecture",
+            [
+                [
+                    "Overview",
+                    "/Architecture/Overview"
+                ],
+                [
+                    "ServiceCollection",
+                    "/Architecture/ServiceCollection"
+                ],
+                [
+                    "Activator",
+                    "/Architecture/Activator"
+                ],
+                [
+                    "Exceptions",
+                    "/Exceptions"
+                ]
+            ]
+        ],
+        [
+            "Recommendations",
+            "/Recommendations"
+        ],
+        [
+            "Testing",
+            "/Testing"
+        ],
+        [
+            "For C# Developers",
+            "/CSharpDevelopers"
+        ],
+        [
+            "Syntax Comparison",
+            "/SyntaxComparison"
         ],
         [
             "Examples",
@@ -52,6 +93,10 @@
                     "/examples/using-request-object-beyond-controller"
                 ]
             ]
+        ],
+        [
+            "Contributing",
+            "/Contributing"
         ]
     ]
 }

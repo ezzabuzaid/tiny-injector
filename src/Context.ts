@@ -1,6 +1,6 @@
 
 export class Context {
-    #extras = new Map<string, any>();
+    #extras = new Map<string, any | undefined>();
     constructor() {
         Object.freeze(this);
         Object.seal(this);
@@ -11,7 +11,7 @@ export class Context {
     }
 
     getExtra<T>(name: string): T {
-        return this.#extras.get(name) as T;
+        return this.#extras.get(name);
     }
 
 }
