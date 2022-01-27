@@ -6,12 +6,12 @@
   "scripts": {
     "test": "jest --runInBand --detectOpenHandles --no-cache",
     "test:majestic": "majestic",
-    "release": "dotenv release-it",
     "start": "ts-node src/index.ts",
     "build:watch": "tsc  --project tsconfig.app.json --watch",
     "build": "tsc --project tsconfig.app.json",
     "prebuild": "del-cli ./dist/",
-    "postbuild": "cpy 'README.md' 'package*.json' ./dist/ --no-overwrite --parents"
+    "postbuild": "cpy 'README.md' 'package*.json' ./dist/ --no-overwrite --parents",
+    "release": "release-it"
   },
   "repository": {
     "type": "git",
@@ -34,21 +34,27 @@
   ],
   "private": false,
   "release-it": {
+    "plugins": {
+      "@release-it/conventional-changelog": {
+        "preset": "angular",
+        "infile": "CHANGELOG.md"
+      }
+    },
     "git": {
       "requireBranch": "main",
       "requireCleanWorkingDir": true,
       "requireCommits": true,
-      "changelog": "npx auto-changelog --stdout --commit-limit false -u --template https://raw.githubusercontent.com/release-it/release-it/master/templates/changelog-compact.hbs"
+      "requireUpstream": true,
+      "tag": true
     },
     "github": {
       "release": true
     },
     "npm": {
-      "publish": false,
+      "publish": true,
       "publishPath": "./dist"
     },
     "hooks": {
-      "after:bump": "npx auto-changelog -p",
       "before:npm:publish": "npm run build"
     }
   },
@@ -63,7 +69,6 @@
     "@types/jest": "^27.4.0",
     "cpy-cli": "^1.0.1",
     "del-cli": "^4.0.1",
-    "dotenv-cli": "^4.1.1",
     "jest": "^27.4.7",
     "majestic": "^1.8.1",
     "release-it": "^14.12.1",
