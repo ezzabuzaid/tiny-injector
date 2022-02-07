@@ -1,3 +1,10 @@
+### [0.1.1](https://github.com/ezzabuzaid/tiny-injector/compare/0.1.0...0.1.1) (2022-02-07)
+
+
+### Bug Fixes
+
+* **ServiceProviderServiceExtensions:** add context parameter to GetServices with injectionToken ([36b1c76](https://github.com/ezzabuzaid/tiny-injector/commit/36b1c7698594b9e8dea07b20af18193a619017ea))
+
 # 0.1.0 (2022-01-27)
 
 
