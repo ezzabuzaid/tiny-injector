@@ -129,4 +129,15 @@ export abstract class ServiceProviderServiceExtensions {
      * @returns An array of services of type serviceType
      */
     abstract GetServices<T>(serviceType: ServiceType<T>, context: Context): T[];
+    /**
+     * Get array of registered `InjectionToken` implementationFactory values.
+     *
+     * @param injectionToken Instance of InjectionToken.
+     * @param context A context to bind `injectionToken` to.
+     *
+     * @throws {ServiceNotFoundException} in case no service of type serviceType is registered.
+     *
+     * @returns An array of registered implementationFactory values
+     */
+    abstract GetServices<T extends InjectionToken<any>>(injectionToken: T, context: Context): InjectionTokenGenericParam<T>[];
 }

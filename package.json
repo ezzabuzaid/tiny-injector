@@ -17,6 +17,11 @@
     "type": "git",
     "url": "git+https://github.com/ezzabuzaid/tiny-injector.git"
   },
+  "husky": {
+    "hooks": {
+      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
+    }
+  },
   "author": "ezzabuzaid",
   "license": "MIT",
   "bugs": {
@@ -36,7 +41,7 @@
   "release-it": {
     "plugins": {
       "@release-it/conventional-changelog": {
-        "preset": "angular",
+        "preset": "conventionalcommits",
         "infile": "CHANGELOG.md"
       }
     },
@@ -55,7 +60,8 @@
       "publishPath": "./dist"
     },
     "hooks": {
-      "before:npm:publish": "npm run build"
+      "after:bump": "npm run build",
+      "after:release": "echo Successfully released ${name} v${version} to ${repo.repository}."
     }
   },
   "dependencies": {
@@ -65,7 +71,6 @@
   },
   "devDependencies": {
     "@release-it/conventional-changelog": "^4.1.0",
-    "@release-it/keep-a-changelog": "^2.3.0",
     "@types/jest": "^27.4.0",
     "cpy-cli": "^1.0.1",
     "del-cli": "^4.0.1",
