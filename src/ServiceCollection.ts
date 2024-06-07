@@ -144,10 +144,7 @@ export class ServiceCollection extends AbstractServiceCollection {
 
     public GetServiceDescriptors<T>(serviceType: ServiceType<T>) {
         const descriptor = this.#serviceTypeToServiceDescriptor.get(serviceType);
-        if (isNullOrUndefined(descriptor)) {
-            throw new ServiceNotFoundException(serviceType.name);
-        }
-        return descriptor;
+        return descriptor ?? [];
     }
 
     public BuildServiceProvider() {
@@ -181,10 +178,8 @@ export class ServiceCollection extends AbstractServiceCollection {
         tokens.forEach((token, index) => {
             const injectMetadata = this.GetServiceInjectMeta(serviceType, index);
             const argumentType = injectMetadata?.serviceType ?? token
-            let descriptor: ServiceDescriptor;
-            try {
-                descriptor = lastElement(this.GetServiceDescriptors(argumentType))!;
-            } catch (error) {
+            const descriptor = lastElement(this.GetServiceDescriptors(argumentType))!;
+            if (isNullOrUndefined(descriptor)) {
                 this.#toBeCreatedServices.set(argumentType, serviceType);
                 // throw new ActivationFailedException(argumentType, serviceType);
                 return;
@@ -193,6 +188,11 @@ export class ServiceCollection extends AbstractServiceCollection {
             // Only other Singleton services can be injected in Singleton service
             if (descriptor.lifetime !== ServiceLifetime.Singleton) {
                 const serviceTypeDescriptor = lastElement(this.GetServiceDescriptors(serviceType))!;
+
+                if (isNullOrUndefined(serviceTypeDescriptor)) {
+                    throw new ServiceNotFoundException(serviceType.name);
+                }
+
                 throw new LifestyleMismatchException({
                     serviceType: serviceType,
                     injectedServiceType: argumentType,
@@ -266,15 +266,17 @@ export class ServiceCollection extends AbstractServiceCollection {
     }
 
     private ValidateTransientLifetime(serviceType: ServiceType<any>, argumentType: ServiceType<any>) {
-        let descriptor: ServiceDescriptor;
-        try {
-            descriptor = lastElement(this.GetServiceDescriptors(argumentType))!;
-        } catch (error) {
+        const descriptor = lastElement(this.GetServiceDescriptors(argumentType));
+        if (isNullOrUndefined(descriptor)) {
             throw new ActivationFailedException(argumentType, serviceType);
         }
 
         if (descriptor.lifetime === ServiceLifetime.Scoped) {
             const serviceTypeDescriptor = lastElement(this.GetServiceDescriptors(serviceType))!;
+            if (isNullOrUndefined(serviceTypeDescriptor)) {
+                throw new ServiceNotFoundException(serviceType.name);
+            }
+
             throw new LifestyleMismatchException({
                 serviceType: serviceType,
                 injectedServiceType: argumentType,

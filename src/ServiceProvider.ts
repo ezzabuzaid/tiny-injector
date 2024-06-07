@@ -42,8 +42,11 @@ export class ServiceProvider implements ServiceProviderServiceExtensions, Contex
         if (isNullOrUndefined(serviceTypeOrInjectionToken)) {
             throw new ArgumentException('Must provide service type', 'serviceType');
         }
-        const descriptors = this.serviceCollection.GetServiceDescriptors(serviceTypeOrInjectionToken);
-        return this.GetImplementation(lastElement(descriptors)!, context);
+        const descriptor = lastElement(this.serviceCollection.GetServiceDescriptors(serviceTypeOrInjectionToken));
+        if (isNullOrUndefined(descriptor)) {
+            throw new ServiceNotFoundException(serviceTypeOrInjectionToken.name);
+        }
+        return this.GetImplementation(descriptor, context);
     }
 
     public Create() {

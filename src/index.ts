@@ -10,6 +10,6 @@ export * from './InjectionToken';
 export * from './Injector';
 export * from './ServiceCollection';
 export * from './ServiceLifetime';
+export * from './Types';
 export { ServiceType } from './Types';
 export { RootServiceCollection };
-
