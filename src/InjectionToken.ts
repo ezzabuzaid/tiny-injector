@@ -15,7 +15,14 @@ type FactoryType<T extends
     |
     Object
     > = T extends new (...args: any) => infer R ? R : T;
-interface Options<T> {
+interface Options<T extends
+    (new (...args: any) => any)
+    |
+    string
+    |
+    Array<T>
+    |
+    Object> {
     /**
      * Lifetime of the service
      */
@@ -31,16 +38,16 @@ interface Options<T> {
 
 /**
  * Injection tokens allows injection of values that don't have a runtime representation.
- * 
+ *
  * Use an InjectionToken whenever the type you are injecting is not reified (does not have a runtime representation) such as when injecting an interface, callable type, array or parameterized type.
- * 
+ *
  * InjectionToken is parameterized on T which is the type of object which will be returned by the Injector .
- * 
+ *
  * @link https://github.com/angular/angular/blob/master/packages/core/src/di/injection_token.ts
  */
 export class InjectionToken<T> {
     #InjectionTokenDifferentiator = null;
-    constructor(_name: string, options?: Options<T>) {
+    constructor(_name: string, options?: Options<any>) {
         class serviceType extends InjectionToken<T> { };
 
         if (typeof _name !== 'string' || _name.trim() === '') {

@@ -40,10 +40,12 @@ type Of = {
 }
 
 class _Injector implements Extensions {
-    private serviceProvider = this.serviceCollection.BuildServiceProvider();
+    private readonly serviceProvider ;
     constructor(
         private serviceCollection: AbstractServiceCollection
-    ) { }
+    ) {
+        this.serviceProvider =this.serviceCollection.BuildServiceProvider()
+    }
 
     ReplaceTransient(serviceType: any, implementationType?: any): void {
         this.serviceCollection.ReplaceTransient(serviceType, implementationType);

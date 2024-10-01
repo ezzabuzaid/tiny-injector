@@ -2,13 +2,15 @@
   "name": "tiny-injector",
   "version": "0.1.2",
   "description": "Lightweight dependency injection library for TypeScript applications",
-  "main": "index",
+  "main": "index.js",
+  "module": "index.js",
+  "type": "module",
   "scripts": {
     "test": "jest --runInBand --detectOpenHandles --no-cache",
     "test:majestic": "majestic",
     "start": "ts-node src/index.ts",
     "build:watch": "tsc  --project tsconfig.app.json --watch",
-    "build": "tsc --project tsconfig.app.json",
+    "build": "node ./esbuild.config.mjs && tsc --project tsconfig.app.json",
     "prebuild": "del-cli ./dist/",
     "postbuild": "cpy 'README.md' 'package*.json' ./dist/ --no-overwrite --parents",
     "release": "release-it"
@@ -65,9 +67,11 @@
     }
   },
   "dependencies": {
+    "esbuild": "^0.14.54",
+    "esbuild-node-externals": "^1.15.0",
     "reflect-metadata": "^0.1.13",
     "tslib": "^2.3.1",
-    "typescript": "^4.5.4"
+    "typescript": "^5.6.2"
   },
   "devDependencies": {
     "@release-it/conventional-changelog": "^4.1.0",
