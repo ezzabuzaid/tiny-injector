@@ -1,3 +1,10 @@
+## [0.2.0](https://github.com/ezzabuzaid/tiny-injector/compare/0.1.2...0.2.0) (2024-10-01)
+
+
+### Features
+
+* use esbuild to compile to esm ([dc7c273](https://github.com/ezzabuzaid/tiny-injector/commit/dc7c2733060ee0a3bf52f082b71a6d56deb25b10))
+
 ### [0.1.2](https://github.com/ezzabuzaid/tiny-injector/compare/0.1.1...0.1.2) (2024-06-07)
 
 ### [0.1.1](https://github.com/ezzabuzaid/tiny-injector/compare/0.1.0...0.1.1) (2022-02-07)
